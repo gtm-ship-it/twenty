@@ -22,14 +22,16 @@ const grayScale = {
   gray0: '#ffffff',
 };
 
+// PTS AI brand (fork gtm-ship-it/twenty · ptsai-emails): landing --blue #2f7fd6
 const colors = {
-  blue40: '#5e90f2',
+  blue40: '#2f7fd6',
+  brand: '#2f7fd6',
 };
 
 export const canvasTheme = {
   font: {
     colors: {
-      highlighted: grayScale.gray60,
+      highlighted: grayScale.gray70,
       primary: grayScale.gray50,
       tertiary: grayScale.gray35,
       inverted: grayScale.gray0,
@@ -54,7 +56,7 @@ export const canvasTheme = {
   },
   background: {
     colors: { highlight: grayScale.gray15 },
-    button: grayScale.gray60,
+    button: colors.brand,
     transparent: {
       medium: 'rgba(0, 0, 0, 0.08)',
       light: 'rgba(0, 0, 0, 0.04)',

@@ -7,10 +7,10 @@ const logoStyle = {
 export const Logo = () => {
   return (
     <Img
-      src="https://app.twenty.com/images/icons/windows11/Square150x150Logo.scale-100.png"
-      alt="Twenty logo"
-      width="40"
-      height="40"
+      src="https://app.crm.pts-automation.cloud/images/ptsai-logo.png"
+      alt="PTS AI"
+      width="120"
+      height="60"
       style={logoStyle}
     />
   );
