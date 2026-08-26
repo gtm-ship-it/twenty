@@ -196,7 +196,7 @@ const useSettingsNavigationItems = (): SettingsNavigationSection[] => {
           label: t`Community`,
           path: SettingsPath.Community,
           Icon: IconUsers,
-          isHidden: !permissionMap[PermissionFlagType.WORKSPACE],
+          isHidden: true, // PTS AI white-label: Twenty community links (Discord / X) hidden
         },
         {
           label: t`Support`,
@@ -212,6 +212,7 @@ const useSettingsNavigationItems = (): SettingsNavigationSection[] => {
               '_blank',
             ),
           Icon: IconHelpCircle,
+          isHidden: true, // PTS AI white-label: points to docs.twenty.com
         },
         {
           label: t`Logout`,
