@@ -118,6 +118,124 @@ export class TimelineMessagingService {
     );
   }
 
+  public async getMessageChannelIdsForConnectedAccount(
+    connectedAccountId: string,
+    userWorkspaceId: string,
+    workspaceId: string,
+  ): Promise<string[]> {
+    // Ownership gate: only the account's own user can list its channels.
+    const connectedAccount = await this.connectedAccountRepository.findOne({
+      where: { id: connectedAccountId, workspaceId, userWorkspaceId },
+    });
+
+    if (!connectedAccount) {
+      return [];
+    }
+
+    const messageChannels = await this.messageChannelRepository.find({
+      where: { connectedAccountId, workspaceId },
+    });
+
+    return messageChannels.map((messageChannel) => messageChannel.id);
+  }
+
+  public async getAndCountMessageThreadsForMessageChannels(
+    messageChannelIds: string[],
+    workspaceId: string,
+    offset: number,
+    pageSize: number,
+  ): Promise<{
+    messageThreads: Omit<
+      TimelineThreadDTO,
+      | 'firstParticipant'
+      | 'lastTwoParticipants'
+      | 'participantCount'
+      | 'read'
+      | 'visibility'
+    >[];
+    totalNumberOfThreads: number;
+  }> {
+    if (messageChannelIds.length === 0) {
+      return { messageThreads: [], totalNumberOfThreads: 0 };
+    }
+
+    const authContext = buildSystemAuthContext(workspaceId);
+
+    return this.globalWorkspaceOrmManager.executeInWorkspaceContext(
+      async () => {
+        const messageThreadRepository =
+          await this.globalWorkspaceOrmManager.getRepository<MessageThreadWorkspaceEntity>(
+            workspaceId,
+            'messageThread',
+          );
+
+        const totalNumberOfThreads = await messageThreadRepository
+          .createQueryBuilder('messageThread')
+          .innerJoin('messageThread.messages', 'messages')
+          .innerJoin(
+            'messages.messageChannelMessageAssociations',
+            'associations',
+          )
+          .where('associations.messageChannelId IN(:...messageChannelIds)', {
+            messageChannelIds,
+          })
+          .groupBy('messageThread.id')
+          .getCount();
+
+        const threadIdsQuery = await messageThreadRepository
+          .createQueryBuilder('messageThread')
+          .select('messageThread.id', 'id')
+          .addSelect('MAX(messages.receivedAt)', 'max_received_at')
+          .innerJoin('messageThread.messages', 'messages')
+          .innerJoin(
+            'messages.messageChannelMessageAssociations',
+            'associations',
+          )
+          .where('associations.messageChannelId IN (:...messageChannelIds)', {
+            messageChannelIds,
+          })
+          .groupBy('messageThread.id')
+          .orderBy('max_received_at', 'DESC')
+          .offset(offset)
+          .limit(pageSize)
+          .getRawMany();
+
+        const messageThreadIds = threadIdsQuery.map((thread) => thread.id);
+
+        const messageThreads = await messageThreadRepository.find({
+          where: {
+            id: In(messageThreadIds),
+          },
+          order: {
+            messages: {
+              receivedAt: 'DESC',
+            },
+          },
+          relations: ['messages'],
+        });
+
+        return {
+          messageThreads: messageThreads.map((messageThread) => {
+            const lastMessage = messageThread.messages[0];
+            const firstMessage =
+              messageThread.messages[messageThread.messages.length - 1];
+
+            return {
+              id: messageThread.id,
+              subject: firstMessage.subject ?? '',
+              lastMessageBody: lastMessage.text ?? '',
+              lastMessageReceivedAt: lastMessage.receivedAt ?? new Date(),
+              numberOfMessagesInThread: messageThread.messages.length,
+              lastMessageIsDraft: lastMessage.isDraft ?? false,
+            };
+          }),
+          totalNumberOfThreads,
+        };
+      },
+      authContext,
+    );
+  }
+
   public async getThreadParticipantsByThreadId(
     messageThreadIds: string[],
     workspaceId: string,

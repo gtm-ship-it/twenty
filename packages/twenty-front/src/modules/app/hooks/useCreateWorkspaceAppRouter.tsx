@@ -40,6 +40,12 @@ const RecordIndexPage = lazy(() =>
   })),
 );
 
+const InboxPage = lazy(() =>
+  import('~/pages/inbox/InboxPage').then((module) => ({
+    default: module.InboxPage,
+  })),
+);
+
 const RecordShowPage = lazy(() =>
   import('~/pages/object-record/RecordShowPage').then((module) => ({
     default: module.RecordShowPage,
@@ -211,6 +217,14 @@ const createWorkspaceAppRouter = ({
                 element={
                   <LazyRoute>
                     <AiChatPage />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path={AppPath.InboxPage}
+                element={
+                  <LazyRoute>
+                    <InboxPage />
                   </LazyRoute>
                 }
               />

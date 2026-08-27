@@ -15,6 +15,7 @@ import { UserService } from 'src/engine/core-modules/user/services/user.service'
 import { type AuthContextUser } from 'src/engine/core-modules/auth/types/auth-context.type';
 import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
 import { AuthUser } from 'src/engine/decorators/auth/auth-user.decorator';
+import { AuthUserWorkspaceId } from 'src/engine/decorators/auth/auth-user-workspace-id.decorator';
 import { AuthWorkspace } from 'src/engine/decorators/auth/auth-workspace.decorator';
 import { CustomPermissionGuard } from 'src/engine/guards/custom-permission.guard';
 import { UserAuthGuard } from 'src/engine/guards/user-auth.guard';
@@ -77,6 +78,19 @@ class GetTimelineThreadsFromOpportunityIdArgs {
   pageSize: number;
 }
 
+@ArgsType()
+class GetTimelineThreadsFromConnectedAccountIdArgs {
+  @Field(() => UUIDScalarType)
+  connectedAccountId: string;
+
+  @Field(() => Int)
+  page: number;
+
+  @Field(() => Int)
+  @Max(TIMELINE_THREADS_MAX_PAGE_SIZE)
+  pageSize: number;
+}
+
 @UseGuards(WorkspaceAuthGuard, UserAuthGuard, CustomPermissionGuard)
 @CoreResolver(() => TimelineThreadsWithTotalDTO)
 export class TimelineMessagingResolver {
@@ -85,6 +99,37 @@ export class TimelineMessagingResolver {
     private readonly userService: UserService,
     private readonly accountsToReconnectService: AccountsToReconnectService,
   ) {}
+
+  @Query(() => TimelineThreadsWithTotalDTO)
+  async getTimelineThreadsFromConnectedAccountId(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthUserWorkspaceId() userWorkspaceId: string,
+    @Args()
+    {
+      connectedAccountId,
+      page,
+      pageSize,
+    }: GetTimelineThreadsFromConnectedAccountIdArgs,
+  ) {
+    const workspaceMember = await this.userService.loadWorkspaceMember(
+      user,
+      workspace,
+    );
+
+    if (!workspaceMember) {
+      return;
+    }
+
+    return this.getMessagesFromPersonIdsService.getMessagesFromConnectedAccountId(
+      workspaceMember.id,
+      userWorkspaceId,
+      connectedAccountId,
+      workspace.id,
+      page,
+      pageSize,
+    );
+  }
 
   @Query(() => TimelineThreadsWithTotalDTO)
   async getTimelineThreadsFromObjectRecord(

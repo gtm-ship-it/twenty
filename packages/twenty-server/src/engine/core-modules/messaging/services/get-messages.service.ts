@@ -66,6 +66,75 @@ export class GetMessagesService {
     };
   }
 
+  async getMessagesFromConnectedAccountId(
+    workspaceMemberId: string,
+    userWorkspaceId: string,
+    connectedAccountId: string,
+    workspaceId: string,
+    page = 1,
+    pageSize: number = TIMELINE_THREADS_DEFAULT_PAGE_SIZE,
+  ): Promise<TimelineThreadsWithTotalDTO> {
+    const messageChannelIds =
+      await this.timelineMessagingService.getMessageChannelIdsForConnectedAccount(
+        connectedAccountId,
+        userWorkspaceId,
+        workspaceId,
+      );
+
+    if (messageChannelIds.length === 0) {
+      return {
+        totalNumberOfThreads: 0,
+        timelineThreads: [],
+        relatedPersonIds: [],
+      };
+    }
+
+    const offset = (page - 1) * pageSize;
+
+    const { messageThreads, totalNumberOfThreads } =
+      await this.timelineMessagingService.getAndCountMessageThreadsForMessageChannels(
+        messageChannelIds,
+        workspaceId,
+        offset,
+        pageSize,
+      );
+
+    if (messageThreads.length === 0) {
+      return {
+        totalNumberOfThreads: 0,
+        timelineThreads: [],
+        relatedPersonIds: [],
+      };
+    }
+
+    const messageThreadIds = messageThreads.map(
+      (messageThread) => messageThread.id,
+    );
+
+    const threadParticipantsByThreadId =
+      await this.timelineMessagingService.getThreadParticipantsByThreadId(
+        messageThreadIds,
+        workspaceId,
+      );
+
+    const threadVisibilityByThreadId =
+      await this.timelineMessagingService.getThreadVisibilityByThreadId(
+        messageThreadIds,
+        workspaceMemberId,
+        workspaceId,
+      );
+
+    return {
+      totalNumberOfThreads,
+      timelineThreads: formatThreads(
+        messageThreads,
+        threadParticipantsByThreadId,
+        threadVisibilityByThreadId,
+      ),
+      relatedPersonIds: [],
+    };
+  }
+
   async getMessagesFromObjectRecord(
     workspaceMemberId: string,
     objectNameSingular: string,
