@@ -15,6 +15,7 @@ import {
   CreateLeadModal,
   type CreateLeadDefaultValues,
 } from '@/inbox/components/CreateLeadModal';
+import { threadMatchesOnlySeeList } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
 import { type TimelineThread } from '~/generated/graphql';
 
@@ -99,11 +100,13 @@ const getCreateLeadDefaultValues = (
 type InboxThreadListProps = {
   connectedAccountId: string;
   connectedAccountHandle: string;
+  onlySeeList: string[];
 };
 
 export const InboxThreadList = ({
   connectedAccountId,
   connectedAccountHandle,
+  onlySeeList,
 }: InboxThreadListProps) => {
   const {
     threads,
@@ -136,11 +139,23 @@ export const InboxThreadList = ({
     }
   };
 
+  const visibleThreads = threads.filter((thread) =>
+    threadMatchesOnlySeeList(
+      [
+        thread.firstParticipant?.handle,
+        ...(thread.lastTwoParticipants ?? []).map(
+          (participant) => participant?.handle,
+        ),
+      ],
+      onlySeeList,
+    ),
+  );
+
   return (
     <StyledContainer>
       <Section>
         <ActivityList>
-          {threads.map((thread) => (
+          {visibleThreads.map((thread) => (
             <StyledRowWrapper key={thread.id}>
               <EmailThreadPreview thread={thread} />
               <StyledCreateLeadButtonContainer className="inbox-create-lead-action">

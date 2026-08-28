@@ -42,7 +42,7 @@ const eventSettingsVisibilityOptions = [
 
 export const SettingsAccountsEventVisibilitySettingsCard = ({
   onChange,
-  value = CalendarChannelVisibility.SHARE_EVERYTHING,
+  value = CalendarChannelVisibility.METADATA,
 }: SettingsAccountsEventVisibilitySettingsCardProps) => (
   <SettingsRadioSettingsCard
     name="event-visibility"

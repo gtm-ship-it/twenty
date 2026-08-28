@@ -118,6 +118,18 @@ export class TimelineMessagingService {
     );
   }
 
+  public async verifyConnectedAccountOwnership(
+    connectedAccountId: string,
+    userWorkspaceId: string,
+    workspaceId: string,
+  ): Promise<boolean> {
+    const connectedAccount = await this.connectedAccountRepository.findOne({
+      where: { id: connectedAccountId, workspaceId, userWorkspaceId },
+    });
+
+    return connectedAccount !== null;
+  }
+
   public async getMessageChannelIdsForConnectedAccount(
     connectedAccountId: string,
     userWorkspaceId: string,
