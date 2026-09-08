@@ -86,6 +86,7 @@ const StyledStageRow = styled.div`
   align-items: center;
   display: flex;
   gap: ${themeCssVariables.spacing[2]};
+  position: relative;
 `;
 
 const StyledStageTagButton = styled.button`
@@ -93,6 +94,35 @@ const StyledStageTagButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 0;
+`;
+
+const StyledColorPickerPopup = styled.div`
+  background: ${themeCssVariables.background.primary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  box-shadow: ${themeCssVariables.boxShadow.strong};
+  display: flex;
+  gap: ${themeCssVariables.spacing[1]};
+  left: 0;
+  padding: ${themeCssVariables.spacing[2]};
+  position: absolute;
+  top: calc(100% + 4px);
+  z-index: 10;
+`;
+
+const StyledColorSwatch = styled.button<{ isActive: boolean }>`
+  border: 2px solid
+    ${({ isActive }) =>
+      isActive ? themeCssVariables.font.color.primary : 'transparent'};
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20px;
+  padding: 0;
+  width: 20px;
+
+  &:hover {
+    border-color: ${themeCssVariables.font.color.tertiary};
+  }
 `;
 
 const StyledStageNameInput = styled.input`
@@ -145,16 +175,9 @@ export const PipelineEditorModal = ({
     );
   };
 
-  const cycleColumnColor = (index: number) => {
-    const currentColor = columns[index].color;
-    const colorIndex = MAIN_COLOR_NAMES.indexOf(
-      currentColor as (typeof MAIN_COLOR_NAMES)[number],
-    );
-    const nextColor =
-      MAIN_COLOR_NAMES[(colorIndex + 1) % MAIN_COLOR_NAMES.length];
-
-    updateColumn(index, { color: nextColor });
-  };
+  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(
+    null,
+  );
 
   const moveColumn = (index: number, direction: -1 | 1) => {
     setColumns((previous) => {
@@ -258,13 +281,36 @@ export const PipelineEditorModal = ({
                 <StyledStageTagButton
                   type="button"
                   title={t`Click to change color`}
-                  onClick={() => cycleColumnColor(index)}
+                  onClick={() =>
+                    setColorPickerIndex(
+                      colorPickerIndex === index ? null : index,
+                    )
+                  }
                 >
                   <Tag
                     color={column.color as TagColor}
                     text={column.name || '…'}
                   />
                 </StyledStageTagButton>
+                {colorPickerIndex === index && (
+                  <StyledColorPickerPopup>
+                    {MAIN_COLOR_NAMES.map((colorName) => (
+                      <StyledColorSwatch
+                        key={colorName}
+                        type="button"
+                        isActive={column.color === colorName}
+                        style={{
+                          background:
+                            themeCssVariables.tag.background[colorName],
+                        }}
+                        onClick={() => {
+                          updateColumn(index, { color: colorName });
+                          setColorPickerIndex(null);
+                        }}
+                      />
+                    ))}
+                  </StyledColorPickerPopup>
+                )}
                 <StyledStageNameInput
                   value={column.name}
                   onChange={(event) =>

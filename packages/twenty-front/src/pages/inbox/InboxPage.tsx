@@ -107,6 +107,10 @@ const StyledViewTabs = styled.div`
   padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[4]};
 `;
 
+const StyledEditTabContainer = styled.div`
+  margin-left: auto;
+`;
+
 const StyledEmptyState = styled.div`
   align-items: center;
   color: ${themeCssVariables.font.color.tertiary};
@@ -309,14 +313,16 @@ export const InboxPage = () => {
             {t`+ Pipeline`}
           </StyledAccountTab>
           {selectedPipeline && (
-            <StyledAccountTab
-              active={false}
-              onClick={() =>
-                setPipelineEditorState({ pipeline: selectedPipeline })
-              }
-            >
-              {t`Edit`}
-            </StyledAccountTab>
+            <StyledEditTabContainer>
+              <StyledAccountTab
+                active={false}
+                onClick={() =>
+                  setPipelineEditorState({ pipeline: selectedPipeline })
+                }
+              >
+                {t`Edit`}
+              </StyledAccountTab>
+            </StyledEditTabContainer>
           )}
         </StyledViewTabs>
       )}
