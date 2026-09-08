@@ -232,12 +232,9 @@ export class TimelineMessagingService {
         if (hasSearch) {
           const searchPattern = `%${trimmedSearchTerm}%`;
 
-          const messageParticipantRepository =
-            await this.globalWorkspaceOrmManager.getRepository<MessageParticipantWorkspaceEntity>(
-              workspaceId,
-              'messageParticipant',
-            );
-
+          // Ojo: referenciar las columnas como alias.propiedad SIN comillas —
+          // si se escriben entrecomilladas TypeORM no traduce el alias y
+          // Postgres lo pliega a minúsculas ("missing FROM-clause entry").
           const [contentMatches, participantMatches] = await Promise.all([
             messageThreadRepository
               .createQueryBuilder('messageThread')
@@ -249,12 +246,13 @@ export class TimelineMessagingService {
               )
               .limit(SEARCH_MATCHING_THREADS_LIMIT)
               .getRawMany<{ id: string }>(),
-            messageParticipantRepository
-              .createQueryBuilder('messageParticipant')
-              .select('DISTINCT message."messageThreadId"', 'id')
-              .innerJoin('messageParticipant.message', 'message')
+            messageThreadRepository
+              .createQueryBuilder('messageThread')
+              .select('DISTINCT messageThread.id', 'id')
+              .innerJoin('messageThread.messages', 'searchMessages')
+              .innerJoin('searchMessages.messageParticipants', 'participants')
               .where(
-                '(messageParticipant.handle ILIKE :searchPattern OR messageParticipant."displayName" ILIKE :searchPattern)',
+                '(participants.handle ILIKE :searchPattern OR participants.displayName ILIKE :searchPattern)',
                 { searchPattern },
               )
               .limit(SEARCH_MATCHING_THREADS_LIMIT)
