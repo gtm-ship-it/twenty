@@ -9,7 +9,11 @@ import { SkeletonLoader } from '@/activities/components/SkeletonLoader';
 import { EmailThreadPreview } from '@/activities/emails/components/EmailThreadPreview';
 import { threadMatchesOnlySeeList } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
-import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
+import {
+  type InboxPipeline,
+  type InboxPipelineColumn,
+} from '@/inbox/types/InboxPipeline';
+import { Tag, type TagColor } from 'twenty-ui/data-display';
 import { type TimelineThread } from '~/generated/graphql';
 
 const PIPELINE_BOARD_PAGE_SIZE = 50;
@@ -36,9 +40,12 @@ const StyledColumn = styled.div`
 `;
 
 const StyledColumnTitle = styled.div`
+  align-items: center;
   color: ${themeCssVariables.font.color.secondary};
+  display: flex;
   font-size: ${themeCssVariables.font.size.sm};
   font-weight: ${themeCssVariables.font.weight.semiBold};
+  gap: ${themeCssVariables.spacing[1]};
   padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
 `;
 
@@ -91,13 +98,13 @@ const PipelineCard = ({ thread }: PipelineCardProps) => {
 };
 
 type PipelineColumnProps = {
-  title: string;
+  column: InboxPipelineColumn;
   columnIndex: number;
   threads: TimelineThread[];
 };
 
 const PipelineColumn = ({
-  title,
+  column,
   columnIndex,
   threads,
 }: PipelineColumnProps) => {
@@ -108,7 +115,7 @@ const PipelineColumn = ({
   return (
     <StyledColumn ref={ref}>
       <StyledColumnTitle>
-        {title}
+        <Tag color={column.color as TagColor} text={column.name} />
         <StyledColumnCount>· {threads.length}</StyledColumnCount>
       </StyledColumnTitle>
       {threads.map((thread) => (
@@ -205,10 +212,10 @@ export const InboxPipelineBoard = ({
       }}
     >
       <StyledBoard>
-        {pipeline.columns.map((columnTitle, columnIndex) => (
+        {pipeline.columns.map((column, columnIndex) => (
           <PipelineColumn
             key={columnIndex}
-            title={columnTitle}
+            column={column}
             columnIndex={columnIndex}
             threads={threadsByColumn[columnIndex]}
           />

@@ -720,6 +720,16 @@ msgstr "#"
 msgid "% left"
 msgstr "% zbývá"
 
+#. js-lingui-id: vsrrQ1
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "+ Add stage"
+msgstr ""
+
+#. js-lingui-id: 36ZwRH
+#: src/pages/inbox/InboxPage.tsx
+msgid "+ Pipeline"
+msgstr ""
+
 #. js-lingui-id: n9nj+X
 #. placeholder {0}: aiChatThreadPendingDelete?.threadTitle ?? ''
 #: src/modules/ai/components/AiChatThreadDeleteConfirmationModal.tsx
@@ -879,6 +889,16 @@ msgstr "Chyba 500 - {duration}ms"
 msgid "7d"
 msgstr "7d"
 
+#. js-lingui-id: MRcHr2
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "A board for this inbox's emails, with your own rules and columns. Only visible to you."
+msgstr ""
+
+#. js-lingui-id: fgD63J
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "A company, a person and a \"New lead\" card will be created in the pipeline."
+msgstr ""
+
 #. js-lingui-id: 43TqJC
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
 msgid "A display name for this provider"
@@ -1032,6 +1052,11 @@ msgstr "Účty"
 #: src/pages/settings/legal/SettingsLegalDpaNew.tsx
 msgid "Acme GmbH"
 msgstr "Acme GmbH"
+
+#. js-lingui-id: B13Rnl
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "acme.com"
+msgstr ""
 
 #. js-lingui-id: X5unbK
 #: src/modules/settings/security/components/SSO/SettingsSSOSAMLForm.tsx
@@ -1415,6 +1440,11 @@ msgstr "Přidat výstupní pole"
 msgid "Add permission"
 msgstr ""
 
+#. js-lingui-id: JrYwgc
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Add PTS AI CRM as a Streamable HTTP extension in Goose."
+msgstr ""
+
 #. js-lingui-id: AmiJYR
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectFields.tsx
 msgid "Add relation"
@@ -1463,35 +1493,35 @@ msgstr "Přidat poskytovatele identity SSO"
 msgid "Add test input for evaluation (e.g., \"Find all customers in NY\")"
 msgstr ""
 
-#. js-lingui-id: FKGcEL
+#. js-lingui-id: hbAQ4e
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server as a remote context server in Zed."
-msgstr "Přidejte Twenty MCP server jako vzdálený kontextový server v Zed."
+msgid "Add the PTS AI CRM MCP server as a remote context server in Zed."
+msgstr ""
 
-#. js-lingui-id: iA2nHX
+#. js-lingui-id: DMBrbj
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server from Augment Code settings."
-msgstr "Přidejte Twenty MCP server v nastavení Augment Code."
+msgid "Add the PTS AI CRM MCP server from Augment Code settings."
+msgstr ""
 
-#. js-lingui-id: l+NzAk
+#. js-lingui-id: 7b35VP
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server from Raycast's MCP commands or settings."
-msgstr "Přidejte Twenty MCP server z MCP příkazů nebo nastavení Raycast."
+msgid "Add the PTS AI CRM MCP server from Raycast's MCP commands or settings."
+msgstr ""
 
-#. js-lingui-id: j6G/yI
+#. js-lingui-id: gi6SE9
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server in Gemini CLI settings."
-msgstr "Přidejte Twenty MCP server v nastavení Gemini CLI."
+msgid "Add the PTS AI CRM MCP server in Gemini CLI settings."
+msgstr ""
 
-#. js-lingui-id: /OyhlM
+#. js-lingui-id: YY+ewe
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server to your LibreChat configuration file."
-msgstr "Přidejte Twenty MCP server do svého konfiguračního souboru LibreChat."
+msgid "Add the PTS AI CRM MCP server to your LibreChat configuration file."
+msgstr ""
 
-#. js-lingui-id: K0DXoj
+#. js-lingui-id: Z3DU7b
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty remote server with LM Studio's install link."
-msgstr "Přidejte vzdálený server Twenty pomocí instalačního odkazu LM Studio."
+msgid "Add the PTS AI CRM remote server with LM Studio's install link."
+msgstr ""
 
 #. js-lingui-id: 5+ttxv
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistInput.tsx
@@ -1507,11 +1537,6 @@ msgstr "Přidat do oblíbených"
 #: src/modules/settings/unsubscribe-topics/components/SettingsWorkspaceUnsubscribeTopicSection.tsx
 msgid "Add topic"
 msgstr "Přidat téma"
-
-#. js-lingui-id: 4D/zWv
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add Twenty as a Streamable HTTP extension in Goose."
-msgstr "Přidejte Twenty jako rozšiřující Streamable HTTP modul v Goose."
 
 #. js-lingui-id: XnwceV
 #: src/pages/settings/applications/components/SettingsApplicationRegistrationRedirectURIsInput.tsx
@@ -1588,6 +1613,16 @@ msgstr "Adresa 1"
 #: src/modules/ui/field/input/components/AddressInput.tsx
 msgid "Address 2"
 msgstr "Adresa 2"
+
+#. js-lingui-id: 1im1BF
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Addresses to exclude"
+msgstr ""
+
+#. js-lingui-id: yE4152
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Addresses to include"
+msgstr ""
 
 #. js-lingui-id: 7wCciB
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
@@ -1961,6 +1996,11 @@ msgstr "Všechny e-maily"
 #: src/modules/settings/accounts/components/SettingsAccountsRowDropdownMenu.tsx
 msgid "All emails and events linked to this account ({accountHandle}) will be deleted"
 msgstr "Všechny e-maily a události spojené s tímto účtem ({accountHandle}) budou smazány"
+
+#. js-lingui-id: f61aXo
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "All except these"
+msgstr ""
 
 #. js-lingui-id: GNJgJf
 #: src/modules/settings/admin-panel/health-status/hooks/useRetryJobs.ts
@@ -3339,10 +3379,10 @@ msgstr "Tlačítko"
 msgid "by {author}"
 msgstr "od {author}"
 
-#. js-lingui-id: 8Pfllj
+#. js-lingui-id: 74cYqx
 #: src/modules/auth/sign-in-up/components/FooterNote.tsx
-msgid "By using Twenty, you agree to the"
-msgstr "Použitím Twenty souhlasíte s"
+msgid "By using PTS AI CRM, you agree to the"
+msgstr ""
 
 #. js-lingui-id: Yx41df
 #: src/modules/auth/sign-in-up/components/FooterNote.tsx
@@ -3410,6 +3450,11 @@ msgstr "caldav.example.com"
 #: src/modules/views/types/ViewType.ts
 msgid "Calendar"
 msgstr "Kalendář"
+
+#. js-lingui-id: l7HQ8A
+#: src/modules/activities/timeline-activities/rows/calendar/components/EventCardCalendarEvent.tsx
+msgid "Calendar event has no start date"
+msgstr ""
 
 #. js-lingui-id: xG4khu
 #: src/modules/activities/timeline-activities/rows/calendar/components/EventCardCalendarEvent.tsx
@@ -3514,6 +3559,8 @@ msgstr "Nemůžete skenovat? Zkopírujte"
 
 #. js-lingui-id: dEgA5A
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/object-record/record-update-multiple/components/UpdateMultipleRecordsFooter.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceCreditGrantModal.tsx
 #: src/modules/settings/billing/components/AddCreditCardModal.tsx
@@ -3527,6 +3574,7 @@ msgstr "Nemůžete skenovat? Zkopírujte"
 #: src/modules/spreadsheet-import/steps/components/ValidationStep/ValidationStep.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 #: src/modules/ui/layout/modal/components/ConfirmationModal.tsx
+#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
 msgid "Cancel"
@@ -4002,10 +4050,20 @@ msgstr "Klikněte na \"Přidat výstupní pole\" níže, abyste definovali struk
 msgid "Click on the checkmark to apply your changes."
 msgstr "Klikněte na zaškrtnutí pro použití změn."
 
+#. js-lingui-id: 5Z+J6R
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Click the colored tag to change the stage color."
+msgstr ""
+
 #. js-lingui-id: WTlZnA
 #: src/modules/page-layout/widgets/components/DashboardWidgetPlaceholder.tsx
 msgid "Click to add your first widget"
 msgstr "Kliknutím přidáte svůj první widget"
+
+#. js-lingui-id: sInoyT
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Click to change color"
+msgstr ""
 
 #. js-lingui-id: d0rtA5
 #: src/modules/page-layout/widgets/graph/components/GraphWidgetTooltip.tsx
@@ -4142,6 +4200,11 @@ msgstr "Naprogramujte svou funkci"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsDetail.tsx
 msgid "Collapse"
 msgstr "Sbalit"
+
+#. js-lingui-id: 183A6G
+#: src/modules/activities/timeline-activities/rows/components/EventCardToggleButton.tsx
+msgid "Collapse details"
+msgstr ""
 
 #. js-lingui-id: 086gvz
 #: src/modules/settings/accounts/components/message-folders/SettingsMessageFoldersTreeItem.tsx
@@ -4310,6 +4373,16 @@ msgstr "Kompaktní zobrazení"
 msgid "Companies"
 msgstr "Společnosti"
 
+#. js-lingui-id: XmCyjc
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Company domain"
+msgstr ""
+
+#. js-lingui-id: RA55Iu
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Company name"
+msgstr ""
+
 #. js-lingui-id: awM9hH
 #: src/modules/settings/billing/components/internal/SettingsBillingPlanComparisonTable.tsx
 #: src/modules/settings/billing/components/internal/SettingsBillingSubscriptionInfoCardHeaderActions.tsx
@@ -4468,6 +4541,16 @@ msgstr "Nakonfigurujte nastavení SMTP pro odesílání e-mailů z vašeho účt
 msgid "Configure the default AI models for all workspaces"
 msgstr "Nakonfigurujte výchozí modely AI pro všechny pracovní prostory"
 
+#. js-lingui-id: Ts74BV
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Configure the PTS AI CRM MCP server manually in Cascade."
+msgstr ""
+
+#. js-lingui-id: k2+NM1
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Configure the PTS AI CRM MCP server manually in Cline."
+msgstr ""
+
 #. js-lingui-id: CcCy4C
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Configure the remote MCP server through Warp's agent settings."
@@ -4477,16 +4560,6 @@ msgstr "Nakonfigurujte vzdálený MCP server v nastavení agenta Warp."
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Configure the remote server in Amazon Q Developer's MCP settings."
 msgstr "Nakonfigurujte vzdálený server v MCP nastavení Amazon Q Developer."
-
-#. js-lingui-id: g1/8jH
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Configure the Twenty MCP server manually in Cascade."
-msgstr "Nakonfigurujte Twenty MCP server ručně v Cascade."
-
-#. js-lingui-id: XiyvRh
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Configure the Twenty MCP server manually in Cline."
-msgstr "Nakonfigurujte Twenty MCP server ručně v Cline."
 
 #. js-lingui-id: qA9AGQ
 #: src/modules/settings/domains/components/SettingsDomainRecords.tsx
@@ -4597,6 +4670,11 @@ msgstr "Propojte další MCP klienty pomocí instalačních odkazů nebo dokumen
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "Connect AI assistants like Claude or Cursor to your workspace via the Model Context Protocol"
 msgstr "Připojte asistenty AI jako Claude nebo Cursor ke svému pracovnímu prostoru prostřednictvím protokolu Model Context Protocol."
+
+#. js-lingui-id: oHZ6RM
+#: src/pages/inbox/InboxPage.tsx
+msgid "Connect an email account in Settings → Accounts to see your inbox here."
+msgstr ""
 
 #. js-lingui-id: YLx3sC
 #: src/modules/settings/accounts/components/SettingsAccountsListEmptyStateCard.tsx
@@ -4960,6 +5038,11 @@ msgstr "Tuto aplikaci se nepodařilo nárokovat."
 msgid "Could not complete the claim. Please try again."
 msgstr "Nepodařilo se dokončit nárokování. Zkuste to prosím znovu."
 
+#. js-lingui-id: R+jJIO
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Could not create lead"
+msgstr ""
+
 #. js-lingui-id: VVRHmR
 #: src/modules/settings/security/components/approvedAccessDomains/SettingsSecurityApprovedAccessDomainRowDropdownMenu.tsx
 msgid "Could not delete approved access domain"
@@ -5183,6 +5266,13 @@ msgstr "Vytvořit vlastní zobrazení"
 msgid "Create date field"
 msgstr "Vytvořit pole s datem"
 
+#. js-lingui-id: XzANGz
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "Create lead"
+msgstr ""
+
 #. js-lingui-id: vY2Gfm
 #: src/modules/views/view-picker/components/ViewPickerCreateButton.tsx
 msgid "Create new view"
@@ -5292,11 +5382,6 @@ msgstr ""
 msgid "Created {objectLabel}"
 msgstr "Vytvořen {objectLabel}"
 
-#. js-lingui-id: 2K/oCx
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "created a related {objectNameSingular}"
-msgstr "vytvořil(a) související {objectNameSingular}"
-
 #. js-lingui-id: NCIYDF
 #: src/modules/settings/applications/components/SettingsApplicationAboutSidebar.tsx
 msgid "Created by"
@@ -5323,6 +5408,11 @@ msgstr "Vytváření vašeho <0>datového modelu</0>..."
 #: src/modules/auth/sign-in-up/constants/WorkspaceActivationMessages.tsx
 msgid "Creating your <0>workspace</0>..."
 msgstr "Vytváření vašeho <0>pracovního prostoru</0>..."
+
+#. js-lingui-id: HM56Bx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Creating..."
+msgstr ""
 
 #. js-lingui-id: HAzhV7
 #: src/pages/settings/admin-panel/SettingsAdminAiProviderDetail.tsx
@@ -6144,6 +6234,7 @@ msgstr "smazat"
 #: src/modules/ai/components/AiChatThreadDeleteConfirmationModal.tsx
 #: src/modules/ai/components/AiChatThreadItemMenu.tsx
 #: src/modules/blocknote-editor/components/CustomSideMenu.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/navigation-menu-item/display/folder/components/NavigationMenuItemFolderNavigationDrawerItemDropdown.tsx
 #: src/modules/object-record/record-field-list/record-detail-section/relation/components/RecordDetailRelationRecordsListItem.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/MultiItemFieldMenuItem.tsx
@@ -6394,11 +6485,6 @@ msgstr "Smazáno"
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
 msgid "Deleted {objectLabel}"
 msgstr "Smazané {objectLabel}"
-
-#. js-lingui-id: P65ogp
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "deleted a related {objectNameSingular}"
-msgstr "smazal(a) související {objectNameSingular}"
 
 #. js-lingui-id: oAhMKF
 #: src/modules/blocknote-editor/blocks/MentionInlineContent.tsx
@@ -6939,6 +7025,11 @@ msgstr "např. my-workspace"
 msgid "e.g. OpenAI EU"
 msgstr "např. OpenAI EU"
 
+#. js-lingui-id: zisbVY
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "e.g. Sales"
+msgstr ""
+
 #. js-lingui-id: p5P8NB
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "E.g., \"We are a B2B SaaS company. Always use formal language...\""
@@ -6992,6 +7083,7 @@ msgstr "eddy@gmail.com, @apple.com"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTable.tsx
 #: src/modules/side-panel/hooks/useSidePanelMenu.ts
 #: src/modules/views/view-picker/components/ViewPickerOptionDropdown.tsx
+#: src/pages/inbox/InboxPage.tsx
 msgid "Edit"
 msgstr "Upravit"
 
@@ -7076,6 +7168,11 @@ msgstr "Upravit stránku"
 msgid "Edit payment method, see your invoices and more"
 msgstr "Upravit způsob platby, zobrazit faktury a další"
 
+#. js-lingui-id: NINp+4
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Edit pipeline"
+msgstr ""
+
 #. js-lingui-id: QJQd1J
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useActionRolePermissionFlagConfig.ts
 msgid "Edit Profile"
@@ -7135,6 +7232,7 @@ msgstr "jinak pokud"
 
 #. js-lingui-id: O3oNi5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpEmailField.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/EmailsFieldInput.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminGeneral.tsx
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -8123,6 +8221,11 @@ msgstr "Rozbalit"
 msgid "Expand chat"
 msgstr "Rozbalit chat"
 
+#. js-lingui-id: xAo8pm
+#: src/modules/activities/timeline-activities/rows/components/EventCardToggleButton.tsx
+msgid "Expand details"
+msgstr ""
+
 #. js-lingui-id: /QYKta
 #: src/modules/settings/accounts/components/message-folders/SettingsMessageFoldersTreeItem.tsx
 msgid "Expand folder"
@@ -8956,6 +9059,7 @@ msgid "First 5 lines"
 msgstr "Prvních 5 řádků"
 
 #. js-lingui-id: V1EGGU
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-metadata/hooks/useSortSubFieldChoicesForField.ts
 msgid "First name"
 msgstr "Jméno"
@@ -10148,6 +10252,13 @@ msgstr "Neaktivní možnosti objektu"
 msgid "Inactive Skill Options"
 msgstr "Možnosti neaktivní dovednosti"
 
+#. js-lingui-id: Gp4Yi6
+#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
+#: src/pages/inbox/InboxPage.tsx
+#: src/pages/inbox/InboxPage.tsx
+msgid "Inbox"
+msgstr ""
+
 #. js-lingui-id: j8Bj7e
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
 msgid "Include emails where all participants share the same domain."
@@ -11039,6 +11150,7 @@ msgid "Last message {lastMessageSentAtFormatted}"
 msgstr "Poslední zpráva {lastMessageSentAtFormatted}"
 
 #. js-lingui-id: 1ZaQUH
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-metadata/hooks/useSortSubFieldChoicesForField.ts
 #: src/modules/settings/members/components/MemberNameFields.tsx
 #: src/pages/onboarding/CreateProfile.tsx
@@ -11163,6 +11275,16 @@ msgstr "Režim rozložení: {0}"
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useSettingsRolePermissionFlagConfig.ts
 msgid "Layouts"
 msgstr "Rozvržení"
+
+#. js-lingui-id: p2UKkc
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Lead created in the pipeline"
+msgstr ""
+
+#. js-lingui-id: Dysw8S
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Lead created in the pipeline (existing contact reused)"
+msgstr ""
 
 #. js-lingui-id: zwWKhA
 #: src/modules/information-banner/components/maintenance/InformationBannerMaintenance.tsx
@@ -11375,21 +11497,6 @@ msgstr "URL odkazu"
 #: src/modules/activities/timeline-activities/rows/generic/components/EventRowGenericLinked.tsx
 msgid "linked a {objectLabel}"
 msgstr "propojil(a) {objectLabel}"
-
-#. js-lingui-id: JYFFGu
-#: src/modules/activities/timeline-activities/rows/calendar/components/EventRowCalendarEvent.tsx
-msgid "linked a calendar event with {labelIdentifierValue}"
-msgstr "propojil(a) událost kalendáře s {labelIdentifierValue}"
-
-#. js-lingui-id: ZJ5OOX
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "linked a related {objectNameSingular}"
-msgstr "propojil(a) související {objectNameSingular}"
-
-#. js-lingui-id: fd8C68
-#: src/modules/activities/timeline-activities/rows/message/components/EventRowMessage.tsx
-msgid "linked an email with"
-msgstr "propojil(a) e-mail s"
 
 #. js-lingui-id: 82kQhK
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
@@ -12377,6 +12484,7 @@ msgstr "N/A"
 
 #. js-lingui-id: 6YtxFj
 #: src/modules/auth/sign-in-up/components/internal/SignInUpWorkspaceCreationForm.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/object-core/workflows/constants/WorkflowCoreTableColumns.tsx
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
@@ -12681,6 +12789,11 @@ msgstr "Nový objekt"
 #: src/pages/auth/PasswordReset.tsx
 msgid "New Password"
 msgstr "Nové heslo"
+
+#. js-lingui-id: 2llx5k
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "New pipeline"
+msgstr ""
 
 #. js-lingui-id: ywJUqq
 #: src/modules/settings/billing/components/internal/ResourceCreditPackagePickerModal.tsx
@@ -13086,6 +13199,11 @@ msgstr "Pro tuto aplikaci není k dispozici žádný popis"
 #: src/modules/activities/emails/components/EmptyInboxPlaceholder.tsx
 msgid "No email exchange has occurred with this record yet."
 msgstr "S tímto záznamem ještě nedošlo k žádné emailové výměně."
+
+#. js-lingui-id: 2s2Oh3
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "No emails match this pipeline yet."
+msgstr ""
 
 #. js-lingui-id: p3Hivn
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
@@ -14024,6 +14142,11 @@ msgstr "Odměna za onboarding"
 msgid "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
 msgstr "Jeden nebo více filtrů odkazuje na deaktivovaná nebo smazaná pole a při uložení budou automaticky odstraněny."
 
+#. js-lingui-id: 3B23rq
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "One per line. Use @domain.com to match a whole domain."
+msgstr ""
+
 #. js-lingui-id: 2l4SGU
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
 msgid "One subscription provides one enterprise key that powers one production instance and one potential staging or test instance. To run a staging or test environment, install Twenty on a second server, activate it with this same enterprise key, then register that server as a development instance. Development instances unlock enterprise features without extra billing and do not count toward your production seats."
@@ -14083,10 +14206,31 @@ msgstr "pouze na {firstDay} a {secondDay}"
 msgid "only on {remainingDays} and {0}"
 msgstr "pouze na {remainingDays} a {0}"
 
+#. js-lingui-id: apix5+
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only see"
+msgstr ""
+
+#. js-lingui-id: 2D+w9z
+#. placeholder {0}: onlySeeList.length
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only see ({0})"
+msgstr ""
+
+#. js-lingui-id: enJhmw
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only show emails from these addresses or domains (one per line, e.g. maria@acme.com or @acme.com). Leave empty to show everything. Other emails are only hidden, never deleted."
+msgstr ""
+
 #. js-lingui-id: saaSLd
 #: src/modules/activities/emails/components/EmailThreadNotShared.tsx
 msgid "Only the subject is shared"
 msgstr "Sdílen je pouze předmět"
+
+#. js-lingui-id: RaZNwl
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Only these"
+msgstr ""
 
 #. js-lingui-id: Lp+2YF
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
@@ -14120,15 +14264,15 @@ msgstr "Otevřete editor e-mailů pro úpravu nastavení bloku."
 msgid "Open as link"
 msgstr "Otevřít jako odkaz"
 
-#. js-lingui-id: n0vVgf
+#. js-lingui-id: gV3Sty
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Claude with the Twenty connector name and MCP URL prefilled."
-msgstr "Otevřete Claude s předvyplněným názvem konektoru Twenty a MCP URL."
+msgid "Open Claude with the PTS AI CRM connector name and MCP URL prefilled."
+msgstr ""
 
-#. js-lingui-id: +n2jpB
+#. js-lingui-id: 5G96Wh
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Cursor's MCP installer with the Twenty remote server config."
-msgstr "Otevřete instalační nástroj MCP v Cursor s předvyplněnou konfigurací vzdáleného serveru Twenty."
+msgid "Open Cursor's MCP installer with the PTS AI CRM remote server config."
+msgstr ""
 
 #. js-lingui-id: pZZH4Q
 #: src/modules/auth/sign-in-up/components/EmailVerificationSent.tsx
@@ -14167,15 +14311,15 @@ msgstr "Otevírat záznamy vedle aktuální stránky"
 msgid "Open records on a dedicated page"
 msgstr "Otevírat záznamy na vyhrazené stránce"
 
-#. js-lingui-id: q170S2
+#. js-lingui-id: O1I08w
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Replit with the Twenty remote server config."
-msgstr "Otevřete Replit s předvyplněnou konfigurací vzdáleného serveru Twenty."
+msgid "Open Replit with the PTS AI CRM remote server config."
+msgstr ""
 
-#. js-lingui-id: sBd/cl
+#. js-lingui-id: RnAG4x
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Twenty's official ChatGPT integration for your workspace."
-msgstr "Otevřete oficiální integraci Twenty s ChatGPT pro váš pracovní prostor."
+msgid "Open the ChatGPT integration for your workspace."
+msgstr ""
 
 #. js-lingui-id: OV5wZZ
 #: src/modules/navigation-menu-item/display/sections/components/NavigationDrawerOpenedSection.tsx
@@ -14196,6 +14340,11 @@ msgstr "V provozu"
 #: src/modules/settings/data-model/fields/forms/select/hooks/useSelectSettingsFormInitialValues.ts
 msgid "Option 1"
 msgstr "Možnost 1"
+
+#. js-lingui-id: LLAa/9
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Optional"
+msgstr ""
 
 #. js-lingui-id: gUeG+X
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
@@ -14475,10 +14624,10 @@ msgstr "Rozvržení stránek"
 msgid "Page name"
 msgstr "Název stránky"
 
-#. js-lingui-id: NRvxzv
+#. js-lingui-id: cEYvWT
 #: src/pages/not-found/NotFound.tsx
-msgid "Page Not Found | Twenty"
-msgstr "Stránka nenalezena | Twenty"
+msgid "Page Not Found | PTS AI CRM"
+msgstr ""
 
 #. js-lingui-id: oIhFvf
 #: src/modules/side-panel/pages/email-block-settings/components/EmailPageStyleSection.tsx
@@ -14696,6 +14845,7 @@ msgid "Person ID"
 msgstr "ID osoby"
 
 #. js-lingui-id: zmwvG2
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/PhonesFieldInput.tsx
 msgid "Phone"
 msgstr "Telefon"
@@ -14777,6 +14927,11 @@ msgstr "Růžová"
 #: src/pages/settings/applications/tabs/SettingsApplicationCommandMenuItemSettingsTab.tsx
 msgid "Pinned"
 msgstr "Připnuto"
+
+#. js-lingui-id: 67RoFa
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Pipeline"
+msgstr ""
 
 #. js-lingui-id: hx1ePY
 #: src/modules/workflow/workflow-steps/workflow-actions/form-action/components/WorkflowFormFieldSettingsNumber.tsx
@@ -16035,11 +16190,6 @@ msgstr "Obnovit"
 msgid "Restore {objectLabel}"
 msgstr "Obnovit {objectLabel}"
 
-#. js-lingui-id: RyMA1t
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "restored a related {objectNameSingular}"
-msgstr "obnovil(a) související {objectNameSingular}"
-
 #. js-lingui-id: hO3AfV
 #: src/pages/settings/ai/components/SettingsAiModelsTab.tsx
 msgid "Restrict available models to a curated list"
@@ -16338,7 +16488,9 @@ msgid "Saturday"
 msgstr "Sobota"
 
 #. js-lingui-id: tfDRzk
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
+#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
 msgid "Save"
 msgstr "Uložit"
@@ -16357,6 +16509,11 @@ msgstr "Uložit jako nové zobrazení"
 #: src/modules/layout-customization/hooks/useEnterLayoutCustomizationMode.ts
 msgid "Save or cancel dashboard changes before editing the layout."
 msgstr "Uložte nebo zrušte změny na nástěnce před úpravou rozvržení."
+
+#. js-lingui-id: XvjC4F
+#: src/pages/inbox/InboxPage.tsx
+msgid "Saving..."
+msgstr ""
 
 #. js-lingui-id: bifv6N
 #: src/modules/settings/experience/components/UiScalePicker.tsx
@@ -17892,6 +18049,7 @@ msgid "Stacked lines"
 msgstr ""
 
 #. js-lingui-id: ErU1td
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/views/view-picker/components/ViewPickerContentCreateMode.tsx
 msgid "Stages"
 msgstr "Etapy"
@@ -18115,7 +18273,6 @@ msgid "Subject and metadata will be shared with your team."
 msgstr "Předmět a metadata budou sdíleny s vaším týmem."
 
 #. js-lingui-id: DvSvG9
-#: src/modules/activities/timeline-activities/rows/message/components/EventCardMessage.tsx
 #: src/modules/activities/timeline-activities/rows/message/components/EventCardMessageForbidden.tsx
 msgid "Subject not shared"
 msgstr "Předmět nesdílen"
@@ -18563,14 +18720,14 @@ msgstr "Koncový bod API pro vašeho poskytovatele kompatibilního s OpenAI"
 msgid "The AWS region for Bedrock"
 msgstr "Region AWS pro Bedrock"
 
-#. js-lingui-id: HP7per
+#. js-lingui-id: 997ayW
 #: src/pages/settings/applications/utils/getStandardApplicationDescription.ts
 msgid ""
-"The base data model every Twenty workspace runs on.\n"
+"The base data model every PTS AI CRM workspace runs on.\n"
 "\n"
 "#### What \"foundation\" means\n"
 "\n"
-"Every Twenty workspace starts with this set of objects. They define the shape of your CRM, including relationships, activity, and reporting. Everything else, including marketplace apps, AI agents, and custom objects, plugs into them.\n"
+"Every PTS AI CRM workspace starts with this set of objects. They define the shape of your CRM, including relationships, activity, and reporting. Everything else, including marketplace apps, AI agents, and custom objects, plugs into them.\n"
 "\n"
 "#### Included objects\n"
 "- **People & Companies**: contact and account records\n"
@@ -18578,11 +18735,11 @@ msgid ""
 "- **Notes & Tasks**: activity and follow-ups\n"
 "- **Workflows & Dashboards**: automation and reporting\n"
 "\n"
-"Remove this app and the rest of Twenty has nothing to hang off.\n"
+"Remove this app and the rest of the CRM has nothing to hang off.\n"
 "\n"
 "#### Build your own app\n"
 "\n"
-"Extend Twenty with your own objects, fields, logic functions, or AI skills. Scaffold a new app in one command:\n"
+"Extend the CRM with your own objects, fields, logic functions, or AI skills. Scaffold a new app in one command:\n"
 "\n"
 "```bash\n"
 "npx create-twenty-app@latest my-twenty-app\n"
@@ -18597,36 +18754,6 @@ msgid ""
 "\n"
 "See the [Getting Started guide](https://twenty.com/developers/extend/apps/getting-started) for the full walkthrough, and [Building Apps](https://twenty.com/developers/extend/apps/building) for the `defineApplication` / `defineEntity` APIs."
 msgstr ""
-"Základní datový model, na kterém běží každý pracovní prostor Twenty.\n"
-"\n"
-"#### Co znamená \"základ\"\n"
-"\n"
-"Každý pracovní prostor Twenty začíná touto sadou objektů. Ty definují podobu vašeho CRM včetně vztahů, aktivit a reportování. Vše ostatní, včetně aplikací z marketplace, agentů AI a vlastních objektů, se do nich zapojuje.\n"
-"\n"
-"#### Zahrnuté objekty\n"
-"- **Lidé a společnosti**: záznamy kontaktů a účtů\n"
-"- **Příležitosti**: vaše prodejní pipeline\n"
-"- **Poznámky a úkoly**: aktivity a navazující kroky\n"
-"- **Pracovní postupy a řídicí panely**: automatizace a reportování\n"
-"\n"
-"Když tuto aplikaci odstraníte, zbytku Twenty nezůstane nic, na co by se mohl napojit.\n"
-"\n"
-"#### Vytvořte si vlastní aplikaci\n"
-"\n"
-"Rozšiřte Twenty vlastními objekty, poli, logickými funkcemi nebo dovednostmi AI. Vytvořte kostru nové aplikace jediným příkazem:\n"
-"\n"
-"```bash\n"
-"npx create-twenty-app@latest my-twenty-app\n"
-"```\n"
-"\n"
-"Poté uvnitř složky:\n"
-"\n"
-"```bash\n"
-"cd my-twenty-app\n"
-"yarn twenty dev\n"
-"```\n"
-"\n"
-"Podívejte se na [průvodce Začínáme](https://twenty.com/developers/extend/apps/getting-started) pro kompletní návod a na [Vytváření aplikací](https://twenty.com/developers/extend/apps/building) pro rozhraní API `defineApplication` / `defineEntity`."
 
 #. js-lingui-id: VsxjzF
 #: src/modules/page-layout/widgets/call-recording-summary/components/CallRecordingSummaryBody.tsx
@@ -19973,11 +20100,6 @@ msgstr "Neznámý pracovní prostor"
 msgid "Unlimited"
 msgstr "Neomezené"
 
-#. js-lingui-id: CfClM4
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "unlinked a related {objectNameSingular}"
-msgstr "odpojil(a) související {objectNameSingular}"
-
 #. js-lingui-id: WDcQq9
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownVisibilityContent.tsx
@@ -20065,8 +20187,6 @@ msgid "Unsupported image format"
 msgstr "Nepodporovaný formát obrázku"
 
 #. js-lingui-id: wja8aL
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-#: src/modules/activities/timeline-activities/rows/generic/components/EventRowGenericLinked.tsx
 #: src/modules/ai/components/AiChatThreadListItem.tsx
 #: src/modules/ai/components/ChatReferenceChipDisplay.tsx
 #: src/modules/ai/components/ChatReferenceChipDisplay.tsx
@@ -20212,6 +20332,7 @@ msgstr "Aktualizujte konfiguraci vašeho účtu. Nastavte libovolnou kombinaci I
 
 #. js-lingui-id: x4Xp3c
 #: src/modules/activities/timeline-activities/rows/main-object/components/EventRowMainObjectUpdated.tsx
+#: src/modules/activities/timeline-activities/rows/main-object/components/EventRowMainObjectUpdated.tsx
 msgid "updated"
 msgstr "aktualizováno"
 
@@ -20234,11 +20355,6 @@ msgstr "Aktualizováno (u konkrétních polí)"
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
 msgid "Updated {objectLabel}"
 msgstr "Aktualizováno {objectLabel}"
-
-#. js-lingui-id: OFU7Sk
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "updated a related {objectNameSingular}"
-msgstr "aktualizoval(a) související {objectNameSingular}"
 
 #. js-lingui-id: xuCD/Q
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
@@ -21253,10 +21369,10 @@ msgstr ""
 msgid "Weight"
 msgstr "Váha"
 
-#. js-lingui-id: nTuObL
+#. js-lingui-id: D6q5Py
 #: src/pages/auth/SignInUp.tsx
-msgid "Welcome to Twenty"
-msgstr "Vítejte ve Twenty"
+msgid "Welcome to PTS AI CRM"
+msgstr ""
 
 #. js-lingui-id: t8ZvkC
 #: src/modules/onboarding/constants/WelcomeTitleMessage.ts
@@ -21347,6 +21463,11 @@ msgstr "Kde se otevírají záznamy tohoto objektu"
 #: src/pages/settings/admin-panel/SettingsAdminNewAiModel.tsx
 msgid "Whether this model supports chain-of-thought reasoning"
 msgstr "Zda tento model podporuje řetězení myšlenek"
+
+#. js-lingui-id: jRh5OJ
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Which emails enter this pipeline?"
+msgstr ""
 
 #. js-lingui-id: 9y+sLE
 #: src/modules/workflow/workflow-variables/utils/getWorkflowVariableSpecialItems.ts

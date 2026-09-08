@@ -720,6 +720,16 @@ msgstr "#"
 msgid "% left"
 msgstr "% kvar"
 
+#. js-lingui-id: vsrrQ1
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "+ Add stage"
+msgstr ""
+
+#. js-lingui-id: 36ZwRH
+#: src/pages/inbox/InboxPage.tsx
+msgid "+ Pipeline"
+msgstr ""
+
 #. js-lingui-id: n9nj+X
 #. placeholder {0}: aiChatThreadPendingDelete?.threadTitle ?? ''
 #: src/modules/ai/components/AiChatThreadDeleteConfirmationModal.tsx
@@ -879,6 +889,16 @@ msgstr "500 Fel - {duration}ms"
 msgid "7d"
 msgstr "7 d"
 
+#. js-lingui-id: MRcHr2
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "A board for this inbox's emails, with your own rules and columns. Only visible to you."
+msgstr ""
+
+#. js-lingui-id: fgD63J
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "A company, a person and a \"New lead\" card will be created in the pipeline."
+msgstr ""
+
 #. js-lingui-id: 43TqJC
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
 msgid "A display name for this provider"
@@ -1032,6 +1052,11 @@ msgstr "Konton"
 #: src/pages/settings/legal/SettingsLegalDpaNew.tsx
 msgid "Acme GmbH"
 msgstr "Acme GmbH"
+
+#. js-lingui-id: B13Rnl
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "acme.com"
+msgstr ""
 
 #. js-lingui-id: X5unbK
 #: src/modules/settings/security/components/SSO/SettingsSSOSAMLForm.tsx
@@ -1415,6 +1440,11 @@ msgstr "Lägg till utdatafält"
 msgid "Add permission"
 msgstr ""
 
+#. js-lingui-id: JrYwgc
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Add PTS AI CRM as a Streamable HTTP extension in Goose."
+msgstr ""
+
 #. js-lingui-id: AmiJYR
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectFields.tsx
 msgid "Add relation"
@@ -1463,35 +1493,35 @@ msgstr "Lägg till leverantör av SSO-identitet"
 msgid "Add test input for evaluation (e.g., \"Find all customers in NY\")"
 msgstr ""
 
-#. js-lingui-id: FKGcEL
+#. js-lingui-id: hbAQ4e
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server as a remote context server in Zed."
-msgstr "Lägg till Twenty MCP-servern som en fjärrkontextserver i Zed."
+msgid "Add the PTS AI CRM MCP server as a remote context server in Zed."
+msgstr ""
 
-#. js-lingui-id: iA2nHX
+#. js-lingui-id: DMBrbj
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server from Augment Code settings."
-msgstr "Lägg till Twenty MCP-servern från inställningarna för Augment Code."
+msgid "Add the PTS AI CRM MCP server from Augment Code settings."
+msgstr ""
 
-#. js-lingui-id: l+NzAk
+#. js-lingui-id: 7b35VP
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server from Raycast's MCP commands or settings."
-msgstr "Lägg till Twenty MCP-servern från Raycasts MCP-kommandon eller -inställningar."
+msgid "Add the PTS AI CRM MCP server from Raycast's MCP commands or settings."
+msgstr ""
 
-#. js-lingui-id: j6G/yI
+#. js-lingui-id: gi6SE9
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server in Gemini CLI settings."
-msgstr "Lägg till Twenty MCP-servern i inställningarna för Gemini CLI."
+msgid "Add the PTS AI CRM MCP server in Gemini CLI settings."
+msgstr ""
 
-#. js-lingui-id: /OyhlM
+#. js-lingui-id: YY+ewe
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty MCP server to your LibreChat configuration file."
-msgstr "Lägg till Twenty MCP-servern i din LibreChat-konfigurationsfil."
+msgid "Add the PTS AI CRM MCP server to your LibreChat configuration file."
+msgstr ""
 
-#. js-lingui-id: K0DXoj
+#. js-lingui-id: Z3DU7b
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add the Twenty remote server with LM Studio's install link."
-msgstr "Lägg till Twenty-fjärrservern med LM Studios installationslänk."
+msgid "Add the PTS AI CRM remote server with LM Studio's install link."
+msgstr ""
 
 #. js-lingui-id: 5+ttxv
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistInput.tsx
@@ -1507,11 +1537,6 @@ msgstr "Lägg till i favoriter"
 #: src/modules/settings/unsubscribe-topics/components/SettingsWorkspaceUnsubscribeTopicSection.tsx
 msgid "Add topic"
 msgstr "Lägg till ämne"
-
-#. js-lingui-id: 4D/zWv
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Add Twenty as a Streamable HTTP extension in Goose."
-msgstr "Lägg till Twenty som ett Streamable HTTP-tillägg i Goose."
 
 #. js-lingui-id: XnwceV
 #: src/pages/settings/applications/components/SettingsApplicationRegistrationRedirectURIsInput.tsx
@@ -1588,6 +1613,16 @@ msgstr "Adress 1"
 #: src/modules/ui/field/input/components/AddressInput.tsx
 msgid "Address 2"
 msgstr "Adress 2"
+
+#. js-lingui-id: 1im1BF
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Addresses to exclude"
+msgstr ""
+
+#. js-lingui-id: yE4152
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Addresses to include"
+msgstr ""
 
 #. js-lingui-id: 7wCciB
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
@@ -1961,6 +1996,11 @@ msgstr "Alla e-postmeddelanden"
 #: src/modules/settings/accounts/components/SettingsAccountsRowDropdownMenu.tsx
 msgid "All emails and events linked to this account ({accountHandle}) will be deleted"
 msgstr "Alla e-postmeddelanden och händelser kopplade till det här kontot ({accountHandle}) kommer att raderas"
+
+#. js-lingui-id: f61aXo
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "All except these"
+msgstr ""
 
 #. js-lingui-id: GNJgJf
 #: src/modules/settings/admin-panel/health-status/hooks/useRetryJobs.ts
@@ -3339,10 +3379,10 @@ msgstr "Knapp"
 msgid "by {author}"
 msgstr "av {author}"
 
-#. js-lingui-id: 8Pfllj
+#. js-lingui-id: 74cYqx
 #: src/modules/auth/sign-in-up/components/FooterNote.tsx
-msgid "By using Twenty, you agree to the"
-msgstr "Genom att använda Twenty godkänner du"
+msgid "By using PTS AI CRM, you agree to the"
+msgstr ""
 
 #. js-lingui-id: Yx41df
 #: src/modules/auth/sign-in-up/components/FooterNote.tsx
@@ -3410,6 +3450,11 @@ msgstr "caldav.example.com"
 #: src/modules/views/types/ViewType.ts
 msgid "Calendar"
 msgstr "Kalender"
+
+#. js-lingui-id: l7HQ8A
+#: src/modules/activities/timeline-activities/rows/calendar/components/EventCardCalendarEvent.tsx
+msgid "Calendar event has no start date"
+msgstr ""
 
 #. js-lingui-id: xG4khu
 #: src/modules/activities/timeline-activities/rows/calendar/components/EventCardCalendarEvent.tsx
@@ -3514,6 +3559,8 @@ msgstr "Kan inte skanna? Kopiera "
 
 #. js-lingui-id: dEgA5A
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/object-record/record-update-multiple/components/UpdateMultipleRecordsFooter.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceCreditGrantModal.tsx
 #: src/modules/settings/billing/components/AddCreditCardModal.tsx
@@ -3527,6 +3574,7 @@ msgstr "Kan inte skanna? Kopiera "
 #: src/modules/spreadsheet-import/steps/components/ValidationStep/ValidationStep.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 #: src/modules/ui/layout/modal/components/ConfirmationModal.tsx
+#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
 msgid "Cancel"
@@ -4002,10 +4050,20 @@ msgstr "Klicka på \"Lägg till utdatafält\" nedan för att definiera strukture
 msgid "Click on the checkmark to apply your changes."
 msgstr "Klicka på bocken för att tillämpa dina ändringar."
 
+#. js-lingui-id: 5Z+J6R
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Click the colored tag to change the stage color."
+msgstr ""
+
 #. js-lingui-id: WTlZnA
 #: src/modules/page-layout/widgets/components/DashboardWidgetPlaceholder.tsx
 msgid "Click to add your first widget"
 msgstr "Klicka för att lägga till din första widget"
+
+#. js-lingui-id: sInoyT
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Click to change color"
+msgstr ""
 
 #. js-lingui-id: d0rtA5
 #: src/modules/page-layout/widgets/graph/components/GraphWidgetTooltip.tsx
@@ -4142,6 +4200,11 @@ msgstr "Koda din funktion"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsDetail.tsx
 msgid "Collapse"
 msgstr "Kollapsa"
+
+#. js-lingui-id: 183A6G
+#: src/modules/activities/timeline-activities/rows/components/EventCardToggleButton.tsx
+msgid "Collapse details"
+msgstr ""
 
 #. js-lingui-id: 086gvz
 #: src/modules/settings/accounts/components/message-folders/SettingsMessageFoldersTreeItem.tsx
@@ -4310,6 +4373,16 @@ msgstr "Kompakt vy"
 msgid "Companies"
 msgstr "Företag"
 
+#. js-lingui-id: XmCyjc
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Company domain"
+msgstr ""
+
+#. js-lingui-id: RA55Iu
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Company name"
+msgstr ""
+
 #. js-lingui-id: awM9hH
 #: src/modules/settings/billing/components/internal/SettingsBillingPlanComparisonTable.tsx
 #: src/modules/settings/billing/components/internal/SettingsBillingSubscriptionInfoCardHeaderActions.tsx
@@ -4468,6 +4541,16 @@ msgstr "Konfigurera SMTP-inställningar för att skicka e-post från ditt konto.
 msgid "Configure the default AI models for all workspaces"
 msgstr "Konfigurera standard-AI-modeller för alla arbetsytor"
 
+#. js-lingui-id: Ts74BV
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Configure the PTS AI CRM MCP server manually in Cascade."
+msgstr ""
+
+#. js-lingui-id: k2+NM1
+#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
+msgid "Configure the PTS AI CRM MCP server manually in Cline."
+msgstr ""
+
 #. js-lingui-id: CcCy4C
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Configure the remote MCP server through Warp's agent settings."
@@ -4477,16 +4560,6 @@ msgstr "Konfigurera den fjärranslutna MCP-servern via Warps agentinställningar
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Configure the remote server in Amazon Q Developer's MCP settings."
 msgstr "Konfigurera den fjärranslutna servern i Amazon Q Developers MCP-inställningar."
-
-#. js-lingui-id: g1/8jH
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Configure the Twenty MCP server manually in Cascade."
-msgstr "Konfigurera Twenty MCP-servern manuellt i Cascade."
-
-#. js-lingui-id: XiyvRh
-#: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Configure the Twenty MCP server manually in Cline."
-msgstr "Konfigurera Twenty MCP-servern manuellt i Cline."
 
 #. js-lingui-id: qA9AGQ
 #: src/modules/settings/domains/components/SettingsDomainRecords.tsx
@@ -4597,6 +4670,11 @@ msgstr "Anslut ytterligare MCP-klienter med installationslänkar eller klientdok
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "Connect AI assistants like Claude or Cursor to your workspace via the Model Context Protocol"
 msgstr "Anslut AI-assistenter som Claude eller Cursor till din arbetsyta via Model Context Protocol"
+
+#. js-lingui-id: oHZ6RM
+#: src/pages/inbox/InboxPage.tsx
+msgid "Connect an email account in Settings → Accounts to see your inbox here."
+msgstr ""
 
 #. js-lingui-id: YLx3sC
 #: src/modules/settings/accounts/components/SettingsAccountsListEmptyStateCard.tsx
@@ -4960,6 +5038,11 @@ msgstr "Det gick inte att ta ägarskap över den här applikationen."
 msgid "Could not complete the claim. Please try again."
 msgstr "Det gick inte att slutföra anspråket. Försök igen."
 
+#. js-lingui-id: R+jJIO
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Could not create lead"
+msgstr ""
+
 #. js-lingui-id: VVRHmR
 #: src/modules/settings/security/components/approvedAccessDomains/SettingsSecurityApprovedAccessDomainRowDropdownMenu.tsx
 msgid "Could not delete approved access domain"
@@ -5183,6 +5266,13 @@ msgstr "Skapa anpassad vy"
 msgid "Create date field"
 msgstr "Skapa datumfält"
 
+#. js-lingui-id: XzANGz
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "Create lead"
+msgstr ""
+
 #. js-lingui-id: vY2Gfm
 #: src/modules/views/view-picker/components/ViewPickerCreateButton.tsx
 msgid "Create new view"
@@ -5292,11 +5382,6 @@ msgstr ""
 msgid "Created {objectLabel}"
 msgstr "Skapade {objectLabel}"
 
-#. js-lingui-id: 2K/oCx
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "created a related {objectNameSingular}"
-msgstr "skapade en relaterad {objectNameSingular}"
-
 #. js-lingui-id: NCIYDF
 #: src/modules/settings/applications/components/SettingsApplicationAboutSidebar.tsx
 msgid "Created by"
@@ -5323,6 +5408,11 @@ msgstr "Skapar din <0>datamodell</0>..."
 #: src/modules/auth/sign-in-up/constants/WorkspaceActivationMessages.tsx
 msgid "Creating your <0>workspace</0>..."
 msgstr "Skapar din <0>arbetsyta</0>..."
+
+#. js-lingui-id: HM56Bx
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Creating..."
+msgstr ""
 
 #. js-lingui-id: HAzhV7
 #: src/pages/settings/admin-panel/SettingsAdminAiProviderDetail.tsx
@@ -6144,6 +6234,7 @@ msgstr "ta bort"
 #: src/modules/ai/components/AiChatThreadDeleteConfirmationModal.tsx
 #: src/modules/ai/components/AiChatThreadItemMenu.tsx
 #: src/modules/blocknote-editor/components/CustomSideMenu.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/navigation-menu-item/display/folder/components/NavigationMenuItemFolderNavigationDrawerItemDropdown.tsx
 #: src/modules/object-record/record-field-list/record-detail-section/relation/components/RecordDetailRelationRecordsListItem.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/MultiItemFieldMenuItem.tsx
@@ -6394,11 +6485,6 @@ msgstr "Raderad"
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
 msgid "Deleted {objectLabel}"
 msgstr "Raderade {objectLabel}"
-
-#. js-lingui-id: P65ogp
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "deleted a related {objectNameSingular}"
-msgstr "tog bort en relaterad {objectNameSingular}"
 
 #. js-lingui-id: oAhMKF
 #: src/modules/blocknote-editor/blocks/MentionInlineContent.tsx
@@ -6939,6 +7025,11 @@ msgstr "t.ex. my-workspace"
 msgid "e.g. OpenAI EU"
 msgstr "t.ex. OpenAI EU"
 
+#. js-lingui-id: zisbVY
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "e.g. Sales"
+msgstr ""
+
 #. js-lingui-id: p5P8NB
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "E.g., \"We are a B2B SaaS company. Always use formal language...\""
@@ -6992,6 +7083,7 @@ msgstr "eddy@gmail.com, @apple.com"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTable.tsx
 #: src/modules/side-panel/hooks/useSidePanelMenu.ts
 #: src/modules/views/view-picker/components/ViewPickerOptionDropdown.tsx
+#: src/pages/inbox/InboxPage.tsx
 msgid "Edit"
 msgstr "Redigera"
 
@@ -7076,6 +7168,11 @@ msgstr "Redigera sida"
 msgid "Edit payment method, see your invoices and more"
 msgstr "Redigera betalningsmetod, se dina fakturor och mer"
 
+#. js-lingui-id: NINp+4
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Edit pipeline"
+msgstr ""
+
 #. js-lingui-id: QJQd1J
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useActionRolePermissionFlagConfig.ts
 msgid "Edit Profile"
@@ -7135,6 +7232,7 @@ msgstr "annars om"
 
 #. js-lingui-id: O3oNi5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpEmailField.tsx
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/EmailsFieldInput.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminGeneral.tsx
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -8123,6 +8221,11 @@ msgstr "Expandera"
 msgid "Expand chat"
 msgstr "Expandera chatten"
 
+#. js-lingui-id: xAo8pm
+#: src/modules/activities/timeline-activities/rows/components/EventCardToggleButton.tsx
+msgid "Expand details"
+msgstr ""
+
 #. js-lingui-id: /QYKta
 #: src/modules/settings/accounts/components/message-folders/SettingsMessageFoldersTreeItem.tsx
 msgid "Expand folder"
@@ -8956,6 +9059,7 @@ msgid "First 5 lines"
 msgstr "Första 5 raderna"
 
 #. js-lingui-id: V1EGGU
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-metadata/hooks/useSortSubFieldChoicesForField.ts
 msgid "First name"
 msgstr "Förnamn"
@@ -10148,6 +10252,13 @@ msgstr "Inaktiva objektalternativ"
 msgid "Inactive Skill Options"
 msgstr "Inaktiva färdighetsalternativ"
 
+#. js-lingui-id: Gp4Yi6
+#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
+#: src/pages/inbox/InboxPage.tsx
+#: src/pages/inbox/InboxPage.tsx
+msgid "Inbox"
+msgstr ""
+
 #. js-lingui-id: j8Bj7e
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
 msgid "Include emails where all participants share the same domain."
@@ -11039,6 +11150,7 @@ msgid "Last message {lastMessageSentAtFormatted}"
 msgstr "Senaste meddelandet {lastMessageSentAtFormatted}"
 
 #. js-lingui-id: 1ZaQUH
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-metadata/hooks/useSortSubFieldChoicesForField.ts
 #: src/modules/settings/members/components/MemberNameFields.tsx
 #: src/pages/onboarding/CreateProfile.tsx
@@ -11163,6 +11275,16 @@ msgstr "Layoutläge: {0}"
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useSettingsRolePermissionFlagConfig.ts
 msgid "Layouts"
 msgstr "Layouter"
+
+#. js-lingui-id: p2UKkc
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Lead created in the pipeline"
+msgstr ""
+
+#. js-lingui-id: Dysw8S
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Lead created in the pipeline (existing contact reused)"
+msgstr ""
 
 #. js-lingui-id: zwWKhA
 #: src/modules/information-banner/components/maintenance/InformationBannerMaintenance.tsx
@@ -11375,21 +11497,6 @@ msgstr "Länk-URL"
 #: src/modules/activities/timeline-activities/rows/generic/components/EventRowGenericLinked.tsx
 msgid "linked a {objectLabel}"
 msgstr "länkade {objectLabel}"
-
-#. js-lingui-id: JYFFGu
-#: src/modules/activities/timeline-activities/rows/calendar/components/EventRowCalendarEvent.tsx
-msgid "linked a calendar event with {labelIdentifierValue}"
-msgstr "länkade ett kalenderevenemang med {labelIdentifierValue}"
-
-#. js-lingui-id: ZJ5OOX
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "linked a related {objectNameSingular}"
-msgstr "länkade en relaterad {objectNameSingular}"
-
-#. js-lingui-id: fd8C68
-#: src/modules/activities/timeline-activities/rows/message/components/EventRowMessage.tsx
-msgid "linked an email with"
-msgstr "länkade ett e-postmeddelande med"
 
 #. js-lingui-id: 82kQhK
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
@@ -12379,6 +12486,7 @@ msgstr "N/A"
 
 #. js-lingui-id: 6YtxFj
 #: src/modules/auth/sign-in-up/components/internal/SignInUpWorkspaceCreationForm.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/object-core/workflows/constants/WorkflowCoreTableColumns.tsx
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
@@ -12683,6 +12791,11 @@ msgstr "Nytt Objekt"
 #: src/pages/auth/PasswordReset.tsx
 msgid "New Password"
 msgstr "Nytt Lösenord"
+
+#. js-lingui-id: 2llx5k
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "New pipeline"
+msgstr ""
 
 #. js-lingui-id: ywJUqq
 #: src/modules/settings/billing/components/internal/ResourceCreditPackagePickerModal.tsx
@@ -13088,6 +13201,11 @@ msgstr "Ingen beskrivning finns tillgänglig för den här appen"
 #: src/modules/activities/emails/components/EmptyInboxPlaceholder.tsx
 msgid "No email exchange has occurred with this record yet."
 msgstr "Ingen e-postkommunikation har ännu skett med den här posten."
+
+#. js-lingui-id: 2s2Oh3
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "No emails match this pipeline yet."
+msgstr ""
 
 #. js-lingui-id: p3Hivn
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
@@ -14026,6 +14144,11 @@ msgstr "Introduktionsbelöning"
 msgid "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
 msgstr "Ett eller flera filter hänvisar till inaktiverade eller raderade fält och kommer automatiskt att tas bort vid sparande."
 
+#. js-lingui-id: 3B23rq
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "One per line. Use @domain.com to match a whole domain."
+msgstr ""
+
 #. js-lingui-id: 2l4SGU
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
 msgid "One subscription provides one enterprise key that powers one production instance and one potential staging or test instance. To run a staging or test environment, install Twenty on a second server, activate it with this same enterprise key, then register that server as a development instance. Development instances unlock enterprise features without extra billing and do not count toward your production seats."
@@ -14085,10 +14208,31 @@ msgstr "endast på {firstDay} och {secondDay}"
 msgid "only on {remainingDays} and {0}"
 msgstr "endast på {remainingDays} och {0}"
 
+#. js-lingui-id: apix5+
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only see"
+msgstr ""
+
+#. js-lingui-id: 2D+w9z
+#. placeholder {0}: onlySeeList.length
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only see ({0})"
+msgstr ""
+
+#. js-lingui-id: enJhmw
+#: src/pages/inbox/InboxPage.tsx
+msgid "Only show emails from these addresses or domains (one per line, e.g. maria@acme.com or @acme.com). Leave empty to show everything. Other emails are only hidden, never deleted."
+msgstr ""
+
 #. js-lingui-id: saaSLd
 #: src/modules/activities/emails/components/EmailThreadNotShared.tsx
 msgid "Only the subject is shared"
 msgstr "Endast ämnet delas"
+
+#. js-lingui-id: RaZNwl
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Only these"
+msgstr ""
 
 #. js-lingui-id: Lp+2YF
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
@@ -14122,15 +14266,15 @@ msgstr "Öppna en e-postredigerare för att redigera blockinställningar."
 msgid "Open as link"
 msgstr "Öppna som länk"
 
-#. js-lingui-id: n0vVgf
+#. js-lingui-id: gV3Sty
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Claude with the Twenty connector name and MCP URL prefilled."
-msgstr "Öppna Claude med Twenty-anslutningsnamn och MCP-URL förifyllda."
+msgid "Open Claude with the PTS AI CRM connector name and MCP URL prefilled."
+msgstr ""
 
-#. js-lingui-id: +n2jpB
+#. js-lingui-id: 5G96Wh
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Cursor's MCP installer with the Twenty remote server config."
-msgstr "Öppna Cursors MCP-installationsprogram med Twenty:s fjärrserverkonfiguration."
+msgid "Open Cursor's MCP installer with the PTS AI CRM remote server config."
+msgstr ""
 
 #. js-lingui-id: pZZH4Q
 #: src/modules/auth/sign-in-up/components/EmailVerificationSent.tsx
@@ -14169,15 +14313,15 @@ msgstr "Öppna poster bredvid den aktuella sidan"
 msgid "Open records on a dedicated page"
 msgstr "Öppna poster på en dedikerad sida"
 
-#. js-lingui-id: q170S2
+#. js-lingui-id: O1I08w
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Replit with the Twenty remote server config."
-msgstr "Öppna Replit med Twenty:s fjärrserverkonfiguration."
+msgid "Open Replit with the PTS AI CRM remote server config."
+msgstr ""
 
-#. js-lingui-id: sBd/cl
+#. js-lingui-id: RnAG4x
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
-msgid "Open Twenty's official ChatGPT integration for your workspace."
-msgstr "Öppna Twenty:s officiella ChatGPT-integration för din arbetsyta."
+msgid "Open the ChatGPT integration for your workspace."
+msgstr ""
 
 #. js-lingui-id: OV5wZZ
 #: src/modules/navigation-menu-item/display/sections/components/NavigationDrawerOpenedSection.tsx
@@ -14198,6 +14342,11 @@ msgstr "I drift"
 #: src/modules/settings/data-model/fields/forms/select/hooks/useSelectSettingsFormInitialValues.ts
 msgid "Option 1"
 msgstr "Alternativ 1"
+
+#. js-lingui-id: LLAa/9
+#: src/modules/inbox/components/CreateLeadModal.tsx
+msgid "Optional"
+msgstr ""
 
 #. js-lingui-id: gUeG+X
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
@@ -14477,10 +14626,10 @@ msgstr "Sidlayouter"
 msgid "Page name"
 msgstr "Sidnamn"
 
-#. js-lingui-id: NRvxzv
+#. js-lingui-id: cEYvWT
 #: src/pages/not-found/NotFound.tsx
-msgid "Page Not Found | Twenty"
-msgstr "Sidan kunde inte hittas | Twenty"
+msgid "Page Not Found | PTS AI CRM"
+msgstr ""
 
 #. js-lingui-id: oIhFvf
 #: src/modules/side-panel/pages/email-block-settings/components/EmailPageStyleSection.tsx
@@ -14698,6 +14847,7 @@ msgid "Person ID"
 msgstr "Person-ID"
 
 #. js-lingui-id: zmwvG2
+#: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/PhonesFieldInput.tsx
 msgid "Phone"
 msgstr "Telefon"
@@ -14779,6 +14929,11 @@ msgstr "Rosa"
 #: src/pages/settings/applications/tabs/SettingsApplicationCommandMenuItemSettingsTab.tsx
 msgid "Pinned"
 msgstr "Fäst"
+
+#. js-lingui-id: 67RoFa
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Pipeline"
+msgstr ""
 
 #. js-lingui-id: hx1ePY
 #: src/modules/workflow/workflow-steps/workflow-actions/form-action/components/WorkflowFormFieldSettingsNumber.tsx
@@ -16037,11 +16192,6 @@ msgstr "Återställ"
 msgid "Restore {objectLabel}"
 msgstr "Återställ {objectLabel}"
 
-#. js-lingui-id: RyMA1t
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "restored a related {objectNameSingular}"
-msgstr "återställde en relaterad {objectNameSingular}"
-
 #. js-lingui-id: hO3AfV
 #: src/pages/settings/ai/components/SettingsAiModelsTab.tsx
 msgid "Restrict available models to a curated list"
@@ -16342,7 +16492,9 @@ msgstr ""
 "urdag"
 
 #. js-lingui-id: tfDRzk
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
+#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
 msgid "Save"
 msgstr "Spara"
@@ -16361,6 +16513,11 @@ msgstr "Spara som ny vy"
 #: src/modules/layout-customization/hooks/useEnterLayoutCustomizationMode.ts
 msgid "Save or cancel dashboard changes before editing the layout."
 msgstr "Spara eller avbryt ändringar i instrumentpanelen innan du redigerar layouten."
+
+#. js-lingui-id: XvjC4F
+#: src/pages/inbox/InboxPage.tsx
+msgid "Saving..."
+msgstr ""
 
 #. js-lingui-id: bifv6N
 #: src/modules/settings/experience/components/UiScalePicker.tsx
@@ -17896,6 +18053,7 @@ msgid "Stacked lines"
 msgstr ""
 
 #. js-lingui-id: ErU1td
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/views/view-picker/components/ViewPickerContentCreateMode.tsx
 msgid "Stages"
 msgstr "Stadier"
@@ -18119,7 +18277,6 @@ msgid "Subject and metadata will be shared with your team."
 msgstr "Ämne och metadata kommer att delas med ditt team."
 
 #. js-lingui-id: DvSvG9
-#: src/modules/activities/timeline-activities/rows/message/components/EventCardMessage.tsx
 #: src/modules/activities/timeline-activities/rows/message/components/EventCardMessageForbidden.tsx
 msgid "Subject not shared"
 msgstr "Ämne inte delad"
@@ -18569,14 +18726,14 @@ msgstr "API-slutpunkt för din OpenAI-kompatibla leverantör"
 msgid "The AWS region for Bedrock"
 msgstr "AWS-regionen för Bedrock"
 
-#. js-lingui-id: HP7per
+#. js-lingui-id: 997ayW
 #: src/pages/settings/applications/utils/getStandardApplicationDescription.ts
 msgid ""
-"The base data model every Twenty workspace runs on.\n"
+"The base data model every PTS AI CRM workspace runs on.\n"
 "\n"
 "#### What \"foundation\" means\n"
 "\n"
-"Every Twenty workspace starts with this set of objects. They define the shape of your CRM, including relationships, activity, and reporting. Everything else, including marketplace apps, AI agents, and custom objects, plugs into them.\n"
+"Every PTS AI CRM workspace starts with this set of objects. They define the shape of your CRM, including relationships, activity, and reporting. Everything else, including marketplace apps, AI agents, and custom objects, plugs into them.\n"
 "\n"
 "#### Included objects\n"
 "- **People & Companies**: contact and account records\n"
@@ -18584,11 +18741,11 @@ msgid ""
 "- **Notes & Tasks**: activity and follow-ups\n"
 "- **Workflows & Dashboards**: automation and reporting\n"
 "\n"
-"Remove this app and the rest of Twenty has nothing to hang off.\n"
+"Remove this app and the rest of the CRM has nothing to hang off.\n"
 "\n"
 "#### Build your own app\n"
 "\n"
-"Extend Twenty with your own objects, fields, logic functions, or AI skills. Scaffold a new app in one command:\n"
+"Extend the CRM with your own objects, fields, logic functions, or AI skills. Scaffold a new app in one command:\n"
 "\n"
 "```bash\n"
 "npx create-twenty-app@latest my-twenty-app\n"
@@ -18603,36 +18760,6 @@ msgid ""
 "\n"
 "See the [Getting Started guide](https://twenty.com/developers/extend/apps/getting-started) for the full walkthrough, and [Building Apps](https://twenty.com/developers/extend/apps/building) for the `defineApplication` / `defineEntity` APIs."
 msgstr ""
-"Den grundläggande datamodell som varje Twenty-arbetsyta bygger på.\n"
-"\n"
-"#### Vad \"grund\" betyder\n"
-"\n"
-"Varje Twenty-arbetsyta börjar med den här uppsättningen objekt. De definierar formen på ditt CRM, inklusive relationer, aktivitet och rapportering. Allt annat, inklusive appar från marknadsplatsen, AI-agenter och anpassade objekt, kopplas in i dem.\n"
-"\n"
-"#### Ingående objekt\n"
-"- **Personer och företag**: kontakt- och kontoposter\n"
-"- **Affärsmöjligheter**: din säljpipeline\n"
-"- **Anteckningar och uppgifter**: aktivitet och uppföljningar\n"
-"- **Arbetsflöden och instrumentpaneler**: automatisering och rapportering\n"
-"\n"
-"Tar du bort den här appen har resten av Twenty inget att bygga på.\n"
-"\n"
-"#### Bygg din egen app\n"
-"\n"
-"Utöka Twenty med egna objekt, fält, logikfunktioner eller AI-förmågor. Skapa en ny appstomme med ett enda kommando:\n"
-"\n"
-"```bash\n"
-"npx create-twenty-app@latest my-twenty-app\n"
-"```\n"
-"\n"
-"Gå sedan in i mappen:\n"
-"\n"
-"```bash\n"
-"cd my-twenty-app\n"
-"yarn twenty dev\n"
-"```\n"
-"\n"
-"Se guiden [Kom igång](https://twenty.com/developers/extend/apps/getting-started) för en komplett genomgång, och [Bygga appar](https://twenty.com/developers/extend/apps/building) för `defineApplication` / `defineEntity`-API:erna."
 
 #. js-lingui-id: VsxjzF
 #: src/modules/page-layout/widgets/call-recording-summary/components/CallRecordingSummaryBody.tsx
@@ -19981,11 +20108,6 @@ msgstr "Okänd arbetsyta"
 msgid "Unlimited"
 msgstr "Obegränsad"
 
-#. js-lingui-id: CfClM4
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "unlinked a related {objectNameSingular}"
-msgstr "avlänkade en relaterad {objectNameSingular}"
-
 #. js-lingui-id: WDcQq9
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownVisibilityContent.tsx
@@ -20073,8 +20195,6 @@ msgid "Unsupported image format"
 msgstr "Bildformatet stöds inte"
 
 #. js-lingui-id: wja8aL
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-#: src/modules/activities/timeline-activities/rows/generic/components/EventRowGenericLinked.tsx
 #: src/modules/ai/components/AiChatThreadListItem.tsx
 #: src/modules/ai/components/ChatReferenceChipDisplay.tsx
 #: src/modules/ai/components/ChatReferenceChipDisplay.tsx
@@ -20220,6 +20340,7 @@ msgstr "Uppdatera ditt konto's konfiguration. Konfigurera valfri kombination av 
 
 #. js-lingui-id: x4Xp3c
 #: src/modules/activities/timeline-activities/rows/main-object/components/EventRowMainObjectUpdated.tsx
+#: src/modules/activities/timeline-activities/rows/main-object/components/EventRowMainObjectUpdated.tsx
 msgid "updated"
 msgstr "uppdaterad"
 
@@ -20242,11 +20363,6 @@ msgstr "Uppdaterad (på specifika fält)"
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
 msgid "Updated {objectLabel}"
 msgstr "Uppdaterade {objectLabel}"
-
-#. js-lingui-id: OFU7Sk
-#: src/modules/activities/timeline-activities/rows/activity/components/EventRowActivity.tsx
-msgid "updated a related {objectNameSingular}"
-msgstr "uppdaterade en relaterad {objectNameSingular}"
 
 #. js-lingui-id: xuCD/Q
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
@@ -21261,10 +21377,10 @@ msgstr ""
 msgid "Weight"
 msgstr "Vikt"
 
-#. js-lingui-id: nTuObL
+#. js-lingui-id: D6q5Py
 #: src/pages/auth/SignInUp.tsx
-msgid "Welcome to Twenty"
-msgstr "Välkommen till Twenty"
+msgid "Welcome to PTS AI CRM"
+msgstr ""
 
 #. js-lingui-id: t8ZvkC
 #: src/modules/onboarding/constants/WelcomeTitleMessage.ts
@@ -21355,6 +21471,11 @@ msgstr "Var poster för det här objektet öppnas"
 #: src/pages/settings/admin-panel/SettingsAdminNewAiModel.tsx
 msgid "Whether this model supports chain-of-thought reasoning"
 msgstr "Om den här modellen stöder chain-of-thought-resonemang"
+
+#. js-lingui-id: jRh5OJ
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Which emails enter this pipeline?"
+msgstr ""
 
 #. js-lingui-id: 9y+sLE
 #: src/modules/workflow/workflow-variables/utils/getWorkflowVariableSpecialItems.ts
