@@ -88,13 +88,40 @@ const StyledColorPickerPopup = styled.div`
   border: 1px solid ${themeCssVariables.border.color.medium};
   border-radius: ${themeCssVariables.border.radius.sm};
   box-shadow: ${themeCssVariables.boxShadow.strong};
-  display: flex;
-  gap: ${themeCssVariables.spacing[1]};
   left: 0;
   padding: ${themeCssVariables.spacing[2]};
   position: absolute;
   top: calc(100% + 4px);
+  width: 250px;
   z-index: 10;
+`;
+
+const StyledColorPickerHeader = styled.div`
+  align-items: center;
+  color: ${themeCssVariables.font.color.tertiary};
+  display: flex;
+  font-size: ${themeCssVariables.font.size.xs};
+  justify-content: space-between;
+  margin-bottom: ${themeCssVariables.spacing[1]};
+`;
+
+const StyledColorPickerClose = styled.button`
+  background: transparent;
+  border: none;
+  color: ${themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: 0 ${themeCssVariables.spacing[1]};
+
+  &:hover {
+    color: ${themeCssVariables.font.color.primary};
+  }
+`;
+
+const StyledColorSwatches = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${themeCssVariables.spacing[1]};
 `;
 
 const StyledColorSwatch = styled.button<{ isActive: boolean }>`
@@ -415,21 +442,31 @@ export const PipelineEditorModal = ({
                 </StyledStageTagButton>
                 {colorPickerIndex === index && (
                   <StyledColorPickerPopup>
-                    {MAIN_COLOR_NAMES.map((colorName) => (
-                      <StyledColorSwatch
-                        key={colorName}
+                    <StyledColorPickerHeader>
+                      {t`Pick a color — changes apply live`}
+                      <StyledColorPickerClose
                         type="button"
-                        isActive={column.color === colorName}
-                        style={{
-                          background:
-                            themeCssVariables.tag.background[colorName],
-                        }}
-                        onClick={() => {
-                          updateColumn(index, { color: colorName });
-                          setColorPickerIndex(null);
-                        }}
-                      />
-                    ))}
+                        onClick={() => setColorPickerIndex(null)}
+                      >
+                        ✕
+                      </StyledColorPickerClose>
+                    </StyledColorPickerHeader>
+                    <StyledColorSwatches>
+                      {MAIN_COLOR_NAMES.map((colorName) => (
+                        <StyledColorSwatch
+                          key={colorName}
+                          type="button"
+                          isActive={column.color === colorName}
+                          style={{
+                            background:
+                              themeCssVariables.tag.background[colorName],
+                          }}
+                          onClick={() =>
+                            updateColumn(index, { color: colorName })
+                          }
+                        />
+                      ))}
+                    </StyledColorSwatches>
                   </StyledColorPickerPopup>
                 )}
                 <StyledStageNameInput

@@ -97,6 +97,8 @@ const INBOX_ONLY_SEE_KEY_PREFIX = 'INBOX_ONLY_SEE_';
 const INBOX_ONLY_SEE_MAX_ENTRIES = 200;
 const INBOX_PIPELINES_KEY = 'INBOX_PIPELINES';
 const INBOX_PIPELINES_MAX_BYTES = 200_000;
+const INBOX_SIGNATURE_KEY = 'INBOX_SIGNATURE';
+const INBOX_SIGNATURE_MAX_BYTES = 100_000;
 
 @UseGuards(WorkspaceAuthGuard, UserAuthGuard, CustomPermissionGuard)
 @CoreResolver(() => TimelineThreadsWithTotalDTO)
@@ -169,6 +171,40 @@ export class TimelineMessagingResolver {
       workspaceId: workspace.id,
       key: `${INBOX_ONLY_SEE_KEY_PREFIX}${connectedAccountId}`,
       value: sanitizedHandles,
+    });
+
+    return true;
+  }
+
+  @Query(() => String, { nullable: true })
+  async getMyInboxSignature(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+  ): Promise<string | null> {
+    const value = await this.userVarsService.get({
+      userId: user.id,
+      workspaceId: workspace.id,
+      key: INBOX_SIGNATURE_KEY,
+    });
+
+    return typeof value === 'string' ? value : null;
+  }
+
+  @Mutation(() => Boolean)
+  async setMyInboxSignature(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @Args('signatureHtml', { type: () => String }) signatureHtml: string,
+  ): Promise<boolean> {
+    if (Buffer.byteLength(signatureHtml, 'utf8') > INBOX_SIGNATURE_MAX_BYTES) {
+      return false;
+    }
+
+    await this.userVarsService.set({
+      userId: user.id,
+      workspaceId: workspace.id,
+      key: INBOX_SIGNATURE_KEY,
+      value: signatureHtml,
     });
 
     return true;

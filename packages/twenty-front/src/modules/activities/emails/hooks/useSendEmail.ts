@@ -4,6 +4,7 @@ import { type EmailAttachment } from 'twenty-shared/types';
 
 import { SEND_EMAIL } from '@/activities/emails/graphql/mutations/sendEmail';
 import { getTimelineThreadsFromObjectRecord } from '@/activities/emails/graphql/queries/getTimelineThreadsFromObjectRecord';
+import { useInboxSignature } from '@/inbox/hooks/useInboxSignature';
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { t } from '@lingui/core/macro';
@@ -32,6 +33,8 @@ type SendEmailParams = {
 export const useSendEmail = () => {
   const apolloCoreClient = useApolloCoreClient();
 
+  const { signature } = useInboxSignature();
+
   const [sendEmailMutation, { loading }] = useMutation<
     SendEmailMutation,
     SendEmailMutationVariables
@@ -42,6 +45,12 @@ export const useSendEmail = () => {
   const sendEmail = useCallback(
     async (params: SendEmailParams): Promise<SendEmailResult> => {
       try {
+        // Firma del usuario (configurada en el Inbox) al final del cuerpo.
+        const bodyWithSignature =
+          signature && signature.trim().length > 0
+            ? `${params.body}<br/><br/>${signature}`
+            : params.body;
+
         const result = await sendEmailMutation({
           variables: {
             input: {
@@ -50,7 +59,7 @@ export const useSendEmail = () => {
               cc: params.cc,
               bcc: params.bcc,
               subject: params.subject,
-              body: params.body,
+              body: bodyWithSignature,
               inReplyTo: params.inReplyTo,
               draftMessageId: params.draftMessageId,
               files: params.files,
@@ -96,6 +105,7 @@ export const useSendEmail = () => {
       enqueueSuccessSnackBar,
       enqueueErrorSnackBar,
       apolloCoreClient,
+      signature,
     ],
   );
 

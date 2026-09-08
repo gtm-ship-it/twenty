@@ -2462,6 +2462,11 @@ msgstr "المظهر"
 msgid "Appears filled in fewer than 5% of {0}. Fields that stay empty can be deactivated."
 msgstr "يظهر مملوءاً في أقل من 5% من {0}. يمكن إلغاء تفعيل الحقول التي تبقى فارغة."
 
+#. js-lingui-id: S7AHOF
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Appended at the end of every email you send from the CRM."
+msgstr ""
+
 #. js-lingui-id: LqRVps
 #: src/modules/auth/sign-in-up/components/internal/SignInUpWorkspaceCreationForm.tsx
 msgid "apple"
@@ -3567,6 +3572,7 @@ msgstr "هل لا يمكنك المسح؟ انسخ الـ"
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/object-record/record-update-multiple/components/UpdateMultipleRecordsFooter.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceCreditGrantModal.tsx
 #: src/modules/settings/billing/components/AddCreditCardModal.tsx
@@ -7325,6 +7331,11 @@ msgstr "تم إرسال البريد الإلكتروني بنجاح"
 msgid "Email sharing"
 msgstr "مشاركة البريد الإلكتروني"
 
+#. js-lingui-id: iSMIhW
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Email signature"
+msgstr ""
+
 #. js-lingui-id: jvneza
 #: src/modules/settings/applications/components/SettingsApplicationAboutSidebar.tsx
 msgid "Email support"
@@ -7462,6 +7473,11 @@ msgstr "صندوق الوارد فارغ"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsDetail.tsx
 msgid "Empty Object"
 msgstr "كائن فارغ"
+
+#. js-lingui-id: RmYUku
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Empty signature"
+msgstr ""
 
 #. js-lingui-id: 7A0K1Y
 #: src/modules/page-layout/components/PageLayoutTabListNewTabDropdownContent.tsx
@@ -8157,6 +8173,11 @@ msgstr "الجميع"
 msgid "Everything"
 msgstr "كل شيء"
 
+#. js-lingui-id: 9D/uNG
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Exclude domain"
+msgstr ""
+
 #. js-lingui-id: QQlMid
 #: src/modules/settings/accounts/components/SettingsAccountsMessageChannelDetails.tsx
 msgid "Exclude group emails"
@@ -8166,6 +8187,11 @@ msgstr "استثناء البريد الإلكتروني للمجموعات"
 #: src/modules/settings/accounts/components/SettingsAccountsMessageChannelDetails.tsx
 msgid "Exclude non-professional emails"
 msgstr "استبعاد الرسائل الإلكترونية غير المهنية"
+
+#. js-lingui-id: dtRSPR
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Exclude sender"
+msgstr ""
 
 #. js-lingui-id: ccv57g
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistSection.tsx
@@ -14878,6 +14904,11 @@ msgstr "تم نسخ رقم الهاتف إلى الحافظة"
 msgid "Pick a {objectLabel} record"
 msgstr "اختر سجل {objectLabel}"
 
+#. js-lingui-id: coGyoX
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Pick a color — changes apply live"
+msgstr ""
+
 #. js-lingui-id: 1Mj027
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Pick a connected account or set a workspace member as variable"
@@ -14955,6 +14986,11 @@ msgstr "نص توضيحي"
 #: src/modules/side-panel/pages/page-layout/components/WidgetSettingsPlacementSection.tsx
 msgid "Placement"
 msgstr "الموضع"
+
+#. js-lingui-id: PuO6QY
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Plain text and HTML are supported. Use <br/> for line breaks and <img src=\"https://...\"/> for your logo."
+msgstr ""
 
 #. js-lingui-id: fQtTho
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
@@ -15135,6 +15171,7 @@ msgid "Prevent from assigning the same value to different records"
 msgstr "منع المستخدمين من تعيين نفس القيمة لسجلات مختلفة"
 
 #. js-lingui-id: rdUucN
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/settings/data-model/components/SettingsDataModelPreviewFormCard.tsx
 #: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectSettingsFormCard.tsx
 #: src/pages/settings/applications/SettingsApplicationFrontComponentDetail.tsx
@@ -15909,6 +15946,11 @@ msgstr "إزالة الحقل"
 msgid "Remove filter"
 msgstr "إزالة الفلتر"
 
+#. js-lingui-id: LH4oc+
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Remove from pipeline"
+msgstr ""
+
 #. js-lingui-id: 9VZ6f0
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
 msgid "Remove from sidebar"
@@ -16500,6 +16542,7 @@ msgstr "السبت"
 
 #. js-lingui-id: tfDRzk
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
 #: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
@@ -16522,6 +16565,7 @@ msgid "Save or cancel dashboard changes before editing the layout."
 msgstr "احفظ أو ألغِ تغييرات لوحة المعلومات قبل تحرير التخطيط."
 
 #. js-lingui-id: XvjC4F
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/pages/inbox/InboxPage.tsx
 msgid "Saving..."
 msgstr ""
@@ -17697,6 +17741,11 @@ msgstr "التسجيل غير متاح مؤقتًا أثناء الصيانة."
 #: src/pages/settings/legal/SettingsLegalDpaNew.tsx
 msgid "Signatory title"
 msgstr "المسمّى الوظيفي للموقِّع"
+
+#. js-lingui-id: n+8yVN
+#: src/pages/inbox/InboxPage.tsx
+msgid "Signature"
+msgstr ""
 
 #. js-lingui-id: Lz4j8Q
 #: src/modules/settings/legal/components/SettingsDpaAgreementRow.tsx

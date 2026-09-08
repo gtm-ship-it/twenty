@@ -2457,6 +2457,11 @@ msgstr "Appearance"
 msgid "Appears filled in fewer than 5% of {0}. Fields that stay empty can be deactivated."
 msgstr "Appears filled in fewer than 5% of {0}. Fields that stay empty can be deactivated."
 
+#. js-lingui-id: S7AHOF
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Appended at the end of every email you send from the CRM."
+msgstr "Appended at the end of every email you send from the CRM."
+
 #. js-lingui-id: LqRVps
 #: src/modules/auth/sign-in-up/components/internal/SignInUpWorkspaceCreationForm.tsx
 msgid "apple"
@@ -3562,6 +3567,7 @@ msgstr "Can't scan? Copy the"
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/object-record/record-update-multiple/components/UpdateMultipleRecordsFooter.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceCreditGrantModal.tsx
 #: src/modules/settings/billing/components/AddCreditCardModal.tsx
@@ -7320,6 +7326,11 @@ msgstr "Email sent successfully"
 msgid "Email sharing"
 msgstr "Email sharing"
 
+#. js-lingui-id: iSMIhW
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Email signature"
+msgstr "Email signature"
+
 #. js-lingui-id: jvneza
 #: src/modules/settings/applications/components/SettingsApplicationAboutSidebar.tsx
 msgid "Email support"
@@ -7457,6 +7468,11 @@ msgstr "Empty Inbox"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsDetail.tsx
 msgid "Empty Object"
 msgstr "Empty Object"
+
+#. js-lingui-id: RmYUku
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Empty signature"
+msgstr "Empty signature"
 
 #. js-lingui-id: 7A0K1Y
 #: src/modules/page-layout/components/PageLayoutTabListNewTabDropdownContent.tsx
@@ -8152,6 +8168,11 @@ msgstr "Everyone"
 msgid "Everything"
 msgstr "Everything"
 
+#. js-lingui-id: 9D/uNG
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Exclude domain"
+msgstr "Exclude domain"
+
 #. js-lingui-id: QQlMid
 #: src/modules/settings/accounts/components/SettingsAccountsMessageChannelDetails.tsx
 msgid "Exclude group emails"
@@ -8161,6 +8182,11 @@ msgstr "Exclude group emails"
 #: src/modules/settings/accounts/components/SettingsAccountsMessageChannelDetails.tsx
 msgid "Exclude non-professional emails"
 msgstr "Exclude non-professional emails"
+
+#. js-lingui-id: dtRSPR
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Exclude sender"
+msgstr "Exclude sender"
 
 #. js-lingui-id: ccv57g
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistSection.tsx
@@ -14873,6 +14899,11 @@ msgstr "Phone number copied to clipboard"
 msgid "Pick a {objectLabel} record"
 msgstr "Pick a {objectLabel} record"
 
+#. js-lingui-id: coGyoX
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Pick a color — changes apply live"
+msgstr "Pick a color — changes apply live"
+
 #. js-lingui-id: 1Mj027
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Pick a connected account or set a workspace member as variable"
@@ -14950,6 +14981,11 @@ msgstr "Placeholder"
 #: src/modules/side-panel/pages/page-layout/components/WidgetSettingsPlacementSection.tsx
 msgid "Placement"
 msgstr "Placement"
+
+#. js-lingui-id: PuO6QY
+#: src/modules/inbox/components/SignatureEditorModal.tsx
+msgid "Plain text and HTML are supported. Use <br/> for line breaks and <img src=\"https://...\"/> for your logo."
+msgstr "Plain text and HTML are supported. Use <br/> for line breaks and <img src=\"https://...\"/> for your logo."
 
 #. js-lingui-id: fQtTho
 #: src/modules/advanced-text-editor/extensions/slash-command/DefaultSlashCommands.ts
@@ -15130,6 +15166,7 @@ msgid "Prevent from assigning the same value to different records"
 msgstr "Prevent from assigning the same value to different records"
 
 #. js-lingui-id: rdUucN
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/settings/data-model/components/SettingsDataModelPreviewFormCard.tsx
 #: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectSettingsFormCard.tsx
 #: src/pages/settings/applications/SettingsApplicationFrontComponentDetail.tsx
@@ -15904,6 +15941,11 @@ msgstr "Remove field"
 msgid "Remove filter"
 msgstr "Remove filter"
 
+#. js-lingui-id: LH4oc+
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Remove from pipeline"
+msgstr "Remove from pipeline"
+
 #. js-lingui-id: 9VZ6f0
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
 msgid "Remove from sidebar"
@@ -16495,6 +16537,7 @@ msgstr "Saturday"
 
 #. js-lingui-id: tfDRzk
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
 #: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
@@ -16517,6 +16560,7 @@ msgid "Save or cancel dashboard changes before editing the layout."
 msgstr "Save or cancel dashboard changes before editing the layout."
 
 #. js-lingui-id: XvjC4F
+#: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/pages/inbox/InboxPage.tsx
 msgid "Saving..."
 msgstr "Saving..."
@@ -17692,6 +17736,11 @@ msgstr "Sign-up is temporarily unavailable during maintenance."
 #: src/pages/settings/legal/SettingsLegalDpaNew.tsx
 msgid "Signatory title"
 msgstr "Signatory title"
+
+#. js-lingui-id: n+8yVN
+#: src/pages/inbox/InboxPage.tsx
+msgid "Signature"
+msgstr "Signature"
 
 #. js-lingui-id: Lz4j8Q
 #: src/modules/settings/legal/components/SettingsDpaAgreementRow.tsx

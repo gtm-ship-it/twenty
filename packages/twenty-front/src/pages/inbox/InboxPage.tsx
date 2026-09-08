@@ -9,8 +9,10 @@ import { themeCssVariables } from 'twenty-ui/theme-constants';
 import { InboxPipelineBoard } from '@/inbox/components/InboxPipelineBoard';
 import { InboxThreadList } from '@/inbox/components/InboxThreadList';
 import { PipelineEditorModal } from '@/inbox/components/PipelineEditorModal';
+import { SignatureEditorModal } from '@/inbox/components/SignatureEditorModal';
 import { useInboxOnlySee } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxPipelines } from '@/inbox/hooks/useInboxPipelines';
+import { useInboxSignature } from '@/inbox/hooks/useInboxSignature';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
 import { GET_MY_CONNECTED_ACCOUNTS } from '@/settings/accounts/graphql/queries/getMyConnectedAccounts';
 import { Select } from '@/ui/input/components/Select';
@@ -226,6 +228,63 @@ export const InboxPage = () => {
     );
   };
 
+  const { signature, saveSignature, isSaving: isSavingSignature } =
+    useInboxSignature();
+  const [isSignatureEditorOpen, setIsSignatureEditorOpen] = useState(false);
+
+  const handleExcludeRule = async (rule: string, threadId: string) => {
+    if (!selectedPipeline) {
+      return;
+    }
+
+    await savePipelines(
+      pipelines.map((pipeline) => {
+        if (pipeline.id !== selectedPipeline.id) {
+          return pipeline;
+        }
+
+        const { [threadId]: _removed, ...remainingCardColumns } =
+          pipeline.cardColumns;
+
+        return {
+          ...pipeline,
+          rules:
+            pipeline.mode === 'EXCLUDE'
+              ? pipeline.rules.includes(rule)
+                ? pipeline.rules
+                : [...pipeline.rules, rule]
+              : pipeline.rules.filter(
+                  (existingRule) =>
+                    existingRule !== rule &&
+                    !(
+                      rule.startsWith('@') && existingRule.endsWith(rule)
+                    ),
+                ),
+          cardColumns: remainingCardColumns,
+        };
+      }),
+    );
+  };
+
+  const handleRemoveFromPipeline = async (threadId: string) => {
+    if (!selectedPipeline) {
+      return;
+    }
+
+    await savePipelines(
+      pipelines.map((pipeline) => {
+        if (pipeline.id !== selectedPipeline.id) {
+          return pipeline;
+        }
+
+        const { [threadId]: _removed, ...remainingCardColumns } =
+          pipeline.cardColumns;
+
+        return { ...pipeline, cardColumns: remainingCardColumns };
+      }),
+    );
+  };
+
   const handleAddToPipeline = async (threadId: string, pipelineId: string) => {
     await savePipelines(
       pipelines.map((pipeline) =>
@@ -258,6 +317,13 @@ export const InboxPage = () => {
           variant="secondary"
           accent={onlySeeList.length > 0 ? 'blue' : 'default'}
           onClick={handleToggleOnlySeePanel}
+        />
+        <Button
+          title={t`Signature`}
+          size="small"
+          variant="secondary"
+          accent={signature.trim().length > 0 ? 'blue' : 'default'}
+          onClick={() => setIsSignatureEditorOpen(true)}
         />
         {accounts.length > 1 && !selectedPipeline && (
           <StyledAccountTabs>
@@ -353,6 +419,8 @@ export const InboxPage = () => {
           }
           pipeline={selectedPipeline}
           onMoveCard={handleMoveCard}
+          onExcludeRule={handleExcludeRule}
+          onRemoveFromPipeline={handleRemoveFromPipeline}
         />
       )}
       {activeAccountId && !selectedPipeline && (
@@ -375,6 +443,17 @@ export const InboxPage = () => {
           onSave={handleSavePipeline}
           onDelete={handleDeletePipeline}
           onClose={() => setPipelineEditorState(null)}
+        />
+      )}
+      {isSignatureEditorOpen && (
+        <SignatureEditorModal
+          signature={signature}
+          isSaving={isSavingSignature}
+          onSave={async (signatureHtml) => {
+            await saveSignature(signatureHtml);
+            setIsSignatureEditorOpen(false);
+          }}
+          onClose={() => setIsSignatureEditorOpen(false)}
         />
       )}
     </StyledPanel>
