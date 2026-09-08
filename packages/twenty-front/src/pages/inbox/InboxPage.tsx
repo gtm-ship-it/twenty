@@ -6,8 +6,12 @@ import { IconFilter, IconInbox } from 'twenty-ui/icon';
 import { Button } from 'twenty-ui/input';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
+import { InboxPipelineBoard } from '@/inbox/components/InboxPipelineBoard';
 import { InboxThreadList } from '@/inbox/components/InboxThreadList';
+import { PipelineEditorModal } from '@/inbox/components/PipelineEditorModal';
 import { useInboxOnlySee } from '@/inbox/hooks/useInboxOnlySee';
+import { useInboxPipelines } from '@/inbox/hooks/useInboxPipelines';
+import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
 import { GET_MY_CONNECTED_ACCOUNTS } from '@/settings/accounts/graphql/queries/getMyConnectedAccounts';
 
 const PANEL_CORNER_RADIUS_DERIVED_FROM_THEME_SCALE = `calc(${themeCssVariables.border.radius.md} + ${themeCssVariables.spacing[1]})`;
@@ -95,6 +99,14 @@ const StyledOnlySeeActions = styled.div`
   justify-content: flex-end;
 `;
 
+const StyledViewTabs = styled.div`
+  align-items: center;
+  border-bottom: 1px solid ${themeCssVariables.border.color.light};
+  display: flex;
+  gap: ${themeCssVariables.spacing[1]};
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[4]};
+`;
+
 const StyledEmptyState = styled.div`
   align-items: center;
   color: ${themeCssVariables.font.color.tertiary};
@@ -151,6 +163,62 @@ export const InboxPage = () => {
 
     await saveOnlySeeList(handles);
     setIsOnlySeePanelOpen(false);
+  };
+
+  const { pipelines, savePipelines } = useInboxPipelines(activeAccountId);
+
+  const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
+    null,
+  );
+  const [pipelineEditorState, setPipelineEditorState] = useState<
+    { pipeline: InboxPipeline | null } | null
+  >(null);
+
+  const selectedPipeline =
+    pipelines.find((pipeline) => pipeline.id === selectedPipelineId) ?? null;
+
+  const handleSavePipeline = async (pipeline: InboxPipeline) => {
+    const exists = pipelines.some((existing) => existing.id === pipeline.id);
+    const nextPipelines = exists
+      ? pipelines.map((existing) =>
+          existing.id === pipeline.id ? pipeline : existing,
+        )
+      : [...pipelines, pipeline];
+
+    await savePipelines(nextPipelines);
+    setPipelineEditorState(null);
+    setSelectedPipelineId(pipeline.id);
+  };
+
+  const handleDeletePipeline = async (pipelineId: string) => {
+    await savePipelines(
+      pipelines.filter((pipeline) => pipeline.id !== pipelineId),
+    );
+    setPipelineEditorState(null);
+
+    if (selectedPipelineId === pipelineId) {
+      setSelectedPipelineId(null);
+    }
+  };
+
+  const handleMoveCard = async (threadId: string, columnIndex: number) => {
+    if (!selectedPipeline) {
+      return;
+    }
+
+    await savePipelines(
+      pipelines.map((pipeline) =>
+        pipeline.id === selectedPipeline.id
+          ? {
+              ...pipeline,
+              cardColumns: {
+                ...pipeline.cardColumns,
+                [threadId]: columnIndex,
+              },
+            }
+          : pipeline,
+      ),
+    );
   };
 
   return (
@@ -217,6 +285,50 @@ export const InboxPage = () => {
         </StyledEmptyState>
       )}
       {activeAccountId && (
+        <StyledViewTabs>
+          <StyledAccountTab
+            active={selectedPipeline === null}
+            onClick={() => setSelectedPipelineId(null)}
+          >
+            {t`Inbox`}
+          </StyledAccountTab>
+          {pipelines.map((pipeline) => (
+            <StyledAccountTab
+              key={pipeline.id}
+              active={pipeline.id === selectedPipelineId}
+              onClick={() => setSelectedPipelineId(pipeline.id)}
+              onDoubleClick={() => setPipelineEditorState({ pipeline })}
+            >
+              {pipeline.name}
+            </StyledAccountTab>
+          ))}
+          <StyledAccountTab
+            active={false}
+            onClick={() => setPipelineEditorState({ pipeline: null })}
+          >
+            {t`+ Pipeline`}
+          </StyledAccountTab>
+          {selectedPipeline && (
+            <StyledAccountTab
+              active={false}
+              onClick={() =>
+                setPipelineEditorState({ pipeline: selectedPipeline })
+              }
+            >
+              {t`Edit`}
+            </StyledAccountTab>
+          )}
+        </StyledViewTabs>
+      )}
+      {activeAccountId && selectedPipeline && (
+        <InboxPipelineBoard
+          key={`${activeAccountId}-${selectedPipeline.id}`}
+          connectedAccountId={activeAccountId}
+          pipeline={selectedPipeline}
+          onMoveCard={handleMoveCard}
+        />
+      )}
+      {activeAccountId && !selectedPipeline && (
         <InboxThreadList
           key={activeAccountId}
           connectedAccountId={activeAccountId}
@@ -225,6 +337,14 @@ export const InboxPage = () => {
               ?.handle ?? ''
           }
           onlySeeList={onlySeeList}
+        />
+      )}
+      {pipelineEditorState && (
+        <PipelineEditorModal
+          pipeline={pipelineEditorState.pipeline}
+          onSave={handleSavePipeline}
+          onDelete={handleDeletePipeline}
+          onClose={() => setPipelineEditorState(null)}
         />
       )}
     </StyledPanel>

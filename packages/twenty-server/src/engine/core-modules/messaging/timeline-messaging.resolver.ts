@@ -95,6 +95,8 @@ class GetTimelineThreadsFromConnectedAccountIdArgs {
 
 const INBOX_ONLY_SEE_KEY_PREFIX = 'INBOX_ONLY_SEE_';
 const INBOX_ONLY_SEE_MAX_ENTRIES = 200;
+const INBOX_PIPELINES_KEY_PREFIX = 'INBOX_PIPELINES_';
+const INBOX_PIPELINES_MAX_BYTES = 200_000;
 
 @UseGuards(WorkspaceAuthGuard, UserAuthGuard, CustomPermissionGuard)
 @CoreResolver(() => TimelineThreadsWithTotalDTO)
@@ -167,6 +169,74 @@ export class TimelineMessagingResolver {
       workspaceId: workspace.id,
       key: `${INBOX_ONLY_SEE_KEY_PREFIX}${connectedAccountId}`,
       value: sanitizedHandles,
+    });
+
+    return true;
+  }
+
+  @Query(() => String, { nullable: true })
+  async getInboxPipelines(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthUserWorkspaceId() userWorkspaceId: string,
+    @Args('connectedAccountId', { type: () => UUIDScalarType })
+    connectedAccountId: string,
+  ): Promise<string | null> {
+    const isOwner =
+      await this.timelineMessagingService.verifyConnectedAccountOwnership(
+        connectedAccountId,
+        userWorkspaceId,
+        workspace.id,
+      );
+
+    if (!isOwner) {
+      return null;
+    }
+
+    const value = await this.userVarsService.get({
+      userId: user.id,
+      workspaceId: workspace.id,
+      key: `${INBOX_PIPELINES_KEY_PREFIX}${connectedAccountId}`,
+    });
+
+    return typeof value === 'string' ? value : null;
+  }
+
+  @Mutation(() => Boolean)
+  async setInboxPipelines(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthUserWorkspaceId() userWorkspaceId: string,
+    @Args('connectedAccountId', { type: () => UUIDScalarType })
+    connectedAccountId: string,
+    @Args('pipelinesJson', { type: () => String }) pipelinesJson: string,
+  ): Promise<boolean> {
+    const isOwner =
+      await this.timelineMessagingService.verifyConnectedAccountOwnership(
+        connectedAccountId,
+        userWorkspaceId,
+        workspace.id,
+      );
+
+    if (!isOwner) {
+      return false;
+    }
+
+    if (Buffer.byteLength(pipelinesJson, 'utf8') > INBOX_PIPELINES_MAX_BYTES) {
+      return false;
+    }
+
+    try {
+      JSON.parse(pipelinesJson);
+    } catch {
+      return false;
+    }
+
+    await this.userVarsService.set({
+      userId: user.id,
+      workspaceId: workspace.id,
+      key: `${INBOX_PIPELINES_KEY_PREFIX}${connectedAccountId}`,
+      value: pipelinesJson,
     });
 
     return true;
