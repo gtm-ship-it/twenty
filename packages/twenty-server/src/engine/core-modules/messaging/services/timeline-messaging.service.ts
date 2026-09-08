@@ -5,7 +5,12 @@ import {
   MessageChannelVisibility,
   MessageParticipantRole,
 } from 'twenty-shared/types';
-import { In, type Repository, type SelectQueryBuilder } from 'typeorm';
+import {
+  In,
+  type ObjectLiteral,
+  type Repository,
+  type SelectQueryBuilder,
+} from 'typeorm';
 
 import { FileUrlService } from 'src/engine/core-modules/file/file-url/file-url.service';
 import { type TimelineThreadDTO } from 'src/engine/core-modules/messaging/dtos/timeline-thread.dto';
@@ -17,6 +22,9 @@ import { buildSystemAuthContext } from 'src/engine/twenty-orm/utils/build-system
 import { type MessageParticipantWorkspaceEntity } from 'src/modules/messaging/common/standard-objects/message-participant.workspace-entity';
 import { type MessageThreadWorkspaceEntity } from 'src/modules/messaging/common/standard-objects/message-thread.workspace-entity';
 import { type WorkspaceMemberWorkspaceEntity } from 'src/modules/workspace-member/standard-objects/workspace-member.workspace-entity';
+
+// Tope de hilos que una búsqueda puede resolver antes de paginar.
+const SEARCH_MATCHING_THREADS_LIMIT = 2000;
 
 @Injectable()
 export class TimelineMessagingService {
@@ -213,32 +221,70 @@ export class TimelineMessagingService {
           );
 
         // Búsqueda tipo Gmail: asunto, cuerpo, y nombre/correo de participantes.
+        // Se resuelven primero los hilos que coinciden y luego se filtra por id:
+        // meter los joins de participantes en las queries agregadas rompe el COUNT.
         const trimmedSearchTerm = searchTerm?.trim();
         const hasSearch =
           trimmedSearchTerm !== undefined && trimmedSearchTerm.length > 0;
-        const searchPattern = hasSearch ? `%${trimmedSearchTerm}%` : '';
 
-        const applySearch = <T extends SelectQueryBuilder<never>>(
-          queryBuilder: T,
-        ): T => {
-          if (!hasSearch) {
-            return queryBuilder;
-          }
+        let matchingThreadIds: string[] = [];
 
-          queryBuilder
-            .leftJoin('messages.messageParticipants', 'searchParticipants')
-            .andWhere(
-              `(messages.subject ILIKE :searchPattern
-                OR messages.text ILIKE :searchPattern
-                OR searchParticipants.handle ILIKE :searchPattern
-                OR searchParticipants."displayName" ILIKE :searchPattern)`,
-              { searchPattern },
+        if (hasSearch) {
+          const searchPattern = `%${trimmedSearchTerm}%`;
+
+          const messageParticipantRepository =
+            await this.globalWorkspaceOrmManager.getRepository<MessageParticipantWorkspaceEntity>(
+              workspaceId,
+              'messageParticipant',
             );
 
-          return queryBuilder;
-        };
+          const [contentMatches, participantMatches] = await Promise.all([
+            messageThreadRepository
+              .createQueryBuilder('messageThread')
+              .select('DISTINCT messageThread.id', 'id')
+              .innerJoin('messageThread.messages', 'messages')
+              .where(
+                '(messages.subject ILIKE :searchPattern OR messages.text ILIKE :searchPattern)',
+                { searchPattern },
+              )
+              .limit(SEARCH_MATCHING_THREADS_LIMIT)
+              .getRawMany<{ id: string }>(),
+            messageParticipantRepository
+              .createQueryBuilder('messageParticipant')
+              .select('DISTINCT message."messageThreadId"', 'id')
+              .innerJoin('messageParticipant.message', 'message')
+              .where(
+                '(messageParticipant.handle ILIKE :searchPattern OR messageParticipant."displayName" ILIKE :searchPattern)',
+                { searchPattern },
+              )
+              .limit(SEARCH_MATCHING_THREADS_LIMIT)
+              .getRawMany<{ id: string | null }>(),
+          ]);
 
-        const totalNumberOfThreads = await applySearch(
+          matchingThreadIds = [
+            ...new Set(
+              [...contentMatches, ...participantMatches]
+                .map((row) => row.id)
+                .filter((id): id is string => id !== null && id !== undefined),
+            ),
+          ];
+
+          if (matchingThreadIds.length === 0) {
+            return { messageThreads: [], totalNumberOfThreads: 0 };
+          }
+        }
+
+        const applySearchFilter = <Entity extends ObjectLiteral>(
+          queryBuilder: SelectQueryBuilder<Entity>,
+        ): SelectQueryBuilder<Entity> =>
+          hasSearch
+            ? queryBuilder.andWhere(
+                'messageThread.id IN (:...matchingThreadIds)',
+                { matchingThreadIds },
+              )
+            : queryBuilder;
+
+        const totalNumberOfThreads = await applySearchFilter(
           messageThreadRepository
             .createQueryBuilder('messageThread')
             .innerJoin('messageThread.messages', 'messages')
@@ -248,12 +294,12 @@ export class TimelineMessagingService {
             )
             .where('associations.messageChannelId IN(:...messageChannelIds)', {
               messageChannelIds,
-            }) as unknown as SelectQueryBuilder<never>,
+            }),
         )
           .groupBy('messageThread.id')
           .getCount();
 
-        const threadIdsQuery = await applySearch(
+        const threadIdsQuery = await applySearchFilter(
           messageThreadRepository
             .createQueryBuilder('messageThread')
             .select('messageThread.id', 'id')
@@ -265,7 +311,7 @@ export class TimelineMessagingService {
             )
             .where('associations.messageChannelId IN (:...messageChannelIds)', {
               messageChannelIds,
-            }) as unknown as SelectQueryBuilder<never>,
+            }),
         )
           .groupBy('messageThread.id')
           .orderBy('max_received_at', 'DESC')
