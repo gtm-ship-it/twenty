@@ -280,7 +280,7 @@ export const InboxPage = () => {
     <StyledPanel>
       <StyledHeader>
         <IconInbox size={16} />
-        <StyledTitle>{t`Email`}</StyledTitle>
+        <StyledTitle>Email</StyledTitle>
         <StyledSearchInput
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
