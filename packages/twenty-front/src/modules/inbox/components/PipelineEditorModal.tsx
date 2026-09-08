@@ -56,19 +56,6 @@ const StyledHint = styled.span`
   font-size: ${themeCssVariables.font.size.sm};
 `;
 
-const StyledTextArea = styled.textarea`
-  background: ${themeCssVariables.background.transparent.lighter};
-  border: 1px solid ${themeCssVariables.border.color.medium};
-  border-radius: ${themeCssVariables.border.radius.sm};
-  color: ${themeCssVariables.font.color.primary};
-  font-family: inherit;
-  font-size: ${themeCssVariables.font.size.sm};
-  min-height: 64px;
-  outline: none;
-  padding: ${themeCssVariables.spacing[2]};
-  resize: vertical;
-`;
-
 const StyledButtonsRow = styled.div`
   display: flex;
   gap: ${themeCssVariables.spacing[2]};
@@ -137,12 +124,71 @@ const StyledStageNameInput = styled.input`
   padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
 `;
 
+const StyledRuleInputRow = styled.div`
+  display: flex;
+  gap: ${themeCssVariables.spacing[2]};
+  margin-top: ${themeCssVariables.spacing[1]};
+`;
+
+const StyledRuleChips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${themeCssVariables.spacing[1]};
+  margin-top: ${themeCssVariables.spacing[2]};
+`;
+
+const StyledRuleChip = styled.span`
+  align-items: center;
+  background: ${themeCssVariables.background.transparent.light};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.primary};
+  display: inline-flex;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[1]};
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
+`;
+
+const StyledRuleChipRemove = styled.button`
+  background: transparent;
+  border: none;
+  color: ${themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: 0;
+
+  &:hover {
+    color: ${themeCssVariables.font.color.primary};
+  }
+`;
+
+const StyledAccountsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${themeCssVariables.spacing[1]};
+  margin-top: ${themeCssVariables.spacing[1]};
+`;
+
+const StyledAccountRow = styled.label`
+  align-items: center;
+  color: ${themeCssVariables.font.color.primary};
+  cursor: pointer;
+  display: flex;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[2]};
+`;
+
 const StyledDeleteContainer = styled.div`
   margin-right: auto;
 `;
 
+type PipelineEditorAccount = {
+  id: string;
+  handle: string;
+};
+
 type PipelineEditorModalProps = {
   pipeline: InboxPipeline | null;
+  accounts: PipelineEditorAccount[];
   onSave: (pipeline: InboxPipeline) => void;
   onDelete?: (pipelineId: string) => void;
   onClose: () => void;
@@ -150,6 +196,7 @@ type PipelineEditorModalProps = {
 
 export const PipelineEditorModal = ({
   pipeline,
+  accounts,
   onSave,
   onDelete,
   onClose,
@@ -158,9 +205,31 @@ export const PipelineEditorModal = ({
   const [mode, setMode] = useState<InboxPipelineMode>(
     pipeline?.mode ?? 'EXCLUDE',
   );
-  const [rulesText, setRulesText] = useState(
-    (pipeline?.rules ?? []).join('\n'),
+  const [rules, setRules] = useState<string[]>(pipeline?.rules ?? []);
+  const [ruleInput, setRuleInput] = useState('');
+  const [accountIds, setAccountIds] = useState<string[]>(
+    pipeline?.accountIds ?? [],
   );
+
+  const addRule = () => {
+    const entry = ruleInput.trim().toLowerCase();
+
+    if (entry.length === 0 || rules.includes(entry)) {
+      setRuleInput('');
+      return;
+    }
+
+    setRules([...rules, entry]);
+    setRuleInput('');
+  };
+
+  const toggleAccount = (accountId: string) => {
+    setAccountIds((previous) =>
+      previous.includes(accountId)
+        ? previous.filter((id) => id !== accountId)
+        : [...previous, accountId],
+    );
+  };
   const [columns, setColumns] = useState<InboxPipelineColumn[]>(
     pipeline?.columns?.length
       ? pipeline.columns
@@ -204,11 +273,6 @@ export const PipelineEditorModal = ({
   };
 
   const handleSave = () => {
-    const rules = rulesText
-      .split(/[\n,;]+/)
-      .map((entry) => entry.trim().toLowerCase())
-      .filter((entry) => entry.length > 0);
-
     const sanitizedColumns = columns
       .map((column) => ({ ...column, name: column.name.trim() }))
       .filter((column) => column.name.length > 0);
@@ -218,6 +282,7 @@ export const PipelineEditorModal = ({
       name: name.trim() || t`Pipeline`,
       mode,
       rules,
+      accountIds,
       columns:
         sanitizedColumns.length > 0
           ? sanitizedColumns
@@ -264,14 +329,70 @@ export const PipelineEditorModal = ({
           <StyledFieldLabel>
             {mode === 'EXCLUDE' ? t`Addresses to exclude` : t`Addresses to include`}
           </StyledFieldLabel>
-          <StyledTextArea
-            value={rulesText}
-            onChange={(event) => setRulesText(event.target.value)}
-            placeholder={'maria@acme.com\n@internaldomain.com'}
-          />
+          <StyledRuleInputRow>
+            <StyledStageNameInput
+              value={ruleInput}
+              onChange={(event) => setRuleInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  addRule();
+                }
+              }}
+              placeholder={t`maria@acme.com or @acme.com`}
+            />
+            <Button
+              title={t`Add`}
+              size="small"
+              variant="secondary"
+              accent="blue"
+              disabled={ruleInput.trim().length === 0}
+              onClick={addRule}
+            />
+          </StyledRuleInputRow>
+          {rules.length > 0 && (
+            <StyledRuleChips>
+              {rules.map((rule) => (
+                <StyledRuleChip key={rule}>
+                  {rule}
+                  <StyledRuleChipRemove
+                    type="button"
+                    onClick={() =>
+                      setRules(rules.filter((entry) => entry !== rule))
+                    }
+                  >
+                    ✕
+                  </StyledRuleChipRemove>
+                </StyledRuleChip>
+              ))}
+            </StyledRuleChips>
+          )}
           <StyledHint>
-            {t`One per line. Use @domain.com to match a whole domain.`}
+            {t`Use @domain.com to match a whole domain.`}
           </StyledHint>
+        </div>
+        <div>
+          <StyledFieldLabel>{t`Inboxes feeding this pipeline`}</StyledFieldLabel>
+          <StyledAccountsList>
+            <StyledAccountRow>
+              <input
+                type="checkbox"
+                checked={accountIds.length === 0}
+                onChange={() => setAccountIds([])}
+              />
+              {t`All my accounts`}
+            </StyledAccountRow>
+            {accounts.map((account) => (
+              <StyledAccountRow key={account.id}>
+                <input
+                  type="checkbox"
+                  checked={accountIds.includes(account.id)}
+                  onChange={() => toggleAccount(account.id)}
+                />
+                {account.handle}
+              </StyledAccountRow>
+            ))}
+          </StyledAccountsList>
         </div>
         <div>
           <StyledFieldLabel>{t`Stages`}</StyledFieldLabel>

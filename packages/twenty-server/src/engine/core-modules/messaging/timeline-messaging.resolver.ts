@@ -95,7 +95,7 @@ class GetTimelineThreadsFromConnectedAccountIdArgs {
 
 const INBOX_ONLY_SEE_KEY_PREFIX = 'INBOX_ONLY_SEE_';
 const INBOX_ONLY_SEE_MAX_ENTRIES = 200;
-const INBOX_PIPELINES_KEY_PREFIX = 'INBOX_PIPELINES_';
+const INBOX_PIPELINES_KEY = 'INBOX_PIPELINES';
 const INBOX_PIPELINES_MAX_BYTES = 200_000;
 
 @UseGuards(WorkspaceAuthGuard, UserAuthGuard, CustomPermissionGuard)
@@ -175,53 +175,25 @@ export class TimelineMessagingResolver {
   }
 
   @Query(() => String, { nullable: true })
-  async getInboxPipelines(
+  async getMyInboxPipelines(
     @AuthUser() user: AuthContextUser,
     @AuthWorkspace() workspace: WorkspaceEntity,
-    @AuthUserWorkspaceId() userWorkspaceId: string,
-    @Args('connectedAccountId', { type: () => UUIDScalarType })
-    connectedAccountId: string,
   ): Promise<string | null> {
-    const isOwner =
-      await this.timelineMessagingService.verifyConnectedAccountOwnership(
-        connectedAccountId,
-        userWorkspaceId,
-        workspace.id,
-      );
-
-    if (!isOwner) {
-      return null;
-    }
-
     const value = await this.userVarsService.get({
       userId: user.id,
       workspaceId: workspace.id,
-      key: `${INBOX_PIPELINES_KEY_PREFIX}${connectedAccountId}`,
+      key: INBOX_PIPELINES_KEY,
     });
 
     return typeof value === 'string' ? value : null;
   }
 
   @Mutation(() => Boolean)
-  async setInboxPipelines(
+  async setMyInboxPipelines(
     @AuthUser() user: AuthContextUser,
     @AuthWorkspace() workspace: WorkspaceEntity,
-    @AuthUserWorkspaceId() userWorkspaceId: string,
-    @Args('connectedAccountId', { type: () => UUIDScalarType })
-    connectedAccountId: string,
     @Args('pipelinesJson', { type: () => String }) pipelinesJson: string,
   ): Promise<boolean> {
-    const isOwner =
-      await this.timelineMessagingService.verifyConnectedAccountOwnership(
-        connectedAccountId,
-        userWorkspaceId,
-        workspace.id,
-      );
-
-    if (!isOwner) {
-      return false;
-    }
-
     if (Buffer.byteLength(pipelinesJson, 'utf8') > INBOX_PIPELINES_MAX_BYTES) {
       return false;
     }
@@ -235,7 +207,7 @@ export class TimelineMessagingResolver {
     await this.userVarsService.set({
       userId: user.id,
       workspaceId: workspace.id,
-      key: `${INBOX_PIPELINES_KEY_PREFIX}${connectedAccountId}`,
+      key: INBOX_PIPELINES_KEY,
       value: pipelinesJson,
     });
 
@@ -263,13 +235,42 @@ export class TimelineMessagingResolver {
       return;
     }
 
-    return this.getMessagesFromPersonIdsService.getMessagesFromConnectedAccountId(
+    return this.getMessagesFromPersonIdsService.getMessagesFromConnectedAccountIds(
       workspaceMember.id,
       userWorkspaceId,
-      connectedAccountId,
+      [connectedAccountId],
       workspace.id,
       page,
       pageSize,
+    );
+  }
+
+  @Query(() => TimelineThreadsWithTotalDTO)
+  async getTimelineThreadsFromConnectedAccountIds(
+    @AuthUser() user: AuthContextUser,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthUserWorkspaceId() userWorkspaceId: string,
+    @Args('connectedAccountIds', { type: () => [UUIDScalarType] })
+    connectedAccountIds: string[],
+    @Args('page', { type: () => Int }) page: number,
+    @Args('pageSize', { type: () => Int }) pageSize: number,
+  ) {
+    const workspaceMember = await this.userService.loadWorkspaceMember(
+      user,
+      workspace,
+    );
+
+    if (!workspaceMember) {
+      return;
+    }
+
+    return this.getMessagesFromPersonIdsService.getMessagesFromConnectedAccountIds(
+      workspaceMember.id,
+      userWorkspaceId,
+      connectedAccountIds,
+      workspace.id,
+      page,
+      Math.min(pageSize, TIMELINE_THREADS_MAX_PAGE_SIZE),
     );
   }
 

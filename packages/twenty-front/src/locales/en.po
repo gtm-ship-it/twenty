@@ -1159,6 +1159,7 @@ msgid "Active Sync"
 msgstr "Active Sync"
 
 #. js-lingui-id: m16xKo
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 msgid "Add"
 msgstr "Add"
@@ -2031,6 +2032,11 @@ msgstr "All Members"
 #: src/modules/settings/developers/components/WebhookEntitySelect.tsx
 msgid "All Metadata"
 msgstr "All Metadata"
+
+#. js-lingui-id: 51Bvy+
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "All my accounts"
+msgstr "All my accounts"
 
 #. js-lingui-id: zIk4M6
 #: src/modules/side-panel/components/SidePanelObjectFilterDropdownContent.tsx
@@ -10254,6 +10260,11 @@ msgstr "Inactive Skill Options"
 msgid "Inbox"
 msgstr "Inbox"
 
+#. js-lingui-id: mpG7Vx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Inboxes feeding this pipeline"
+msgstr "Inboxes feeding this pipeline"
+
 #. js-lingui-id: j8Bj7e
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
 msgid "Include emails where all participants share the same domain."
@@ -11905,6 +11916,11 @@ msgstr "Manual configuration"
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Margin"
 msgstr "Margin"
+
+#. js-lingui-id: mJd8OF
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "maria@acme.com or @acme.com"
+msgstr "maria@acme.com or @acme.com"
 
 #. js-lingui-id: fI1Tll
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationGeneralToggles.tsx
@@ -14136,11 +14152,6 @@ msgstr "Onboarding reward"
 #: src/modules/side-panel/pages/page-layout/components/ChartFiltersDeletedFieldsWarning.tsx
 msgid "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
 msgstr "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
-
-#. js-lingui-id: 3B23rq
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "One per line. Use @domain.com to match a whole domain."
-msgstr "One per line. Use @domain.com to match a whole domain."
 
 #. js-lingui-id: 2l4SGU
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -19439,6 +19450,11 @@ msgstr "Title"
 msgid "To"
 msgstr "To"
 
+#. js-lingui-id: PtX5oV
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "To pipeline"
+msgstr "To pipeline"
+
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
@@ -20643,6 +20659,11 @@ msgstr "Usage Events"
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceBillingContent.tsx
 msgid "Usage period"
 msgstr "Usage period"
+
+#. js-lingui-id: 5HyBpb
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Use @domain.com to match a whole domain."
+msgstr "Use @domain.com to match a whole domain."
 
 #. js-lingui-id: 6kLyt5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationProvision.tsx

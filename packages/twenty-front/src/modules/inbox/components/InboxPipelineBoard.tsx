@@ -126,13 +126,13 @@ const PipelineColumn = ({
 };
 
 type InboxPipelineBoardProps = {
-  connectedAccountId: string;
+  accountIds: string[];
   pipeline: InboxPipeline;
   onMoveCard: (threadId: string, columnIndex: number) => void;
 };
 
 export const InboxPipelineBoard = ({
-  connectedAccountId,
+  accountIds,
   pipeline,
   onMoveCard,
 }: InboxPipelineBoardProps) => {
@@ -142,13 +142,18 @@ export const InboxPipelineBoard = ({
     firstQueryLoading,
     isFetchingMore,
     fetchMoreRecords,
-  } = useInboxThreads(connectedAccountId, PIPELINE_BOARD_PAGE_SIZE);
+  } = useInboxThreads(accountIds, PIPELINE_BOARD_PAGE_SIZE);
 
   if (firstQueryLoading) {
     return <SkeletonLoader />;
   }
 
   const pipelineThreads = (threads ?? []).filter((thread) => {
+    // Un hilo agregado manualmente pertenece al pipeline aunque no cumpla reglas.
+    if (thread.id in (pipeline.cardColumns ?? {})) {
+      return true;
+    }
+
     const participantHandles = [
       thread.firstParticipant?.handle,
       ...(thread.lastTwoParticipants ?? []).map(

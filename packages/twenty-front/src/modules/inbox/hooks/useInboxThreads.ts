@@ -2,16 +2,16 @@ import { useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 
 import { useSnackBarOnQueryError } from '@/apollo/hooks/useSnackBarOnQueryError';
-import { getTimelineThreadsFromConnectedAccountId } from '@/inbox/graphql/getTimelineThreadsFromConnectedAccountId';
+import { getTimelineThreadsFromConnectedAccountIds } from '@/inbox/graphql/getTimelineThreadsFromConnectedAccountId';
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
 import { type TimelineThreadsWithTotal } from '~/generated/graphql';
 
 type InboxThreadsQueryResult = {
-  getTimelineThreadsFromConnectedAccountId: TimelineThreadsWithTotal;
+  getTimelineThreadsFromConnectedAccountIds: TimelineThreadsWithTotal;
 };
 
 export const useInboxThreads = (
-  connectedAccountId: string | null,
+  connectedAccountIds: string[],
   pageSize: number,
 ) => {
   const apolloCoreClient = useApolloCoreClient();
@@ -24,15 +24,18 @@ export const useInboxThreads = (
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const { data, loading, fetchMore, refetch, error } =
-    useQuery<InboxThreadsQueryResult>(getTimelineThreadsFromConnectedAccountId, {
-      client: apolloCoreClient,
-      skip: !connectedAccountId,
-      variables: {
-        connectedAccountId,
-        page: 1,
-        pageSize,
+    useQuery<InboxThreadsQueryResult>(
+      getTimelineThreadsFromConnectedAccountIds,
+      {
+        client: apolloCoreClient,
+        skip: connectedAccountIds.length === 0,
+        variables: {
+          connectedAccountIds,
+          page: 1,
+          pageSize,
+        },
       },
-    });
+    );
 
   useSnackBarOnQueryError(error);
 
@@ -47,15 +50,16 @@ export const useInboxThreads = (
 
     await fetchMore({
       variables: {
-        connectedAccountId,
+        connectedAccountIds,
         page: page.pageNumber + 1,
         pageSize,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         const previousThreads =
-          prev?.getTimelineThreadsFromConnectedAccountId?.timelineThreads ?? [];
+          prev?.getTimelineThreadsFromConnectedAccountIds?.timelineThreads ??
+          [];
         const fetchedThreads =
-          fetchMoreResult?.getTimelineThreadsFromConnectedAccountId
+          fetchMoreResult?.getTimelineThreadsFromConnectedAccountIds
             ?.timelineThreads ?? [];
 
         if (fetchedThreads.length === 0) {
@@ -73,8 +77,8 @@ export const useInboxThreads = (
         }));
 
         return {
-          getTimelineThreadsFromConnectedAccountId: {
-            ...fetchMoreResult.getTimelineThreadsFromConnectedAccountId,
+          getTimelineThreadsFromConnectedAccountIds: {
+            ...fetchMoreResult.getTimelineThreadsFromConnectedAccountIds,
             timelineThreads: [...previousThreads, ...fetchedThreads],
           },
         };
@@ -86,10 +90,11 @@ export const useInboxThreads = (
 
   return {
     threads:
-      data?.getTimelineThreadsFromConnectedAccountId?.timelineThreads ??
+      data?.getTimelineThreadsFromConnectedAccountIds?.timelineThreads ??
       undefined,
     totalNumberOfThreads:
-      data?.getTimelineThreadsFromConnectedAccountId?.totalNumberOfThreads ?? 0,
+      data?.getTimelineThreadsFromConnectedAccountIds?.totalNumberOfThreads ??
+      0,
     firstQueryLoading,
     isFetchingMore,
     fetchMoreRecords,

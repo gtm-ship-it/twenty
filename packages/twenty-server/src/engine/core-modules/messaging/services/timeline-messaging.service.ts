@@ -130,6 +130,36 @@ export class TimelineMessagingService {
     return connectedAccount !== null;
   }
 
+  public async getMessageChannelIdsForConnectedAccounts(
+    connectedAccountIds: string[],
+    userWorkspaceId: string,
+    workspaceId: string,
+  ): Promise<string[]> {
+    if (connectedAccountIds.length === 0) {
+      return [];
+    }
+
+    // Ownership gate: solo cuentas del propio usuario.
+    const ownedAccounts = await this.connectedAccountRepository.find({
+      where: { id: In(connectedAccountIds), workspaceId, userWorkspaceId },
+      select: { id: true },
+    });
+
+    if (ownedAccounts.length === 0) {
+      return [];
+    }
+
+    const messageChannels = await this.messageChannelRepository.find({
+      where: {
+        connectedAccountId: In(ownedAccounts.map((account) => account.id)),
+        workspaceId,
+      },
+      select: { id: true },
+    });
+
+    return messageChannels.map((messageChannel) => messageChannel.id);
+  }
+
   public async getMessageChannelIdsForConnectedAccount(
     connectedAccountId: string,
     userWorkspaceId: string,

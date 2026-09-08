@@ -13,6 +13,7 @@ import { useInboxOnlySee } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxPipelines } from '@/inbox/hooks/useInboxPipelines';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
 import { GET_MY_CONNECTED_ACCOUNTS } from '@/settings/accounts/graphql/queries/getMyConnectedAccounts';
+import { Select } from '@/ui/input/components/Select';
 
 const PANEL_CORNER_RADIUS_DERIVED_FROM_THEME_SCALE = `calc(${themeCssVariables.border.radius.md} + ${themeCssVariables.spacing[1]})`;
 
@@ -169,7 +170,7 @@ export const InboxPage = () => {
     setIsOnlySeePanelOpen(false);
   };
 
-  const { pipelines, savePipelines } = useInboxPipelines(activeAccountId);
+  const { pipelines, savePipelines } = useInboxPipelines();
 
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null,
@@ -225,6 +226,22 @@ export const InboxPage = () => {
     );
   };
 
+  const handleAddToPipeline = async (threadId: string, pipelineId: string) => {
+    await savePipelines(
+      pipelines.map((pipeline) =>
+        pipeline.id === pipelineId
+          ? {
+              ...pipeline,
+              cardColumns: {
+                ...pipeline.cardColumns,
+                [threadId]: pipeline.cardColumns[threadId] ?? 0,
+              },
+            }
+          : pipeline,
+      ),
+    );
+  };
+
   return (
     <StyledPanel>
       <StyledHeader>
@@ -242,17 +259,17 @@ export const InboxPage = () => {
           accent={onlySeeList.length > 0 ? 'blue' : 'default'}
           onClick={handleToggleOnlySeePanel}
         />
-        {accounts.length > 1 && (
+        {accounts.length > 1 && !selectedPipeline && (
           <StyledAccountTabs>
-            {accounts.map((account) => (
-              <StyledAccountTab
-                key={account.id}
-                active={account.id === activeAccountId}
-                onClick={() => setSelectedAccountId(account.id)}
-              >
-                {account.handle}
-              </StyledAccountTab>
-            ))}
+            <Select
+              dropdownId="inbox-account-select"
+              options={accounts.map((account) => ({
+                value: account.id,
+                label: account.handle,
+              }))}
+              value={activeAccountId ?? undefined}
+              onChange={(value) => setSelectedAccountId(value)}
+            />
           </StyledAccountTabs>
         )}
       </StyledHeader>
@@ -328,8 +345,12 @@ export const InboxPage = () => {
       )}
       {activeAccountId && selectedPipeline && (
         <InboxPipelineBoard
-          key={`${activeAccountId}-${selectedPipeline.id}`}
-          connectedAccountId={activeAccountId}
+          key={selectedPipeline.id}
+          accountIds={
+            selectedPipeline.accountIds.length > 0
+              ? selectedPipeline.accountIds
+              : accounts.map((account) => account.id)
+          }
           pipeline={selectedPipeline}
           onMoveCard={handleMoveCard}
         />
@@ -343,11 +364,14 @@ export const InboxPage = () => {
               ?.handle ?? ''
           }
           onlySeeList={onlySeeList}
+          pipelines={pipelines}
+          onAddToPipeline={handleAddToPipeline}
         />
       )}
       {pipelineEditorState && (
         <PipelineEditorModal
           pipeline={pipelineEditorState.pipeline}
+          accounts={accounts}
           onSave={handleSavePipeline}
           onDelete={handleDeletePipeline}
           onClose={() => setPipelineEditorState(null)}

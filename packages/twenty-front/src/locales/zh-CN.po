@@ -1164,6 +1164,7 @@ msgid "Active Sync"
 msgstr "活动同步"
 
 #. js-lingui-id: m16xKo
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 msgid "Add"
 msgstr "添加"
@@ -2036,6 +2037,11 @@ msgstr "所有成员"
 #: src/modules/settings/developers/components/WebhookEntitySelect.tsx
 msgid "All Metadata"
 msgstr "所有元数据"
+
+#. js-lingui-id: 51Bvy+
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "All my accounts"
+msgstr ""
 
 #. js-lingui-id: zIk4M6
 #: src/modules/side-panel/components/SidePanelObjectFilterDropdownContent.tsx
@@ -10236,6 +10242,11 @@ msgstr "停用技能选项"
 msgid "Inbox"
 msgstr ""
 
+#. js-lingui-id: mpG7Vx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Inboxes feeding this pipeline"
+msgstr ""
+
 #. js-lingui-id: j8Bj7e
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
 msgid "Include emails where all participants share the same domain."
@@ -11887,6 +11898,11 @@ msgstr "手动配置"
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Margin"
 msgstr "边距"
+
+#. js-lingui-id: mJd8OF
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "maria@acme.com or @acme.com"
+msgstr ""
 
 #. js-lingui-id: fI1Tll
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationGeneralToggles.tsx
@@ -14118,11 +14134,6 @@ msgstr "入门奖励"
 #: src/modules/side-panel/pages/page-layout/components/ChartFiltersDeletedFieldsWarning.tsx
 msgid "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
 msgstr "一个或多个筛选器引用了已停用或已删除的字段，保存时将自动移除。"
-
-#. js-lingui-id: 3B23rq
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "One per line. Use @domain.com to match a whole domain."
-msgstr ""
 
 #. js-lingui-id: 2l4SGU
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -19389,6 +19400,11 @@ msgstr "标题"
 msgid "To"
 msgstr "收件人"
 
+#. js-lingui-id: PtX5oV
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "To pipeline"
+msgstr ""
+
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
@@ -20593,6 +20609,11 @@ msgstr "使用事件"
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceBillingContent.tsx
 msgid "Usage period"
 msgstr "使用周期"
+
+#. js-lingui-id: 5HyBpb
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Use @domain.com to match a whole domain."
+msgstr ""
 
 #. js-lingui-id: 6kLyt5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationProvision.tsx

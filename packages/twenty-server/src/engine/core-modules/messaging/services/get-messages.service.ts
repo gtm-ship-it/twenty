@@ -66,17 +66,17 @@ export class GetMessagesService {
     };
   }
 
-  async getMessagesFromConnectedAccountId(
+  async getMessagesFromConnectedAccountIds(
     workspaceMemberId: string,
     userWorkspaceId: string,
-    connectedAccountId: string,
+    connectedAccountIds: string[],
     workspaceId: string,
     page = 1,
     pageSize: number = TIMELINE_THREADS_DEFAULT_PAGE_SIZE,
   ): Promise<TimelineThreadsWithTotalDTO> {
     const messageChannelIds =
-      await this.timelineMessagingService.getMessageChannelIdsForConnectedAccount(
-        connectedAccountId,
+      await this.timelineMessagingService.getMessageChannelIdsForConnectedAccounts(
+        connectedAccountIds,
         userWorkspaceId,
         workspaceId,
       );

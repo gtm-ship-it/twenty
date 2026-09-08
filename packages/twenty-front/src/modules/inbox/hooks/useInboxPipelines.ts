@@ -2,8 +2,8 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
 
 import {
-  GET_INBOX_PIPELINES,
-  SET_INBOX_PIPELINES,
+  GET_MY_INBOX_PIPELINES,
+  SET_MY_INBOX_PIPELINES,
 } from '@/inbox/graphql/inboxPipelines';
 import {
   type InboxPipeline,
@@ -11,44 +11,33 @@ import {
 } from '@/inbox/types/InboxPipeline';
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
 
-export const useInboxPipelines = (connectedAccountId: string | null) => {
+export const useInboxPipelines = () => {
   const apolloCoreClient = useApolloCoreClient();
 
   const [pipelines, setPipelines] = useState<InboxPipeline[]>([]);
 
-  const { data, loading } = useQuery<{ getInboxPipelines: string | null }>(
-    GET_INBOX_PIPELINES,
-    {
-      client: apolloCoreClient,
-      skip: !connectedAccountId,
-      variables: { connectedAccountId },
-    },
+  const { data, loading } = useQuery<{ getMyInboxPipelines: string | null }>(
+    GET_MY_INBOX_PIPELINES,
+    { client: apolloCoreClient },
   );
 
   useEffect(() => {
     if (data !== undefined) {
-      setPipelines(parseInboxPipelines(data.getInboxPipelines));
+      setPipelines(parseInboxPipelines(data.getMyInboxPipelines));
     }
   }, [data]);
 
   const [setPipelinesMutation, { loading: isSaving }] = useMutation(
-    SET_INBOX_PIPELINES,
+    SET_MY_INBOX_PIPELINES,
     { client: apolloCoreClient },
   );
 
   const savePipelines = async (nextPipelines: InboxPipeline[]) => {
-    if (!connectedAccountId) {
-      return;
-    }
-
     // Optimista: la UI responde al instante, el server persiste detrás.
     setPipelines(nextPipelines);
 
     await setPipelinesMutation({
-      variables: {
-        connectedAccountId,
-        pipelinesJson: JSON.stringify(nextPipelines),
-      },
+      variables: { pipelinesJson: JSON.stringify(nextPipelines) },
     });
   };
 

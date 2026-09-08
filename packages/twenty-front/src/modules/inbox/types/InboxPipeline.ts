@@ -13,8 +13,12 @@ export type InboxPipeline = {
   mode: InboxPipelineMode;
   // direcciones exactas o dominios con @ (ej. "maria@acme.com", "@acme.com")
   rules: string[];
+  // cuentas conectadas que alimentan este pipeline; vacío = todas las del usuario
+  accountIds: string[];
   columns: InboxPipelineColumn[];
-  // threadId -> índice de columna; los hilos sin entrada caen en la columna 0
+  // threadId -> índice de columna; los hilos sin entrada caen en la columna 0.
+  // Un hilo presente aquí pertenece al pipeline aunque no cumpla las reglas
+  // (agregado manualmente desde el Inbox).
   cardColumns: Record<string, number>;
 };
 
@@ -79,6 +83,12 @@ export const parseInboxPipelines = (
           rules: pipeline.rules.filter(
             (rule: unknown): rule is string => typeof rule === 'string',
           ),
+          accountIds: Array.isArray(pipeline.accountIds)
+            ? pipeline.accountIds.filter(
+                (accountId: unknown): accountId is string =>
+                  typeof accountId === 'string',
+              )
+            : [],
           columns: pipeline.columns
             .map(normalizeColumn)
             .filter(

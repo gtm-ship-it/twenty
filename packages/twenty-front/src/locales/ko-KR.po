@@ -1164,6 +1164,7 @@ msgid "Active Sync"
 msgstr "활성 동기화"
 
 #. js-lingui-id: m16xKo
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 msgid "Add"
 msgstr "추가"
@@ -2036,6 +2037,11 @@ msgstr "모든 구성원"
 #: src/modules/settings/developers/components/WebhookEntitySelect.tsx
 msgid "All Metadata"
 msgstr "모든 메타데이터"
+
+#. js-lingui-id: 51Bvy+
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "All my accounts"
+msgstr ""
 
 #. js-lingui-id: zIk4M6
 #: src/modules/side-panel/components/SidePanelObjectFilterDropdownContent.tsx
@@ -10259,6 +10265,11 @@ msgstr "비활성 스킬 옵션"
 msgid "Inbox"
 msgstr ""
 
+#. js-lingui-id: mpG7Vx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Inboxes feeding this pipeline"
+msgstr ""
+
 #. js-lingui-id: j8Bj7e
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
 msgid "Include emails where all participants share the same domain."
@@ -11910,6 +11921,11 @@ msgstr "수동 구성"
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Margin"
 msgstr "여백"
+
+#. js-lingui-id: mJd8OF
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "maria@acme.com or @acme.com"
+msgstr ""
 
 #. js-lingui-id: fI1Tll
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationGeneralToggles.tsx
@@ -14141,11 +14157,6 @@ msgstr "온보딩 보상"
 #: src/modules/side-panel/pages/page-layout/components/ChartFiltersDeletedFieldsWarning.tsx
 msgid "One or more filters reference deactivated or deleted fields and will be automatically removed on save."
 msgstr "하나 이상의 필터가 비활성화되었거나 삭제된 필드를 참조하고 있어, 저장 시 자동으로 제거됩니다."
-
-#. js-lingui-id: 3B23rq
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "One per line. Use @domain.com to match a whole domain."
-msgstr ""
 
 #. js-lingui-id: 2l4SGU
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -19412,6 +19423,11 @@ msgstr "제목"
 msgid "To"
 msgstr "받는 사람"
 
+#. js-lingui-id: PtX5oV
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "To pipeline"
+msgstr ""
+
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
@@ -20616,6 +20632,11 @@ msgstr "사용 이벤트"
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceBillingContent.tsx
 msgid "Usage period"
 msgstr "사용 기간"
+
+#. js-lingui-id: 5HyBpb
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Use @domain.com to match a whole domain."
+msgstr ""
 
 #. js-lingui-id: 6kLyt5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationProvision.tsx
