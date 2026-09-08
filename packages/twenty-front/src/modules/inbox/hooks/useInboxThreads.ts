@@ -13,6 +13,7 @@ type InboxThreadsQueryResult = {
 export const useInboxThreads = (
   connectedAccountIds: string[],
   pageSize: number,
+  searchTerm?: string,
 ) => {
   const apolloCoreClient = useApolloCoreClient();
 
@@ -33,6 +34,7 @@ export const useInboxThreads = (
           connectedAccountIds,
           page: 1,
           pageSize,
+          searchTerm: searchTerm ?? null,
         },
       },
     );
@@ -53,6 +55,7 @@ export const useInboxThreads = (
         connectedAccountIds,
         page: page.pageNumber + 1,
         pageSize,
+        searchTerm: searchTerm ?? null,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         const previousThreads =

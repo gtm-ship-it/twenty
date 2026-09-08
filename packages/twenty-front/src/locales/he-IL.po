@@ -3586,7 +3586,6 @@ msgstr "לא ניתן לסרוק? העתק את"
 #: src/modules/spreadsheet-import/steps/components/ValidationStep/ValidationStep.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 #: src/modules/ui/layout/modal/components/ConfirmationModal.tsx
-#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
 msgid "Cancel"
@@ -7245,6 +7244,7 @@ msgstr "אחרת אם"
 #. js-lingui-id: O3oNi5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpEmailField.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
+#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/EmailsFieldInput.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminGeneral.tsx
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -7254,6 +7254,7 @@ msgstr "אחרת אם"
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 #: src/pages/auth/PasswordReset.tsx
+#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminUserDetail.tsx
 #: src/pages/settings/admin-panel/SettingsAdminWorkspaceDetail.tsx
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersInviteTab.tsx
@@ -10285,8 +10286,6 @@ msgid "Inactive Skill Options"
 msgstr "אפשרויות מיומנות לא פעילה"
 
 #. js-lingui-id: Gp4Yi6
-#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
-#: src/pages/inbox/InboxPage.tsx
 #: src/pages/inbox/InboxPage.tsx
 msgid "Inbox"
 msgstr ""
@@ -14243,22 +14242,6 @@ msgstr "רק ב-{firstDay} וב-{secondDay}"
 msgid "only on {remainingDays} and {0}"
 msgstr "רק ב-{remainingDays} וב-{0}"
 
-#. js-lingui-id: apix5+
-#: src/pages/inbox/InboxPage.tsx
-msgid "Only see"
-msgstr ""
-
-#. js-lingui-id: 2D+w9z
-#. placeholder {0}: onlySeeList.length
-#: src/pages/inbox/InboxPage.tsx
-msgid "Only see ({0})"
-msgstr ""
-
-#. js-lingui-id: enJhmw
-#: src/pages/inbox/InboxPage.tsx
-msgid "Only show emails from these addresses or domains (one per line, e.g. maria@acme.com or @acme.com). Leave empty to show everything. Other emails are only hidden, never deleted."
-msgstr ""
-
 #. js-lingui-id: saaSLd
 #: src/modules/activities/emails/components/EmailThreadNotShared.tsx
 msgid "Only the subject is shared"
@@ -16544,7 +16527,6 @@ msgstr "יום שבת"
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/inbox/components/SignatureEditorModal.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
-#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
 msgid "Save"
 msgstr "שמור"
@@ -16566,7 +16548,6 @@ msgstr "שמור או בטל את השינויים בלוח המחוונים ל�
 
 #. js-lingui-id: XvjC4F
 #: src/modules/inbox/components/SignatureEditorModal.tsx
-#: src/pages/inbox/InboxPage.tsx
 msgid "Saving..."
 msgstr ""
 
@@ -16827,6 +16808,11 @@ msgstr "חפש מדינה"
 #: src/modules/object-record/object-filter-dropdown/components/ObjectFilterDropdownCurrencySelect.tsx
 msgid "Search currency"
 msgstr "חפש מטבע"
+
+#. js-lingui-id: /v0a1K
+#: src/pages/inbox/InboxPage.tsx
+msgid "Search emails by name, address, subject or text"
+msgstr ""
 
 #. js-lingui-id: AHePb2
 #: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts

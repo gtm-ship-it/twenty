@@ -1,16 +1,15 @@
 import { useQuery } from '@apollo/client/react';
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
-import { useState } from 'react';
-import { IconFilter, IconInbox } from 'twenty-ui/icon';
-import { Button } from 'twenty-ui/input';
+import { useEffect, useState } from 'react';
+import { IconInbox } from 'twenty-ui/icon';
+
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
 import { InboxPipelineBoard } from '@/inbox/components/InboxPipelineBoard';
 import { InboxThreadList } from '@/inbox/components/InboxThreadList';
 import { PipelineEditorModal } from '@/inbox/components/PipelineEditorModal';
 import { SignatureEditorModal } from '@/inbox/components/SignatureEditorModal';
-import { useInboxOnlySee } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxPipelines } from '@/inbox/hooks/useInboxPipelines';
 import { useInboxSignature } from '@/inbox/hooks/useInboxSignature';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
@@ -70,36 +69,25 @@ const StyledAccountTab = styled.button<{ active: boolean }>`
   }
 `;
 
-const StyledOnlySeePanel = styled.div`
-  border-bottom: 1px solid ${themeCssVariables.border.color.medium};
-  display: flex;
-  flex-direction: column;
-  gap: ${themeCssVariables.spacing[2]};
-  padding: ${themeCssVariables.spacing[3]} ${themeCssVariables.spacing[4]};
-`;
-
-const StyledOnlySeeHint = styled.span`
-  color: ${themeCssVariables.font.color.tertiary};
-  font-size: ${themeCssVariables.font.size.sm};
-`;
-
-const StyledOnlySeeTextArea = styled.textarea`
+const StyledSearchInput = styled.input`
   background: ${themeCssVariables.background.transparent.lighter};
   border: 1px solid ${themeCssVariables.border.color.medium};
   border-radius: ${themeCssVariables.border.radius.sm};
   color: ${themeCssVariables.font.color.primary};
+  flex: 1;
   font-family: inherit;
   font-size: ${themeCssVariables.font.size.sm};
-  min-height: 72px;
+  max-width: 420px;
   outline: none;
-  padding: ${themeCssVariables.spacing[2]};
-  resize: vertical;
-`;
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
 
-const StyledOnlySeeActions = styled.div`
-  display: flex;
-  gap: ${themeCssVariables.spacing[2]};
-  justify-content: flex-end;
+  &::placeholder {
+    color: ${themeCssVariables.font.color.light};
+  }
+
+  &:focus {
+    border-color: ${themeCssVariables.border.color.strong};
+  }
 `;
 
 const StyledViewTabs = styled.div`
@@ -149,28 +137,15 @@ export const InboxPage = () => {
       ? selectedAccountId
       : (accounts[0]?.id ?? null);
 
-  const { onlySeeList, saveOnlySeeList, isSaving } =
-    useInboxOnlySee(activeAccountId);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const [isOnlySeePanelOpen, setIsOnlySeePanelOpen] = useState(false);
-  const [onlySeeDraft, setOnlySeeDraft] = useState<string | null>(null);
+  // debounce: no consultar en cada tecla
+  useEffect(() => {
+    const timeoutId = setTimeout(() => setSearchTerm(searchInput), 350);
 
-  const handleToggleOnlySeePanel = () => {
-    if (!isOnlySeePanelOpen) {
-      setOnlySeeDraft(onlySeeList.join('\n'));
-    }
-    setIsOnlySeePanelOpen(!isOnlySeePanelOpen);
-  };
-
-  const handleSaveOnlySee = async () => {
-    const handles = (onlySeeDraft ?? '')
-      .split(/[\n,;]+/)
-      .map((entry) => entry.trim())
-      .filter((entry) => entry.length > 0);
-
-    await saveOnlySeeList(handles);
-    setIsOnlySeePanelOpen(false);
-  };
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   const { pipelines, savePipelines } = useInboxPipelines();
 
@@ -305,25 +280,11 @@ export const InboxPage = () => {
     <StyledPanel>
       <StyledHeader>
         <IconInbox size={16} />
-        <StyledTitle>{t`Inbox`}</StyledTitle>
-        <Button
-          title={
-            onlySeeList.length > 0
-              ? t`Only see (${onlySeeList.length})`
-              : t`Only see`
-          }
-          Icon={IconFilter}
-          size="small"
-          variant="secondary"
-          accent={onlySeeList.length > 0 ? 'blue' : 'default'}
-          onClick={handleToggleOnlySeePanel}
-        />
-        <Button
-          title={t`Signature`}
-          size="small"
-          variant="secondary"
-          accent={signature.trim().length > 0 ? 'blue' : 'default'}
-          onClick={() => setIsSignatureEditorOpen(true)}
+        <StyledTitle>{t`Email`}</StyledTitle>
+        <StyledSearchInput
+          value={searchInput}
+          onChange={(event) => setSearchInput(event.target.value)}
+          placeholder={t`Search emails by name, address, subject or text`}
         />
         {accounts.length > 1 && !selectedPipeline && (
           <StyledAccountTabs>
@@ -339,34 +300,7 @@ export const InboxPage = () => {
           </StyledAccountTabs>
         )}
       </StyledHeader>
-      {isOnlySeePanelOpen && (
-        <StyledOnlySeePanel>
-          <StyledOnlySeeHint>
-            {t`Only show emails from these addresses or domains (one per line, e.g. maria@acme.com or @acme.com). Leave empty to show everything. Other emails are only hidden, never deleted.`}
-          </StyledOnlySeeHint>
-          <StyledOnlySeeTextArea
-            value={onlySeeDraft ?? ''}
-            onChange={(event) => setOnlySeeDraft(event.target.value)}
-            placeholder={'maria@acme.com\n@brightloans.com'}
-          />
-          <StyledOnlySeeActions>
-            <Button
-              title={t`Cancel`}
-              variant="secondary"
-              size="small"
-              onClick={() => setIsOnlySeePanelOpen(false)}
-            />
-            <Button
-              title={isSaving ? t`Saving...` : t`Save`}
-              accent="blue"
-              size="small"
-              disabled={isSaving}
-              onClick={handleSaveOnlySee}
-            />
-          </StyledOnlySeeActions>
-        </StyledOnlySeePanel>
-      )}
-      {!loading && accounts.length === 0 && (
+            {!loading && accounts.length === 0 && (
         <StyledEmptyState>
           {t`Connect an email account in Settings → Accounts to see your inbox here.`}
         </StyledEmptyState>
@@ -395,8 +329,16 @@ export const InboxPage = () => {
           >
             {t`+ Pipeline`}
           </StyledAccountTab>
+          <StyledEditTabContainer>
+            <StyledAccountTab
+              active={false}
+              onClick={() => setIsSignatureEditorOpen(true)}
+            >
+              {t`Signature`}
+            </StyledAccountTab>
+          </StyledEditTabContainer>
           {selectedPipeline && (
-            <StyledEditTabContainer>
+            <StyledEditTabContainer style={{ marginLeft: 0 }}>
               <StyledAccountTab
                 active={false}
                 onClick={() =>
@@ -417,6 +359,7 @@ export const InboxPage = () => {
               ? selectedPipeline.accountIds
               : accounts.map((account) => account.id)
           }
+          searchTerm={searchTerm}
           pipeline={selectedPipeline}
           onMoveCard={handleMoveCard}
           onExcludeRule={handleExcludeRule}
@@ -431,7 +374,7 @@ export const InboxPage = () => {
             accounts.find((account) => account.id === activeAccountId)
               ?.handle ?? ''
           }
-          onlySeeList={onlySeeList}
+          searchTerm={searchTerm}
           pipelines={pipelines}
           onAddToPipeline={handleAddToPipeline}
         />

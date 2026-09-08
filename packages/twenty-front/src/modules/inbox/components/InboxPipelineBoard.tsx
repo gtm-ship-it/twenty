@@ -97,8 +97,9 @@ const StyledCardMenu = styled.div`
   box-shadow: ${themeCssVariables.boxShadow.strong};
   display: flex;
   flex-direction: column;
+  left: ${themeCssVariables.spacing[1]};
+  max-width: calc(100% - 2 * ${themeCssVariables.spacing[1]});
   position: absolute;
-  right: ${themeCssVariables.spacing[1]};
   top: ${themeCssVariables.spacing[6]};
   z-index: 4;
 `;
@@ -110,8 +111,10 @@ const StyledCardMenuItem = styled.button`
   cursor: pointer;
   font-family: inherit;
   font-size: ${themeCssVariables.font.size.sm};
+  overflow: hidden;
   padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[3]};
   text-align: left;
+  text-overflow: ellipsis;
   white-space: nowrap;
 
   &:hover {
@@ -250,6 +253,7 @@ const PipelineColumn = ({
 
 type InboxPipelineBoardProps = {
   accountIds: string[];
+  searchTerm: string;
   pipeline: InboxPipeline;
   onMoveCard: (threadId: string, columnIndex: number) => void;
   onExcludeRule: (rule: string, threadId: string) => void;
@@ -258,6 +262,7 @@ type InboxPipelineBoardProps = {
 
 export const InboxPipelineBoard = ({
   accountIds,
+  searchTerm,
   pipeline,
   onMoveCard,
   onExcludeRule,
@@ -269,7 +274,7 @@ export const InboxPipelineBoard = ({
     firstQueryLoading,
     isFetchingMore,
     fetchMoreRecords,
-  } = useInboxThreads(accountIds, PIPELINE_BOARD_PAGE_SIZE);
+  } = useInboxThreads(accountIds, PIPELINE_BOARD_PAGE_SIZE, searchTerm);
 
   const [menuThreadId, setMenuThreadId] = useState<string | null>(null);
 

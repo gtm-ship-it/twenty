@@ -6,11 +6,13 @@ export const getTimelineThreadsFromConnectedAccountIds = gql`
     $connectedAccountIds: [UUID!]!
     $page: Int!
     $pageSize: Int!
+    $searchTerm: String
   ) {
     getTimelineThreadsFromConnectedAccountIds(
       connectedAccountIds: $connectedAccountIds
       page: $page
       pageSize: $pageSize
+      searchTerm: $searchTerm
     ) {
       ...TimelineThreadsWithTotalFragment
     }

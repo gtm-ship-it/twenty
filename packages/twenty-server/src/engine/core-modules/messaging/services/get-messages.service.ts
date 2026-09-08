@@ -73,6 +73,7 @@ export class GetMessagesService {
     workspaceId: string,
     page = 1,
     pageSize: number = TIMELINE_THREADS_DEFAULT_PAGE_SIZE,
+    searchTerm?: string,
   ): Promise<TimelineThreadsWithTotalDTO> {
     const messageChannelIds =
       await this.timelineMessagingService.getMessageChannelIdsForConnectedAccounts(
@@ -97,6 +98,7 @@ export class GetMessagesService {
         workspaceId,
         offset,
         pageSize,
+        searchTerm,
       );
 
     if (messageThreads.length === 0) {

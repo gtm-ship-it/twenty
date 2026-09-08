@@ -15,7 +15,6 @@ import {
   CreateLeadModal,
   type CreateLeadDefaultValues,
 } from '@/inbox/components/CreateLeadModal';
-import { threadMatchesOnlySeeList } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
 import { type TimelineThread } from '~/generated/graphql';
@@ -137,7 +136,7 @@ const getCreateLeadDefaultValues = (
 type InboxThreadListProps = {
   connectedAccountId: string;
   connectedAccountHandle: string;
-  onlySeeList: string[];
+  searchTerm: string;
   pipelines: InboxPipeline[];
   onAddToPipeline: (threadId: string, pipelineId: string) => void;
 };
@@ -145,7 +144,7 @@ type InboxThreadListProps = {
 export const InboxThreadList = ({
   connectedAccountId,
   connectedAccountHandle,
-  onlySeeList,
+  searchTerm,
   pipelines,
   onAddToPipeline,
 }: InboxThreadListProps) => {
@@ -155,7 +154,11 @@ export const InboxThreadList = ({
     firstQueryLoading,
     isFetchingMore,
     fetchMoreRecords,
-  } = useInboxThreads([connectedAccountId], TIMELINE_THREADS_DEFAULT_PAGE_SIZE);
+  } = useInboxThreads(
+    [connectedAccountId],
+    TIMELINE_THREADS_DEFAULT_PAGE_SIZE,
+    searchTerm,
+  );
 
   const [createLeadDefaultValues, setCreateLeadDefaultValues] =
     useState<CreateLeadDefaultValues | null>(null);
@@ -184,17 +187,7 @@ export const InboxThreadList = ({
     }
   };
 
-  const visibleThreads = threads.filter((thread) =>
-    threadMatchesOnlySeeList(
-      [
-        thread.firstParticipant?.handle,
-        ...(thread.lastTwoParticipants ?? []).map(
-          (participant) => participant?.handle,
-        ),
-      ],
-      onlySeeList,
-    ),
-  );
+  const visibleThreads = threads;
 
   return (
     <StyledContainer>

@@ -41,7 +41,7 @@ export const MainNavigationDrawerScrollableItems = () => {
     <StyledScrollableItemsContainer>
       <NavigationDrawerSection>
         <NavigationDrawerItem
-          label={t`Inbox`}
+          label={t`Email`}
           to={AppPath.InboxPage}
           Icon={IconInbox}
           active={pathname === AppPath.InboxPage}

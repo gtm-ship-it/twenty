@@ -290,6 +290,8 @@ export class TimelineMessagingResolver {
     connectedAccountIds: string[],
     @Args('page', { type: () => Int }) page: number,
     @Args('pageSize', { type: () => Int }) pageSize: number,
+    @Args('searchTerm', { type: () => String, nullable: true })
+    searchTerm?: string,
   ) {
     const workspaceMember = await this.userService.loadWorkspaceMember(
       user,
@@ -307,6 +309,7 @@ export class TimelineMessagingResolver {
       workspace.id,
       page,
       Math.min(pageSize, TIMELINE_THREADS_MAX_PAGE_SIZE),
+      searchTerm,
     );
   }
 

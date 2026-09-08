@@ -5,7 +5,7 @@ import {
   MessageChannelVisibility,
   MessageParticipantRole,
 } from 'twenty-shared/types';
-import { In, type Repository } from 'typeorm';
+import { In, type Repository, type SelectQueryBuilder } from 'typeorm';
 
 import { FileUrlService } from 'src/engine/core-modules/file/file-url/file-url.service';
 import { type TimelineThreadDTO } from 'src/engine/core-modules/messaging/dtos/timeline-thread.dto';
@@ -186,6 +186,7 @@ export class TimelineMessagingService {
     workspaceId: string,
     offset: number,
     pageSize: number,
+    searchTerm?: string,
   ): Promise<{
     messageThreads: Omit<
       TimelineThreadDTO,
@@ -211,31 +212,61 @@ export class TimelineMessagingService {
             'messageThread',
           );
 
-        const totalNumberOfThreads = await messageThreadRepository
-          .createQueryBuilder('messageThread')
-          .innerJoin('messageThread.messages', 'messages')
-          .innerJoin(
-            'messages.messageChannelMessageAssociations',
-            'associations',
-          )
-          .where('associations.messageChannelId IN(:...messageChannelIds)', {
-            messageChannelIds,
-          })
+        // Búsqueda tipo Gmail: asunto, cuerpo, y nombre/correo de participantes.
+        const trimmedSearchTerm = searchTerm?.trim();
+        const hasSearch =
+          trimmedSearchTerm !== undefined && trimmedSearchTerm.length > 0;
+        const searchPattern = hasSearch ? `%${trimmedSearchTerm}%` : '';
+
+        const applySearch = <T extends SelectQueryBuilder<never>>(
+          queryBuilder: T,
+        ): T => {
+          if (!hasSearch) {
+            return queryBuilder;
+          }
+
+          queryBuilder
+            .leftJoin('messages.messageParticipants', 'searchParticipants')
+            .andWhere(
+              `(messages.subject ILIKE :searchPattern
+                OR messages.text ILIKE :searchPattern
+                OR searchParticipants.handle ILIKE :searchPattern
+                OR searchParticipants."displayName" ILIKE :searchPattern)`,
+              { searchPattern },
+            );
+
+          return queryBuilder;
+        };
+
+        const totalNumberOfThreads = await applySearch(
+          messageThreadRepository
+            .createQueryBuilder('messageThread')
+            .innerJoin('messageThread.messages', 'messages')
+            .innerJoin(
+              'messages.messageChannelMessageAssociations',
+              'associations',
+            )
+            .where('associations.messageChannelId IN(:...messageChannelIds)', {
+              messageChannelIds,
+            }) as unknown as SelectQueryBuilder<never>,
+        )
           .groupBy('messageThread.id')
           .getCount();
 
-        const threadIdsQuery = await messageThreadRepository
-          .createQueryBuilder('messageThread')
-          .select('messageThread.id', 'id')
-          .addSelect('MAX(messages.receivedAt)', 'max_received_at')
-          .innerJoin('messageThread.messages', 'messages')
-          .innerJoin(
-            'messages.messageChannelMessageAssociations',
-            'associations',
-          )
-          .where('associations.messageChannelId IN (:...messageChannelIds)', {
-            messageChannelIds,
-          })
+        const threadIdsQuery = await applySearch(
+          messageThreadRepository
+            .createQueryBuilder('messageThread')
+            .select('messageThread.id', 'id')
+            .addSelect('MAX(messages.receivedAt)', 'max_received_at')
+            .innerJoin('messageThread.messages', 'messages')
+            .innerJoin(
+              'messages.messageChannelMessageAssociations',
+              'associations',
+            )
+            .where('associations.messageChannelId IN (:...messageChannelIds)', {
+              messageChannelIds,
+            }) as unknown as SelectQueryBuilder<never>,
+        )
           .groupBy('messageThread.id')
           .orderBy('max_received_at', 'DESC')
           .offset(offset)
