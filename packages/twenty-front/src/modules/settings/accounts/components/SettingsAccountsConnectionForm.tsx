@@ -10,7 +10,7 @@ import { SettingsAccountsPasswordController } from '@/settings/accounts/componen
 import { type ConnectionFormData } from '@/settings/accounts/hooks/useImapSmtpCaldavConnectionForm';
 import { EmailConnectionSecurity } from '~/generated-metadata/graphql';
 import { type AccountType } from 'twenty-shared/constants';
-import { Button } from 'twenty-ui/input';
+import { Toggle } from 'twenty-ui/input';
 import { H2Title } from 'twenty-ui/typography';
 import { Section } from 'twenty-ui/layout';
 import { MOBILE_VIEWPORT, themeCssVariables } from 'twenty-ui/theme-constants';
@@ -45,29 +45,6 @@ const StyledSectionDescription = styled.p`
   margin: 0;
 `;
 
-const StyledHelpBox = styled.div`
-  background: ${themeCssVariables.background.transparent.lighter};
-  border: 1px solid ${themeCssVariables.border.color.medium};
-  border-radius: ${themeCssVariables.border.radius.sm};
-  color: ${themeCssVariables.font.color.secondary};
-  display: flex;
-  flex-direction: column;
-  font-size: ${themeCssVariables.font.size.sm};
-  gap: ${themeCssVariables.spacing[2]};
-  line-height: 1.5;
-  padding: ${themeCssVariables.spacing[3]};
-`;
-
-const StyledHelpTitle = styled.span`
-  color: ${themeCssVariables.font.color.primary};
-  font-weight: ${themeCssVariables.font.weight.semiBold};
-`;
-
-const StyledHelpList = styled.ol`
-  margin: 0;
-  padding-left: ${themeCssVariables.spacing[4]};
-`;
-
 const StyledHelpLink = styled.a`
   color: ${themeCssVariables.font.color.primary};
   text-decoration: none;
@@ -77,15 +54,71 @@ const StyledHelpLink = styled.a`
   }
 `;
 
-const StyledHelpActions = styled.div`
+const StyledStepsCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${themeCssVariables.spacing[4]};
+`;
+
+const StyledStep = styled.div`
+  display: flex;
+  gap: ${themeCssVariables.spacing[3]};
+`;
+
+const StyledStepNumber = styled.div`
+  align-items: center;
+  background: ${themeCssVariables.color.blue};
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  flex-shrink: 0;
+  font-size: ${themeCssVariables.font.size.sm};
+  font-weight: ${themeCssVariables.font.weight.semiBold};
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+`;
+
+const StyledStepBody = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: ${themeCssVariables.spacing[2]};
+  min-width: 0;
+`;
+
+const StyledStepTitle = styled.span`
+  color: ${themeCssVariables.font.color.primary};
+  font-size: ${themeCssVariables.font.size.md};
+  font-weight: ${themeCssVariables.font.weight.semiBold};
+`;
+
+const StyledStepText = styled.span`
+  color: ${themeCssVariables.font.color.secondary};
+  font-size: ${themeCssVariables.font.size.sm};
+  line-height: 1.5;
+`;
+
+const StyledToggleRow = styled.div`
+  align-items: center;
   display: flex;
   gap: ${themeCssVariables.spacing[2]};
 `;
 
-const StyledFieldHint = styled.span`
+const StyledAdvancedLink = styled.button`
+  align-self: flex-start;
+  background: transparent;
+  border: none;
   color: ${themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  font-family: inherit;
   font-size: ${themeCssVariables.font.size.sm};
-  margin-top: -${themeCssVariables.spacing[1]};
+  padding: 0;
+  text-decoration: underline;
+
+  &:hover {
+    color: ${themeCssVariables.font.color.primary};
+  }
 `;
 
 const StyledFieldRow = styled.div`
@@ -138,76 +171,185 @@ export const SettingsAccountsConnectionForm = ({
 
   const handlePortChange = (value: string) => Number(value);
 
-  // Autocompletado de Gmail / Google Workspace: llena todo menos las contraseñas.
+  // Modo simple (por defecto al conectar una cuenta nueva de Google):
+  // el usuario solo escribe correo + App Password; el resto se rellena solo.
   const { setValue, watch } = useFormContext<ConnectionFormData>();
   const emailAddress = watch('handle');
+  const [isAdvancedMode, setIsAdvancedMode] = useState(isEditing);
+  const [shouldSyncCalendar, setShouldSyncCalendar] = useState(true);
 
-  const fillGoogleDefaults = () => {
-    const address = (emailAddress ?? '').trim();
+  const applyGoogleSettings = ({
+    address,
+    password,
+    withCalendar,
+  }: {
+    address: string;
+    password: string;
+    withCalendar: boolean;
+  }) => {
+    const cleanAddress = address.trim();
+    // Google muestra el App Password en grupos de 4; pegarlo con espacios es
+    // el error mas comun, asi que los quitamos por el usuario.
+    const cleanPassword = password.replace(/\s/g, '');
 
     setValue('IMAP.host', 'imap.gmail.com', { shouldDirty: true });
     setValue('IMAP.port', 993, { shouldDirty: true });
     setValue('IMAP.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
       shouldDirty: true,
     });
+    setValue('IMAP.username', cleanAddress, { shouldDirty: true });
+    setValue('IMAP.password', cleanPassword, { shouldDirty: true });
+
     setValue('SMTP.host', 'smtp.gmail.com', { shouldDirty: true });
     setValue('SMTP.port', 465, { shouldDirty: true });
     setValue('SMTP.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
       shouldDirty: true,
     });
-    setValue('CALDAV.port', 443, { shouldDirty: true });
-    setValue('CALDAV.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
-      shouldDirty: true,
-    });
+    setValue('SMTP.username', cleanAddress, { shouldDirty: true });
+    setValue('SMTP.password', cleanPassword, { shouldDirty: true });
 
-    if (address.length > 0) {
-      setValue('IMAP.username', address, { shouldDirty: true });
-      setValue('SMTP.username', address, { shouldDirty: true });
-      setValue('CALDAV.username', address, { shouldDirty: true });
+    if (withCalendar && cleanAddress.length > 0) {
       setValue(
         'CALDAV.host',
-        `https://apidata.googleusercontent.com/caldav/v2/${address}/events`,
+        `https://apidata.googleusercontent.com/caldav/v2/${cleanAddress}/events`,
         { shouldDirty: true },
       );
+      setValue('CALDAV.port', 443, { shouldDirty: true });
+      setValue('CALDAV.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
+        shouldDirty: true,
+      });
+      setValue('CALDAV.username', cleanAddress, { shouldDirty: true });
+      setValue('CALDAV.password', cleanPassword, { shouldDirty: true });
+    } else {
+      setValue('CALDAV.host', '', { shouldDirty: true });
+      setValue('CALDAV.username', '', { shouldDirty: true });
+      setValue('CALDAV.password', '', { shouldDirty: true });
     }
+  };
+
+  const [simplePassword, setSimplePassword] = useState('');
+
+  const handleSimpleEmailChange = (value: string) => {
+    setValue('handle', value, { shouldDirty: true });
+    applyGoogleSettings({
+      address: value,
+      password: simplePassword,
+      withCalendar: shouldSyncCalendar,
+    });
+  };
+
+  const handleSimplePasswordChange = (value: string) => {
+    setSimplePassword(value);
+    applyGoogleSettings({
+      address: emailAddress ?? '',
+      password: value,
+      withCalendar: shouldSyncCalendar,
+    });
+  };
+
+  const handleToggleCalendar = (value: boolean) => {
+    setShouldSyncCalendar(value);
+    applyGoogleSettings({
+      address: emailAddress ?? '',
+      password: simplePassword,
+      withCalendar: value,
+    });
   };
 
   return (
     <Section>
       <H2Title title={t`Mail Account`} description={getDescription()} />
-      <StyledHelpBox>
-        <StyledHelpTitle>{t`Using Gmail or Google Workspace?`}</StyledHelpTitle>
-        <span>
-          {t`Google does not accept your normal password here. You need a 16-character App Password:`}
-        </span>
-        <StyledHelpList>
-          <li>{t`Turn on 2-Step Verification in your Google account (required first).`}</li>
-          <li>
-            {t`Create the App Password at`}{' '}
-            <StyledHelpLink
-              href="https://myaccount.google.com/apppasswords"
-              target="_blank"
-              rel="noreferrer"
-            >
-              myaccount.google.com/apppasswords
-            </StyledHelpLink>
-            {t` — pick "Mail", any name (e.g. CRM).`}
-          </li>
-          <li>{t`Paste it, with no spaces, in every password field below.`}</li>
-        </StyledHelpList>
-        <span>
-          {t`Type your email address first, then use the button to fill in every server field for you.`}
-        </span>
-        <StyledHelpActions>
-          <Button
-            title={t`Fill in Gmail settings`}
-            size="small"
-            variant="secondary"
-            accent="blue"
-            onClick={fillGoogleDefaults}
-          />
-        </StyledHelpActions>
-      </StyledHelpBox>
+      {!isAdvancedMode && (
+        <StyledStepsCard>
+          <StyledStep>
+            <StyledStepNumber>1</StyledStepNumber>
+            <StyledStepBody>
+              <StyledStepTitle>{t`Create an App Password in Google`}</StyledStepTitle>
+              <StyledStepText>
+                {t`Google does not accept your normal password here. Open`}{' '}
+                <StyledHelpLink
+                  href="https://myaccount.google.com/apppasswords"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  myaccount.google.com/apppasswords
+                </StyledHelpLink>
+                {t`, type a name (for example "CRM") and click Create. Google shows you a 16-character password — copy it.`}
+              </StyledStepText>
+              <StyledStepText>
+                {t`If that page does not open, turn on 2-Step Verification in your Google account first, then come back.`}
+              </StyledStepText>
+            </StyledStepBody>
+          </StyledStep>
+
+          <StyledStep>
+            <StyledStepNumber>2</StyledStepNumber>
+            <StyledStepBody>
+              <StyledStepTitle>{t`Type your email address`}</StyledStepTitle>
+              <SettingsTextInput
+                instanceId="simple-email-connection-form"
+                label={t`Email address`}
+                placeholder={t`you@company.com`}
+                value={emailAddress ?? ''}
+                onChange={handleSimpleEmailChange}
+                fullWidth
+              />
+            </StyledStepBody>
+          </StyledStep>
+
+          <StyledStep>
+            <StyledStepNumber>3</StyledStepNumber>
+            <StyledStepBody>
+              <StyledStepTitle>{t`Paste the App Password`}</StyledStepTitle>
+              <SettingsTextInput
+                instanceId="simple-password-connection-form"
+                label={t`App Password`}
+                type="password"
+                placeholder={t`16 characters from Google`}
+                value={simplePassword}
+                onChange={handleSimplePasswordChange}
+                fullWidth
+              />
+              <StyledStepText>
+                {t`Spaces are removed automatically — you can paste it exactly as Google shows it.`}
+              </StyledStepText>
+            </StyledStepBody>
+          </StyledStep>
+
+          <StyledStep>
+            <StyledStepNumber>4</StyledStepNumber>
+            <StyledStepBody>
+              <StyledStepTitle>{t`Calendar`}</StyledStepTitle>
+              <StyledToggleRow>
+                <Toggle
+                  value={shouldSyncCalendar}
+                  onChange={handleToggleCalendar}
+                />
+                <StyledStepText>
+                  {t`Also sync my calendar events (recommended).`}
+                </StyledStepText>
+              </StyledToggleRow>
+              <StyledStepText>
+                {t`That is all — servers, ports and security are set for you. Click Save.`}
+              </StyledStepText>
+            </StyledStepBody>
+          </StyledStep>
+
+          <StyledAdvancedLink
+            type="button"
+            onClick={() => setIsAdvancedMode(true)}
+          >
+            {t`Not a Google account? Enter the server settings manually`}
+          </StyledAdvancedLink>
+        </StyledStepsCard>
+      )}
+
+      {isAdvancedMode && !isEditing && (
+        <StyledAdvancedLink type="button" onClick={() => setIsAdvancedMode(false)}>
+          {t`Back to the guided Google setup`}
+        </StyledAdvancedLink>
+      )}
+      {isAdvancedMode && (
       <StyledFormContainer>
         <Controller
           name="name"
@@ -490,6 +632,7 @@ export const SettingsAccountsConnectionForm = ({
           />
         </StyledConnectionSection>
       </StyledFormContainer>
+      )}
     </Section>
   );
 };

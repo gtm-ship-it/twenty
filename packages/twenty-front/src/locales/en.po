@@ -13,11 +13,6 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#. js-lingui-id: EJ/Ifr
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid " — pick \"Mail\", any name (e.g. CRM)."
-msgstr " — pick \"Mail\", any name (e.g. CRM)."
-
 #. js-lingui-id: lndIq/
 #: src/modules/settings/billing/hooks/useBillingWording.ts
 #: src/modules/settings/billing/hooks/useBillingWording.ts
@@ -40,6 +35,11 @@ msgstr " per {intervalLabel}"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
 msgid "—"
 msgstr "—"
+
+#. js-lingui-id: ZwVV+r
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid ", type a name (for example \"CRM\") and click Create. Google shows you a 16-character password — copy it."
+msgstr ", type a name (for example \"CRM\") and click Create. Google shows you a 16-character password — copy it."
 
 #. js-lingui-id: ypz2+E
 #: src/modules/object-record/object-filter-dropdown/utils/getOperandLabel.ts
@@ -814,6 +814,11 @@ msgstr "12h"
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsTimeFormatSelect.tsx
 msgid "12h ({hour12Label})"
 msgstr "12h ({hour12Label})"
+
+#. js-lingui-id: 7w5PGz
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "16 characters from Google"
+msgstr "16 characters from Google"
 
 #. js-lingui-id: wk1eMj
 #: src/modules/ai/constants/AgentChatThreadLastActivityFilterLabels.ts
@@ -2194,6 +2199,11 @@ msgstr "alphabetical"
 msgid "Already in navbar"
 msgstr "Already in navbar"
 
+#. js-lingui-id: qtVOvp
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Also sync my calendar events (recommended)."
+msgstr "Also sync my calendar events (recommended)."
+
 #. js-lingui-id: u/DP73
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Alt text"
@@ -2443,6 +2453,11 @@ msgstr "App"
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 msgid "App deleted successfully"
 msgstr "App deleted successfully"
+
+#. js-lingui-id: 0Xf97/
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "App Password"
+msgstr "App Password"
 
 #. js-lingui-id: hIGwzP
 #: src/pages/settings/applications/tabs/SettingsApplicationFunctionDomainSection.tsx
@@ -3054,6 +3069,11 @@ msgstr "Back to content"
 msgid "Back to settings"
 msgstr "Back to settings"
 
+#. js-lingui-id: F35S4K
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Back to the guided Google setup"
+msgstr "Back to the guided Google setup"
+
 #. js-lingui-id: i8ZVQU
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "background"
@@ -3450,6 +3470,7 @@ msgstr "CalDAV Username"
 
 #. js-lingui-id: AjVXBS
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
 #: src/pages/inbox/InboxPage.tsx
@@ -5236,6 +5257,11 @@ msgstr "Create a workflow and return here to view its versions"
 msgid "Create a workspace"
 msgstr "Create a workspace"
 
+#. js-lingui-id: MIpvKN
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Create an App Password in Google"
+msgstr "Create an App Password in Google"
+
 #. js-lingui-id: /WlFSf
 #: src/pages/settings/applications/tabs/SettingsApplicationsDeveloperTab.tsx
 msgid "Create an application"
@@ -5320,11 +5346,6 @@ msgstr "Create select field"
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
 msgid "Create Select..."
 msgstr "Create Select..."
-
-#. js-lingui-id: XXKqUi
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Create the App Password at"
-msgstr "Create the App Password at"
 
 #. js-lingui-id: JjK4rW
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -7261,6 +7282,7 @@ msgid "Email"
 msgstr "Email"
 
 #. js-lingui-id: ATGYL1
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/unsubscribers/components/SettingsUnsubscribersList.tsx
 msgid "Email address"
 msgstr "Email address"
@@ -8978,11 +9000,6 @@ msgstr "File label"
 msgid "File no longer exists - {label}"
 msgstr "File no longer exists - {label}"
 
-#. js-lingui-id: h0VO7u
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Fill in Gmail settings"
-msgstr "Fill in Gmail settings"
-
 #. js-lingui-id: BZGmTs
 #: src/modules/settings/logic-functions/components/tabs/SettingsLogicFunctionTestTab.tsx
 msgid "Fill with sample input from"
@@ -9511,10 +9528,10 @@ msgstr "Goodwill gesture after the March incident"
 msgid "Google"
 msgstr "Google"
 
-#. js-lingui-id: lCd2VR
+#. js-lingui-id: wChUeO
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Google does not accept your normal password here. You need a 16-character App Password:"
-msgstr "Google does not accept your normal password here. You need a 16-character App Password:"
+msgid "Google does not accept your normal password here. Open"
+msgstr "Google does not accept your normal password here. Open"
 
 #. js-lingui-id: CQwSng
 #: src/modules/settings/security/components/SSO/SettingsSSOIdentitiesProvidersForm.tsx
@@ -10101,6 +10118,11 @@ msgstr "Identity Provider Metadata XML"
 #: src/modules/workflow/workflow-steps/workflow-actions/if-else-action/utils/getBranchLabel.ts
 msgid "if"
 msgstr "if"
+
+#. js-lingui-id: wQyPJN
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "If that page does not open, turn on 2-Step Verification in your Google account first, then come back."
+msgstr "If that page does not open, turn on 2-Step Verification in your Google account first, then come back."
 
 #. js-lingui-id: bTDz/2
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
@@ -13825,6 +13847,11 @@ msgstr "None"
 msgid "Norwegian"
 msgstr "Norwegian"
 
+#. js-lingui-id: tfQ5oR
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Not a Google account? Enter the server settings manually"
+msgstr "Not a Google account? Enter the server settings manually"
+
 #. js-lingui-id: v3W9iu
 #: src/modules/spreadsheet-import/steps/components/MatchColumnsStep/MatchColumnsStep.tsx
 msgid "Not all columns matched"
@@ -14765,10 +14792,10 @@ msgstr "Past due"
 msgid "Paste a link to a hosted image"
 msgstr "Paste a link to a hosted image"
 
-#. js-lingui-id: g8C4Tq
+#. js-lingui-id: Lu+QTN
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Paste it, with no spaces, in every password field below."
-msgstr "Paste it, with no spaces, in every password field below."
+msgid "Paste the App Password"
+msgstr "Paste the App Password"
 
 #. js-lingui-id: cpStVq
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationVerification.tsx
@@ -18108,6 +18135,11 @@ msgstr "Source: {canonicalValue}"
 msgid "Spaces and comma"
 msgstr "Spaces and comma"
 
+#. js-lingui-id: on/zN/
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Spaces are removed automatically — you can paste it exactly as Google shows it."
+msgstr "Spaces are removed automatically — you can paste it exactly as Google shows it."
+
 #. js-lingui-id: U9uWM+
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 msgid "spam@x.com or @newsletter.com"
@@ -18819,6 +18851,11 @@ msgstr "Text copied to clipboard"
 #: src/modules/advanced-text-editor/components/FormAdvancedTextFieldInput.tsx
 msgid "Text Editor"
 msgstr "Text Editor"
+
+#. js-lingui-id: 5cvN3t
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "That is all — servers, ports and security are set for you. Click Save."
+msgstr "That is all — servers, ports and security are set for you. Click Save."
 
 #. js-lingui-id: Z4WP0F
 #: src/modules/settings/accounts/components/SettingsAccountsNewEmailGroupChannel.tsx
@@ -19932,11 +19969,6 @@ msgstr "Turn not found"
 msgid "Turn Not Found"
 msgstr "Turn Not Found"
 
-#. js-lingui-id: K/kGuc
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Turn on 2-Step Verification in your Google account (required first)."
-msgstr "Turn on 2-Step Verification in your Google account (required first)."
-
 #. js-lingui-id: EdHWDU
 #: src/modules/settings/data-model/fields/forms/select/components/SettingsDataModelFieldSelectFormOptionRow.tsx
 msgid "Turquoise"
@@ -20033,10 +20065,10 @@ msgstr "Type something or press \"/\" to see commands"
 msgid "Type to search records"
 msgstr "Type to search records"
 
-#. js-lingui-id: RzrCQI
+#. js-lingui-id: JMjny0
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Type your email address first, then use the button to fill in every server field for you."
-msgstr "Type your email address first, then use the button to fill in every server field for you."
+msgid "Type your email address"
+msgstr "Type your email address"
 
 #. js-lingui-id: SILT51
 #: src/modules/ai/components/internal/AiChatQuestionOtherOption.tsx
@@ -20933,11 +20965,6 @@ msgstr "Using default application value. Configure via environment variables."
 #: src/modules/settings/admin-panel/config-variables/components/ConfigVariableHelpText.tsx
 msgid "Using default value. Set a custom value to override."
 msgstr "Using default value. Set a custom value to override."
-
-#. js-lingui-id: tNYLZh
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Using Gmail or Google Workspace?"
-msgstr "Using Gmail or Google Workspace?"
 
 #. js-lingui-id: zzp4XX
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -22142,6 +22169,11 @@ msgstr ""
 #: src/modules/ai/components/AIChatNoMoreBillingCreditsBanner.tsx
 msgid "You've hit your usage limit. Subscribe for more usage."
 msgstr "You've hit your usage limit. Subscribe for more usage."
+
+#. js-lingui-id: JHf6qZ
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "you@company.com"
+msgstr "you@company.com"
 
 #. js-lingui-id: tOPGvO
 #: src/modules/apollo/services/apollo.factory.ts

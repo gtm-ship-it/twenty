@@ -18,11 +18,6 @@ msgstr ""
 "X-Crowdin-File: /packages/twenty-front/src/locales/en.po\n"
 "X-Crowdin-File-ID: 29\n"
 
-#. js-lingui-id: EJ/Ifr
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid " — pick \"Mail\", any name (e.g. CRM)."
-msgstr ""
-
 #. js-lingui-id: lndIq/
 #: src/modules/settings/billing/hooks/useBillingWording.ts
 #: src/modules/settings/billing/hooks/useBillingWording.ts
@@ -45,6 +40,11 @@ msgstr " per {intervalLabel}"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
 msgid "—"
 msgstr "—"
+
+#. js-lingui-id: ZwVV+r
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid ", type a name (for example \"CRM\") and click Create. Google shows you a 16-character password — copy it."
+msgstr ""
 
 #. js-lingui-id: ypz2+E
 #: src/modules/object-record/object-filter-dropdown/utils/getOperandLabel.ts
@@ -819,6 +819,11 @@ msgstr "12 t"
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsTimeFormatSelect.tsx
 msgid "12h ({hour12Label})"
 msgstr "12t ({hour12Label})"
+
+#. js-lingui-id: 7w5PGz
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "16 characters from Google"
+msgstr ""
 
 #. js-lingui-id: wk1eMj
 #: src/modules/ai/constants/AgentChatThreadLastActivityFilterLabels.ts
@@ -2199,6 +2204,11 @@ msgstr "alfabetisk"
 msgid "Already in navbar"
 msgstr "Allerede i navigasjonslinjen"
 
+#. js-lingui-id: qtVOvp
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Also sync my calendar events (recommended)."
+msgstr ""
+
 #. js-lingui-id: u/DP73
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Alt text"
@@ -2448,6 +2458,11 @@ msgstr "App"
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 msgid "App deleted successfully"
 msgstr "App slettet vellykket"
+
+#. js-lingui-id: 0Xf97/
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "App Password"
+msgstr ""
 
 #. js-lingui-id: hIGwzP
 #: src/pages/settings/applications/tabs/SettingsApplicationFunctionDomainSection.tsx
@@ -3059,6 +3074,11 @@ msgstr "Tilbake til innhold"
 msgid "Back to settings"
 msgstr "Tilbake til Innstillinger"
 
+#. js-lingui-id: F35S4K
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Back to the guided Google setup"
+msgstr ""
+
 #. js-lingui-id: i8ZVQU
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "background"
@@ -3455,6 +3475,7 @@ msgstr "CalDAV-brukernavn"
 
 #. js-lingui-id: AjVXBS
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
 #: src/pages/inbox/InboxPage.tsx
@@ -5241,6 +5262,11 @@ msgstr "Opprett en arbeidsflyt og kom tilbake hit for å vise versjonene"
 msgid "Create a workspace"
 msgstr "Opprett arbeidsområde"
 
+#. js-lingui-id: MIpvKN
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Create an App Password in Google"
+msgstr ""
+
 #. js-lingui-id: /WlFSf
 #: src/pages/settings/applications/tabs/SettingsApplicationsDeveloperTab.tsx
 msgid "Create an application"
@@ -5325,11 +5351,6 @@ msgstr "Opprett valgt felt"
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
 msgid "Create Select..."
 msgstr "Opprett Valg..."
-
-#. js-lingui-id: XXKqUi
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Create the App Password at"
-msgstr ""
 
 #. js-lingui-id: JjK4rW
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -7266,6 +7287,7 @@ msgid "Email"
 msgstr "E-post"
 
 #. js-lingui-id: ATGYL1
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/unsubscribers/components/SettingsUnsubscribersList.tsx
 msgid "Email address"
 msgstr "E-postadresse"
@@ -8983,11 +9005,6 @@ msgstr "Etikett for fil"
 msgid "File no longer exists - {label}"
 msgstr "Filen finnes ikke lenger - {label}"
 
-#. js-lingui-id: h0VO7u
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Fill in Gmail settings"
-msgstr ""
-
 #. js-lingui-id: BZGmTs
 #: src/modules/settings/logic-functions/components/tabs/SettingsLogicFunctionTestTab.tsx
 msgid "Fill with sample input from"
@@ -9516,9 +9533,9 @@ msgstr "Geste av velvilje etter hendelsen i mars"
 msgid "Google"
 msgstr "Google"
 
-#. js-lingui-id: lCd2VR
+#. js-lingui-id: wChUeO
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Google does not accept your normal password here. You need a 16-character App Password:"
+msgid "Google does not accept your normal password here. Open"
 msgstr ""
 
 #. js-lingui-id: CQwSng
@@ -10106,6 +10123,11 @@ msgstr "Identitetsleverandør Metadata XML"
 #: src/modules/workflow/workflow-steps/workflow-actions/if-else-action/utils/getBranchLabel.ts
 msgid "if"
 msgstr "hvis"
+
+#. js-lingui-id: wQyPJN
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "If that page does not open, turn on 2-Step Verification in your Google account first, then come back."
+msgstr ""
 
 #. js-lingui-id: bTDz/2
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
@@ -13830,6 +13852,11 @@ msgstr "Ingen"
 msgid "Norwegian"
 msgstr "Norsk"
 
+#. js-lingui-id: tfQ5oR
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Not a Google account? Enter the server settings manually"
+msgstr ""
+
 #. js-lingui-id: v3W9iu
 #: src/modules/spreadsheet-import/steps/components/MatchColumnsStep/MatchColumnsStep.tsx
 msgid "Not all columns matched"
@@ -14770,9 +14797,9 @@ msgstr "Forfalt"
 msgid "Paste a link to a hosted image"
 msgstr "Lim inn en lenke til et bilde på nett"
 
-#. js-lingui-id: g8C4Tq
+#. js-lingui-id: Lu+QTN
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Paste it, with no spaces, in every password field below."
+msgid "Paste the App Password"
 msgstr ""
 
 #. js-lingui-id: cpStVq
@@ -18113,6 +18140,11 @@ msgstr "Kilde: {canonicalValue}"
 msgid "Spaces and comma"
 msgstr "Mellomrom og komma"
 
+#. js-lingui-id: on/zN/
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Spaces are removed automatically — you can paste it exactly as Google shows it."
+msgstr ""
+
 #. js-lingui-id: U9uWM+
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 msgid "spam@x.com or @newsletter.com"
@@ -18824,6 +18856,11 @@ msgstr "Tekst kopiert til utklippstavlen"
 #: src/modules/advanced-text-editor/components/FormAdvancedTextFieldInput.tsx
 msgid "Text Editor"
 msgstr "Tekstredigering"
+
+#. js-lingui-id: 5cvN3t
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "That is all — servers, ports and security are set for you. Click Save."
+msgstr ""
 
 #. js-lingui-id: Z4WP0F
 #: src/modules/settings/accounts/components/SettingsAccountsNewEmailGroupChannel.tsx
@@ -19905,11 +19942,6 @@ msgstr ""
 msgid "Turn Not Found"
 msgstr ""
 
-#. js-lingui-id: K/kGuc
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Turn on 2-Step Verification in your Google account (required first)."
-msgstr ""
-
 #. js-lingui-id: EdHWDU
 #: src/modules/settings/data-model/fields/forms/select/components/SettingsDataModelFieldSelectFormOptionRow.tsx
 msgid "Turquoise"
@@ -20006,9 +20038,9 @@ msgstr "Skriv noe eller trykk \"/\" for å se kommandoer"
 msgid "Type to search records"
 msgstr "Skriv for å søke i poster"
 
-#. js-lingui-id: RzrCQI
+#. js-lingui-id: JMjny0
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Type your email address first, then use the button to fill in every server field for you."
+msgid "Type your email address"
 msgstr ""
 
 #. js-lingui-id: SILT51
@@ -20906,11 +20938,6 @@ msgstr "Bruker standard applikasjonsverdi. Konfigurer via miljøvariabler."
 #: src/modules/settings/admin-panel/config-variables/components/ConfigVariableHelpText.tsx
 msgid "Using default value. Set a custom value to override."
 msgstr "Bruker standardverdi. Angi en tilpasset verdi for å overstyre."
-
-#. js-lingui-id: tNYLZh
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Using Gmail or Google Workspace?"
-msgstr ""
 
 #. js-lingui-id: zzp4XX
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -22115,6 +22142,11 @@ msgstr ""
 #: src/modules/ai/components/AIChatNoMoreBillingCreditsBanner.tsx
 msgid "You've hit your usage limit. Subscribe for more usage."
 msgstr "Du har nådd bruksgrensen din. Abonner for mer kapasitet."
+
+#. js-lingui-id: JHf6qZ
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "you@company.com"
+msgstr ""
 
 #. js-lingui-id: tOPGvO
 #: src/modules/apollo/services/apollo.factory.ts
