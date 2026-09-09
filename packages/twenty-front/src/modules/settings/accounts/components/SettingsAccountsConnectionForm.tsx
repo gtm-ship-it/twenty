@@ -264,9 +264,27 @@ export const SettingsAccountsConnectionForm = ({
           <StyledStep>
             <StyledStepNumber>1</StyledStepNumber>
             <StyledStepBody>
-              <StyledStepTitle>{t`Create an App Password in Google`}</StyledStepTitle>
+              <StyledStepTitle>{t`Turn on 2-Step Verification (do this first)`}</StyledStepTitle>
               <StyledStepText>
-                {t`Google does not accept your normal password here. Open`}{' '}
+                {t`Google only allows this connection on accounts with 2-Step Verification. Check it at`}{' '}
+                <StyledHelpLink
+                  href="https://myaccount.google.com/signinoptions/twosv"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  myaccount.google.com/signinoptions/twosv
+                </StyledHelpLink>
+                {t`. If it says Off, turn it on (Google will ask for your phone). If it is already On, go to step 2.`}
+              </StyledStepText>
+            </StyledStepBody>
+          </StyledStep>
+
+          <StyledStep>
+            <StyledStepNumber>2</StyledStepNumber>
+            <StyledStepBody>
+              <StyledStepTitle>{t`Create an App Password`}</StyledStepTitle>
+              <StyledStepText>
+                {t`Open`}{' '}
                 <StyledHelpLink
                   href="https://myaccount.google.com/apppasswords"
                   target="_blank"
@@ -274,16 +292,16 @@ export const SettingsAccountsConnectionForm = ({
                 >
                   myaccount.google.com/apppasswords
                 </StyledHelpLink>
-                {t`, type a name (for example "CRM") and click Create. Google shows you a 16-character password — copy it.`}
+                {t`, type a name (for example "CRM") and click Create. Google shows a 16-character password — copy it.`}
               </StyledStepText>
               <StyledStepText>
-                {t`If that page does not open, turn on 2-Step Verification in your Google account first, then come back.`}
+                {t`Seeing "The setting you are looking for is not available for your account"? Either step 1 is not done yet, or your Google Workspace administrator has blocked App Passwords — ask them to allow them for your user.`}
               </StyledStepText>
             </StyledStepBody>
           </StyledStep>
 
           <StyledStep>
-            <StyledStepNumber>2</StyledStepNumber>
+            <StyledStepNumber>3</StyledStepNumber>
             <StyledStepBody>
               <StyledStepTitle>{t`Type your email address`}</StyledStepTitle>
               <SettingsTextInput
@@ -298,7 +316,7 @@ export const SettingsAccountsConnectionForm = ({
           </StyledStep>
 
           <StyledStep>
-            <StyledStepNumber>3</StyledStepNumber>
+            <StyledStepNumber>4</StyledStepNumber>
             <StyledStepBody>
               <StyledStepTitle>{t`Paste the App Password`}</StyledStepTitle>
               <SettingsTextInput
@@ -317,7 +335,7 @@ export const SettingsAccountsConnectionForm = ({
           </StyledStep>
 
           <StyledStep>
-            <StyledStepNumber>4</StyledStepNumber>
+            <StyledStepNumber>5</StyledStepNumber>
             <StyledStepBody>
               <StyledStepTitle>{t`Calendar`}</StyledStepTitle>
               <StyledToggleRow>

@@ -36,10 +36,10 @@ msgstr " per {intervalLabel}"
 msgid "—"
 msgstr "—"
 
-#. js-lingui-id: ZwVV+r
+#. js-lingui-id: 32hPPl
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid ", type a name (for example \"CRM\") and click Create. Google shows you a 16-character password — copy it."
-msgstr ", type a name (for example \"CRM\") and click Create. Google shows you a 16-character password — copy it."
+msgid ", type a name (for example \"CRM\") and click Create. Google shows a 16-character password — copy it."
+msgstr ", type a name (for example \"CRM\") and click Create. Google shows a 16-character password — copy it."
 
 #. js-lingui-id: ypz2+E
 #: src/modules/object-record/object-filter-dropdown/utils/getOperandLabel.ts
@@ -80,6 +80,11 @@ msgstr ": Past"
 #: src/modules/object-record/object-filter-dropdown/utils/getOperandLabel.ts
 msgid ": Today{timeZoneAbbreviationSuffix}"
 msgstr ": Today{timeZoneAbbreviationSuffix}"
+
+#. js-lingui-id: 3xGlKM
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid ". If it says Off, turn it on (Google will ask for your phone). If it is already On, go to step 2."
+msgstr ". If it says Off, turn it on (Google will ask for your phone). If it is already On, go to step 2."
 
 #. js-lingui-id: N/lIUf
 #: src/modules/settings/billing/hooks/useBillingWording.ts
@@ -5257,10 +5262,10 @@ msgstr "Create a workflow and return here to view its versions"
 msgid "Create a workspace"
 msgstr "Create a workspace"
 
-#. js-lingui-id: MIpvKN
+#. js-lingui-id: xat1ec
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Create an App Password in Google"
-msgstr "Create an App Password in Google"
+msgid "Create an App Password"
+msgstr "Create an App Password"
 
 #. js-lingui-id: /WlFSf
 #: src/pages/settings/applications/tabs/SettingsApplicationsDeveloperTab.tsx
@@ -9528,15 +9533,15 @@ msgstr "Goodwill gesture after the March incident"
 msgid "Google"
 msgstr "Google"
 
-#. js-lingui-id: wChUeO
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Google does not accept your normal password here. Open"
-msgstr "Google does not accept your normal password here. Open"
-
 #. js-lingui-id: CQwSng
 #: src/modules/settings/security/components/SSO/SettingsSSOIdentitiesProvidersForm.tsx
 msgid "Google OIDC"
 msgstr "Google OIDC"
+
+#. js-lingui-id: 8HeHpm
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Google only allows this connection on accounts with 2-Step Verification. Check it at"
+msgstr "Google only allows this connection on accounts with 2-Step Verification. Check it at"
 
 #. js-lingui-id: QlsrUj
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -10118,11 +10123,6 @@ msgstr "Identity Provider Metadata XML"
 #: src/modules/workflow/workflow-steps/workflow-actions/if-else-action/utils/getBranchLabel.ts
 msgid "if"
 msgstr "if"
-
-#. js-lingui-id: wQyPJN
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "If that page does not open, turn on 2-Step Verification in your Google account first, then come back."
-msgstr "If that page does not open, turn on 2-Step Verification in your Google account first, then come back."
 
 #. js-lingui-id: bTDz/2
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
@@ -14337,6 +14337,7 @@ msgid "Only you will be able to see your emails and events"
 msgstr "Only you will be able to see your emails and events"
 
 #. js-lingui-id: 1TNIig
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectAboutForm.tsx
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersTeamTab.tsx
@@ -17158,6 +17159,11 @@ msgstr "See your data structure as an interactive diagram"
 msgid "Seeded"
 msgstr "Seeded"
 
+#. js-lingui-id: uRwdTY
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Seeing \"The setting you are looking for is not available for your account\"? Either step 1 is not done yet, or your Google Workspace administrator has blocked App Passwords — ask them to allow them for your user."
+msgstr "Seeing \"The setting you are looking for is not available for your account\"? Either step 1 is not done yet, or your Google Workspace administrator has blocked App Passwords — ask them to allow them for your user."
+
 #. js-lingui-id: rG3WVm
 #: src/modules/object-record/record-field/ui/form-types/components/FormMultiRecordFieldChips.tsx
 #: src/modules/object-record/record-field/ui/form-types/components/FormSingleRecordFieldChip.tsx
@@ -19968,6 +19974,11 @@ msgstr "Turn not found"
 #: src/pages/settings/ai/SettingsAgentTurnDetail.tsx
 msgid "Turn Not Found"
 msgstr "Turn Not Found"
+
+#. js-lingui-id: YvfzKK
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Turn on 2-Step Verification (do this first)"
+msgstr "Turn on 2-Step Verification (do this first)"
 
 #. js-lingui-id: EdHWDU
 #: src/modules/settings/data-model/fields/forms/select/components/SettingsDataModelFieldSelectFormOptionRow.tsx
