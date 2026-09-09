@@ -13,7 +13,6 @@ import {
   DEFAULT_PIPELINE_COLUMNS,
   type InboxPipeline,
   type InboxPipelineColumn,
-  type InboxPipelineMode,
 } from '@/inbox/types/InboxPipeline';
 import { SettingsTextInput } from '@/ui/input/components/SettingsTextInput';
 
@@ -44,11 +43,6 @@ const StyledFieldLabel = styled.span`
   color: ${themeCssVariables.font.color.secondary};
   font-size: ${themeCssVariables.font.size.sm};
   font-weight: ${themeCssVariables.font.weight.medium};
-`;
-
-const StyledModeRow = styled.div`
-  display: flex;
-  gap: ${themeCssVariables.spacing[2]};
 `;
 
 const StyledHint = styled.span`
@@ -164,9 +158,12 @@ const StyledRuleChips = styled.div`
   margin-top: ${themeCssVariables.spacing[2]};
 `;
 
-const StyledRuleChip = styled.span`
+const StyledRuleChip = styled.span<{ isExcluded: boolean }>`
   align-items: center;
-  background: ${themeCssVariables.background.transparent.light};
+  background: ${({ isExcluded }) =>
+    isExcluded
+      ? themeCssVariables.tag.background.red
+      : themeCssVariables.tag.background.green};
   border-radius: ${themeCssVariables.border.radius.sm};
   color: ${themeCssVariables.font.color.primary};
   display: inline-flex;
@@ -229,25 +226,33 @@ export const PipelineEditorModal = ({
   onClose,
 }: PipelineEditorModalProps) => {
   const [name, setName] = useState(pipeline?.name ?? '');
-  const [mode, setMode] = useState<InboxPipelineMode>(
-    pipeline?.mode ?? 'EXCLUDE',
+  const [onlyRules, setOnlyRules] = useState<string[]>(
+    pipeline?.onlyRules ?? [],
   );
-  const [rules, setRules] = useState<string[]>(pipeline?.rules ?? []);
-  const [ruleInput, setRuleInput] = useState('');
+  const [excludeRules, setExcludeRules] = useState<string[]>(
+    pipeline?.excludeRules ?? [],
+  );
+  const [onlyInput, setOnlyInput] = useState('');
+  const [excludeInput, setExcludeInput] = useState('');
   const [accountIds, setAccountIds] = useState<string[]>(
     pipeline?.accountIds ?? [],
   );
 
-  const addRule = () => {
-    const entry = ruleInput.trim().toLowerCase();
+  const addRule = (
+    input: string,
+    current: string[],
+    setCurrent: (next: string[]) => void,
+    clearInput: () => void,
+  ) => {
+    const entry = input.trim().toLowerCase();
 
-    if (entry.length === 0 || rules.includes(entry)) {
-      setRuleInput('');
+    if (entry.length === 0 || current.includes(entry)) {
+      clearInput();
       return;
     }
 
-    setRules([...rules, entry]);
-    setRuleInput('');
+    setCurrent([...current, entry]);
+    clearInput();
   };
 
   const toggleAccount = (accountId: string) => {
@@ -307,8 +312,8 @@ export const PipelineEditorModal = ({
     onSave({
       id: pipeline?.id ?? v4(),
       name: name.trim() || t`Pipeline`,
-      mode,
-      rules,
+      onlyRules,
+      excludeRules,
       accountIds,
       columns:
         sanitizedColumns.length > 0
@@ -334,36 +339,20 @@ export const PipelineEditorModal = ({
           fullWidth
         />
         <div>
-          <StyledFieldLabel>{t`Which emails enter this pipeline?`}</StyledFieldLabel>
-          <StyledModeRow>
-            <Button
-              title={t`All except these`}
-              size="small"
-              variant="secondary"
-              accent={mode === 'EXCLUDE' ? 'blue' : 'default'}
-              onClick={() => setMode('EXCLUDE')}
-            />
-            <Button
-              title={t`Only these`}
-              size="small"
-              variant="secondary"
-              accent={mode === 'ONLY' ? 'blue' : 'default'}
-              onClick={() => setMode('ONLY')}
-            />
-          </StyledModeRow>
-        </div>
-        <div>
-          <StyledFieldLabel>
-            {mode === 'EXCLUDE' ? t`Addresses to exclude` : t`Addresses to include`}
-          </StyledFieldLabel>
+          <StyledFieldLabel>{t`Only these senders`}</StyledFieldLabel>
+          <StyledHint>
+            {t`Leave empty to receive everything that is not excluded.`}
+          </StyledHint>
           <StyledRuleInputRow>
             <StyledStageNameInput
-              value={ruleInput}
-              onChange={(event) => setRuleInput(event.target.value)}
+              value={onlyInput}
+              onChange={(event) => setOnlyInput(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   event.preventDefault();
-                  addRule();
+                  addRule(onlyInput, onlyRules, setOnlyRules, () =>
+                    setOnlyInput(''),
+                  );
                 }
               }}
               placeholder={t`maria@acme.com or @acme.com`}
@@ -373,19 +362,23 @@ export const PipelineEditorModal = ({
               size="small"
               variant="secondary"
               accent="blue"
-              disabled={ruleInput.trim().length === 0}
-              onClick={addRule}
+              disabled={onlyInput.trim().length === 0}
+              onClick={() =>
+                addRule(onlyInput, onlyRules, setOnlyRules, () =>
+                  setOnlyInput(''),
+                )
+              }
             />
           </StyledRuleInputRow>
-          {rules.length > 0 && (
+          {onlyRules.length > 0 && (
             <StyledRuleChips>
-              {rules.map((rule) => (
-                <StyledRuleChip key={rule}>
+              {onlyRules.map((rule) => (
+                <StyledRuleChip key={rule} isExcluded={false}>
                   {rule}
                   <StyledRuleChipRemove
                     type="button"
                     onClick={() =>
-                      setRules(rules.filter((entry) => entry !== rule))
+                      setOnlyRules(onlyRules.filter((entry) => entry !== rule))
                     }
                   >
                     ✕
@@ -394,9 +387,58 @@ export const PipelineEditorModal = ({
               ))}
             </StyledRuleChips>
           )}
+        </div>
+        <div>
+          <StyledFieldLabel>{t`All except these senders`}</StyledFieldLabel>
           <StyledHint>
-            {t`Use @domain.com to match a whole domain.`}
+            {t`Exclusions always win. Use @domain.com to match a whole domain.`}
           </StyledHint>
+          <StyledRuleInputRow>
+            <StyledStageNameInput
+              value={excludeInput}
+              onChange={(event) => setExcludeInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  addRule(excludeInput, excludeRules, setExcludeRules, () =>
+                    setExcludeInput(''),
+                  );
+                }
+              }}
+              placeholder={t`spam@x.com or @newsletter.com`}
+            />
+            <Button
+              title={t`Add`}
+              size="small"
+              variant="secondary"
+              accent="blue"
+              disabled={excludeInput.trim().length === 0}
+              onClick={() =>
+                addRule(excludeInput, excludeRules, setExcludeRules, () =>
+                  setExcludeInput(''),
+                )
+              }
+            />
+          </StyledRuleInputRow>
+          {excludeRules.length > 0 && (
+            <StyledRuleChips>
+              {excludeRules.map((rule) => (
+                <StyledRuleChip key={rule} isExcluded>
+                  {rule}
+                  <StyledRuleChipRemove
+                    type="button"
+                    onClick={() =>
+                      setExcludeRules(
+                        excludeRules.filter((entry) => entry !== rule),
+                      )
+                    }
+                  >
+                    ✕
+                  </StyledRuleChipRemove>
+                </StyledRuleChip>
+              ))}
+            </StyledRuleChips>
+          )}
         </div>
         <div>
           <StyledFieldLabel>{t`Inboxes feeding this pipeline`}</StyledFieldLabel>

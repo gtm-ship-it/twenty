@@ -243,6 +243,13 @@ msgstr "{0} in this list"
 msgid "{0} in this list, {1} sendable ({breakdown})"
 msgstr "{0} in this list, {1} sendable ({breakdown})"
 
+#. js-lingui-id: WtPc08
+#. placeholder {0}: pipelineThreads.length
+#. placeholder {1}: (threads ?? []).length
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "{0} in this pipeline · {1} of {totalNumberOfThreads} conversations loaded"
+msgstr "{0} in this pipeline · {1} of {totalNumberOfThreads} conversations loaded"
+
 #. js-lingui-id: T8aKxO
 #. placeholder {0}: layout.name
 #: src/modules/settings/applications/hooks/useComputeApplicationContentForLayoutAndLogic.ts
@@ -1160,6 +1167,7 @@ msgstr "Active Sync"
 
 #. js-lingui-id: m16xKo
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 msgid "Add"
 msgstr "Add"
@@ -1610,16 +1618,6 @@ msgstr "Address 1"
 msgid "Address 2"
 msgstr "Address 2"
 
-#. js-lingui-id: 1im1BF
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Addresses to exclude"
-msgstr "Addresses to exclude"
-
-#. js-lingui-id: yE4152
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Addresses to include"
-msgstr "Addresses to include"
-
 #. js-lingui-id: 7wCciB
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
 msgid "Addresses your workspace uses to send and receive email from shared inboxes"
@@ -1993,10 +1991,10 @@ msgstr "All emails"
 msgid "All emails and events linked to this account ({accountHandle}) will be deleted"
 msgstr "All emails and events linked to this account ({accountHandle}) will be deleted"
 
-#. js-lingui-id: f61aXo
+#. js-lingui-id: z+0YDD
 #: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "All except these"
-msgstr "All except these"
+msgid "All except these senders"
+msgstr "All except these senders"
 
 #. js-lingui-id: GNJgJf
 #: src/modules/settings/admin-panel/health-status/hooks/useRetryJobs.ts
@@ -7239,7 +7237,6 @@ msgstr "else if"
 #. js-lingui-id: O3oNi5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpEmailField.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
-#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/EmailsFieldInput.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminGeneral.tsx
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -7249,7 +7246,6 @@ msgstr "else if"
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 #: src/pages/auth/PasswordReset.tsx
-#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminUserDetail.tsx
 #: src/pages/settings/admin-panel/SettingsAdminWorkspaceDetail.tsx
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersInviteTab.tsx
@@ -8198,6 +8194,11 @@ msgstr "Exclude the following people and domains from my email sync."
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistSection.tsx
 msgid "Exclude the following people and domains from my email sync. Internal conversations will not be imported"
 msgstr "Exclude the following people and domains from my email sync. Internal conversations will not be imported"
+
+#. js-lingui-id: j/qTpb
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Exclusions always win. Use @domain.com to match a whole domain."
+msgstr "Exclusions always win. Use @domain.com to match a whole domain."
 
 #. js-lingui-id: g3jaWB
 #: src/pages/settings/legal/SettingsLegalDpa.tsx
@@ -11358,6 +11359,11 @@ msgstr "Leave blank if you don't need to import emails."
 msgid "Leave blank if you don't need to send emails."
 msgstr "Leave blank if you don't need to send emails."
 
+#. js-lingui-id: tdUvKZ
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Leave empty to receive everything that is not excluded."
+msgstr "Leave empty to receive everything that is not excluded."
+
 #. js-lingui-id: qvRaz1
 #: src/modules/settings/profile/components/DeleteAccount.tsx
 #: src/modules/settings/profile/components/DeleteAccount.tsx
@@ -14242,10 +14248,20 @@ msgstr "only on {remainingDays} and {0}"
 msgid "Only the subject is shared"
 msgstr "Only the subject is shared"
 
-#. js-lingui-id: RaZNwl
+#. js-lingui-id: VIXGml
 #: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Only these"
-msgstr "Only these"
+msgid "Only these senders"
+msgstr "Only these senders"
+
+#. js-lingui-id: K6sLul
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Only this domain"
+msgstr "Only this domain"
+
+#. js-lingui-id: r5XPVR
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Only this sender"
+msgstr "Only this sender"
 
 #. js-lingui-id: Lp+2YF
 #: src/pages/settings/applications/components/SettingsApplicationConnectScopePickerModal.tsx
@@ -17682,6 +17698,12 @@ msgstr "Show this object's records in the command menu (⌘K)."
 msgid "Show value in center"
 msgstr "Show value in center"
 
+#. js-lingui-id: oMza0r
+#. placeholder {0}: visibleThreads.length
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "Showing {0} of {totalNumberOfThreads} conversations"
+msgstr "Showing {0} of {totalNumberOfThreads} conversations"
+
 #. js-lingui-id: P7rcbf
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectOpenRecordInPicker.tsx
 #: src/modules/settings/experience/components/OpenRecordInPreferencePicker.tsx
@@ -18038,6 +18060,11 @@ msgstr "Source: {canonicalValue}"
 #: src/modules/settings/experience/components/NumberFormatSelect.tsx
 msgid "Spaces and comma"
 msgstr "Spaces and comma"
+
+#. js-lingui-id: U9uWM+
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "spam@x.com or @newsletter.com"
+msgstr "spam@x.com or @newsletter.com"
 
 #. js-lingui-id: 65A04M
 #: src/localization/hooks/useLocaleOptions.ts
@@ -20695,11 +20722,6 @@ msgstr "Usage Events"
 msgid "Usage period"
 msgstr "Usage period"
 
-#. js-lingui-id: 5HyBpb
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Use @domain.com to match a whole domain."
-msgstr "Use @domain.com to match a whole domain."
-
 #. js-lingui-id: 6kLyt5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationProvision.tsx
 msgid "Use authenticator apps and browser extensions like 1Password, Authy, Microsoft Authenticator to generate one-time passwords"
@@ -21546,11 +21568,6 @@ msgstr "Where records of this object open"
 #: src/pages/settings/admin-panel/SettingsAdminNewAiModel.tsx
 msgid "Whether this model supports chain-of-thought reasoning"
 msgstr "Whether this model supports chain-of-thought reasoning"
-
-#. js-lingui-id: jRh5OJ
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Which emails enter this pipeline?"
-msgstr "Which emails enter this pipeline?"
 
 #. js-lingui-id: 9y+sLE
 #: src/modules/workflow/workflow-variables/utils/getWorkflowVariableSpecialItems.ts

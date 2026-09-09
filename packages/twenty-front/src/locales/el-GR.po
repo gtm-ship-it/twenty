@@ -248,6 +248,13 @@ msgstr "{0} σε αυτήν τη λίστα"
 msgid "{0} in this list, {1} sendable ({breakdown})"
 msgstr "{0} σε αυτήν τη λίστα, {1} μπορούν να αποσταλούν ({breakdown})"
 
+#. js-lingui-id: WtPc08
+#. placeholder {0}: pipelineThreads.length
+#. placeholder {1}: (threads ?? []).length
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "{0} in this pipeline · {1} of {totalNumberOfThreads} conversations loaded"
+msgstr ""
+
 #. js-lingui-id: T8aKxO
 #. placeholder {0}: layout.name
 #: src/modules/settings/applications/hooks/useComputeApplicationContentForLayoutAndLogic.ts
@@ -1165,6 +1172,7 @@ msgstr "Ενεργός συγχρονισμός"
 
 #. js-lingui-id: m16xKo
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/pages/settings/ai/components/SettingsAgentEvalsTab.tsx
 msgid "Add"
 msgstr "Προσθήκη"
@@ -1615,16 +1623,6 @@ msgstr "Διεύθυνση 1"
 msgid "Address 2"
 msgstr "Διεύθυνση 2"
 
-#. js-lingui-id: 1im1BF
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Addresses to exclude"
-msgstr ""
-
-#. js-lingui-id: yE4152
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Addresses to include"
-msgstr ""
-
 #. js-lingui-id: 7wCciB
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
 msgid "Addresses your workspace uses to send and receive email from shared inboxes"
@@ -1998,9 +1996,9 @@ msgstr "Όλα τα email"
 msgid "All emails and events linked to this account ({accountHandle}) will be deleted"
 msgstr "Όλα τα emails και τα γεγονότα που συνδέονται με αυτόν τον λογαριασμό ({accountHandle}) θα διαγραφούν"
 
-#. js-lingui-id: f61aXo
+#. js-lingui-id: z+0YDD
 #: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "All except these"
+msgid "All except these senders"
 msgstr ""
 
 #. js-lingui-id: GNJgJf
@@ -7244,7 +7242,6 @@ msgstr "αλλιώς εάν"
 #. js-lingui-id: O3oNi5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpEmailField.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
-#: src/modules/navigation/components/MainNavigationDrawerScrollableItems.tsx
 #: src/modules/object-record/record-field/ui/meta-types/input/components/EmailsFieldInput.tsx
 #: src/modules/settings/admin-panel/components/SettingsAdminGeneral.tsx
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -7254,7 +7251,6 @@ msgstr "αλλιώς εάν"
 #: src/modules/settings/workspace/components/SettingsWorkspaceEmailGroupSection.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 #: src/pages/auth/PasswordReset.tsx
-#: src/pages/inbox/InboxPage.tsx
 #: src/pages/settings/admin-panel/SettingsAdminUserDetail.tsx
 #: src/pages/settings/admin-panel/SettingsAdminWorkspaceDetail.tsx
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersInviteTab.tsx
@@ -8203,6 +8199,11 @@ msgstr "Αποκλεισμός των ακόλουθων ατόμων και τ�
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistSection.tsx
 msgid "Exclude the following people and domains from my email sync. Internal conversations will not be imported"
 msgstr "Εξαιρέστε τα παρακάτω άτομα και τομείς από τον συγχρονισμό ηλεκτρονικού ταχυδρομείου μου. Εσωτερικές συζητήσεις δεν θα εισαχθούν"
+
+#. js-lingui-id: j/qTpb
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Exclusions always win. Use @domain.com to match a whole domain."
+msgstr ""
 
 #. js-lingui-id: g3jaWB
 #: src/pages/settings/legal/SettingsLegalDpa.tsx
@@ -11363,6 +11364,11 @@ msgstr "Αφήστε κενό αν δεν χρειάζεστε να εισάγε
 msgid "Leave blank if you don't need to send emails."
 msgstr "Αφήστε κενό αν δεν χρειάζεστε να στείλετε email."
 
+#. js-lingui-id: tdUvKZ
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "Leave empty to receive everything that is not excluded."
+msgstr ""
+
 #. js-lingui-id: qvRaz1
 #: src/modules/settings/profile/components/DeleteAccount.tsx
 #: src/modules/settings/profile/components/DeleteAccount.tsx
@@ -14247,9 +14253,19 @@ msgstr "μόνο τις {remainingDays} και {0}"
 msgid "Only the subject is shared"
 msgstr "Μοιράζεται μόνο το θέμα"
 
-#. js-lingui-id: RaZNwl
+#. js-lingui-id: VIXGml
 #: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Only these"
+msgid "Only these senders"
+msgstr ""
+
+#. js-lingui-id: K6sLul
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Only this domain"
+msgstr ""
+
+#. js-lingui-id: r5XPVR
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Only this sender"
 msgstr ""
 
 #. js-lingui-id: Lp+2YF
@@ -17689,6 +17705,12 @@ msgstr "Εμφάνιση των εγγραφών αυτού του αντικε�
 msgid "Show value in center"
 msgstr ""
 
+#. js-lingui-id: oMza0r
+#. placeholder {0}: visibleThreads.length
+#: src/modules/inbox/components/InboxThreadList.tsx
+msgid "Showing {0} of {totalNumberOfThreads} conversations"
+msgstr ""
+
 #. js-lingui-id: P7rcbf
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectOpenRecordInPicker.tsx
 #: src/modules/settings/experience/components/OpenRecordInPreferencePicker.tsx
@@ -18045,6 +18067,11 @@ msgstr "Πηγή: {canonicalValue}"
 #: src/modules/settings/experience/components/NumberFormatSelect.tsx
 msgid "Spaces and comma"
 msgstr "Κενά και κόμμα"
+
+#. js-lingui-id: U9uWM+
+#: src/modules/inbox/components/PipelineEditorModal.tsx
+msgid "spam@x.com or @newsletter.com"
+msgstr ""
 
 #. js-lingui-id: 65A04M
 #: src/localization/hooks/useLocaleOptions.ts
@@ -20672,11 +20699,6 @@ msgstr "Συμβάντα χρήσης"
 msgid "Usage period"
 msgstr "Περίοδος χρήσης"
 
-#. js-lingui-id: 5HyBpb
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Use @domain.com to match a whole domain."
-msgstr ""
-
 #. js-lingui-id: 6kLyt5
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationProvision.tsx
 msgid "Use authenticator apps and browser extensions like 1Password, Authy, Microsoft Authenticator to generate one-time passwords"
@@ -21523,11 +21545,6 @@ msgstr "Πού ανοίγουν οι εγγραφές αυτού του αντι
 #: src/pages/settings/admin-panel/SettingsAdminNewAiModel.tsx
 msgid "Whether this model supports chain-of-thought reasoning"
 msgstr "Αν αυτό το μοντέλο υποστηρίζει συλλογιστική αλυσίδας σκέψης"
-
-#. js-lingui-id: jRh5OJ
-#: src/modules/inbox/components/PipelineEditorModal.tsx
-msgid "Which emails enter this pipeline?"
-msgstr ""
 
 #. js-lingui-id: 9y+sLE
 #: src/modules/workflow/workflow-variables/utils/getWorkflowVariableSpecialItems.ts

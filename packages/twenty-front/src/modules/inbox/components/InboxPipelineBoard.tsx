@@ -8,9 +8,9 @@ import { themeCssVariables } from 'twenty-ui/theme-constants';
 import { CustomResolverFetchMoreLoader } from '@/activities/components/CustomResolverFetchMoreLoader';
 import { SkeletonLoader } from '@/activities/components/SkeletonLoader';
 import { EmailThreadPreview } from '@/activities/emails/components/EmailThreadPreview';
-import { threadMatchesOnlySeeList } from '@/inbox/hooks/useInboxOnlySee';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
 import {
+  threadBelongsToPipeline,
   type InboxPipeline,
   type InboxPipelineColumn,
 } from '@/inbox/types/InboxPipeline';
@@ -18,6 +18,19 @@ import { Tag, type TagColor } from 'twenty-ui/data-display';
 import { type TimelineThread } from '~/generated/graphql';
 
 const PIPELINE_BOARD_PAGE_SIZE = 50;
+
+const StyledBoardWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const StyledCountBar = styled.div`
+  color: ${themeCssVariables.font.color.tertiary};
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[4]} 0;
+`;
 
 const StyledBoard = styled.div`
   display: flex;
@@ -145,6 +158,7 @@ type PipelineCardProps = {
   isMenuOpen: boolean;
   onToggleMenu: () => void;
   onExcludeRule: (rule: string, threadId: string) => void;
+  onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadId: string) => void;
 };
 
@@ -153,6 +167,7 @@ const PipelineCard = ({
   isMenuOpen,
   onToggleMenu,
   onExcludeRule,
+  onOnlyRule,
   onRemoveFromPipeline,
 }: PipelineCardProps) => {
   const { ref } = useDraggable({
@@ -196,6 +211,22 @@ const PipelineCard = ({
               {t`Exclude domain`} ({senderDomain})
             </StyledCardMenuItem>
           )}
+          {senderHandle && (
+            <StyledCardMenuItem
+              type="button"
+              onClick={() => onOnlyRule(senderHandle)}
+            >
+              {t`Only this sender`} ({senderHandle})
+            </StyledCardMenuItem>
+          )}
+          {senderDomain && (
+            <StyledCardMenuItem
+              type="button"
+              onClick={() => onOnlyRule(senderDomain)}
+            >
+              {t`Only this domain`} ({senderDomain})
+            </StyledCardMenuItem>
+          )}
           <StyledCardMenuItem
             type="button"
             onClick={() => onRemoveFromPipeline(thread.id)}
@@ -215,6 +246,7 @@ type PipelineColumnProps = {
   menuThreadId: string | null;
   onToggleMenu: (threadId: string) => void;
   onExcludeRule: (rule: string, threadId: string) => void;
+  onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadId: string) => void;
 };
 
@@ -225,6 +257,7 @@ const PipelineColumn = ({
   menuThreadId,
   onToggleMenu,
   onExcludeRule,
+  onOnlyRule,
   onRemoveFromPipeline,
 }: PipelineColumnProps) => {
   const { ref } = useDroppable({
@@ -244,6 +277,7 @@ const PipelineColumn = ({
           isMenuOpen={menuThreadId === thread.id}
           onToggleMenu={() => onToggleMenu(thread.id)}
           onExcludeRule={onExcludeRule}
+          onOnlyRule={onOnlyRule}
           onRemoveFromPipeline={onRemoveFromPipeline}
         />
       ))}
@@ -257,6 +291,7 @@ type InboxPipelineBoardProps = {
   pipeline: InboxPipeline;
   onMoveCard: (threadId: string, columnIndex: number) => void;
   onExcludeRule: (rule: string, threadId: string) => void;
+  onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadId: string) => void;
 };
 
@@ -266,6 +301,7 @@ export const InboxPipelineBoard = ({
   pipeline,
   onMoveCard,
   onExcludeRule,
+  onOnlyRule,
   onRemoveFromPipeline,
 }: InboxPipelineBoardProps) => {
   const {
@@ -288,23 +324,15 @@ export const InboxPipelineBoard = ({
       return true;
     }
 
-    const participantHandles = [
-      thread.firstParticipant?.handle,
-      ...(thread.lastTwoParticipants ?? []).map(
-        (participant) => participant?.handle,
-      ),
-    ];
-
-    const matches = threadMatchesOnlySeeList(
-      participantHandles,
-      pipeline.rules,
+    return threadBelongsToPipeline(
+      [
+        thread.firstParticipant?.handle,
+        ...(thread.lastTwoParticipants ?? []).map(
+          (participant) => participant?.handle,
+        ),
+      ],
+      pipeline,
     );
-
-    // ONLY sin reglas muestra todo; EXCLUDE sin reglas también muestra todo
-    // (threadMatchesOnlySeeList devuelve true con lista vacía).
-    return pipeline.mode === 'ONLY'
-      ? matches
-      : pipeline.rules.length === 0 || !matches;
   });
 
   if (pipelineThreads.length === 0) {
@@ -333,7 +361,11 @@ export const InboxPipelineBoard = ({
   const hasMoreThreads = (threads?.length ?? 0) < totalNumberOfThreads;
 
   return (
-    <DragDropProvider
+    <StyledBoardWrapper>
+      <StyledCountBar>
+        {t`${pipelineThreads.length} in this pipeline · ${(threads ?? []).length} of ${totalNumberOfThreads} conversations loaded`}
+      </StyledCountBar>
+      <DragDropProvider
       onDragEnd={(event) => {
         const { source, target } = event.operation;
 
@@ -365,6 +397,10 @@ export const InboxPipelineBoard = ({
               setMenuThreadId(null);
               onExcludeRule(rule, threadId);
             }}
+            onOnlyRule={(rule) => {
+              setMenuThreadId(null);
+              onOnlyRule(rule);
+            }}
             onRemoveFromPipeline={(threadId) => {
               setMenuThreadId(null);
               onRemoveFromPipeline(threadId);
@@ -380,6 +416,7 @@ export const InboxPipelineBoard = ({
           }}
         />
       </StyledBoard>
-    </DragDropProvider>
+      </DragDropProvider>
+    </StyledBoardWrapper>
   );
 };

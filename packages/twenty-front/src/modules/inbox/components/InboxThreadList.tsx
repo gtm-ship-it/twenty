@@ -29,6 +29,12 @@ const StyledContainer = styled.div`
     ${themeCssVariables.spacing[2]};
 `;
 
+const StyledCountBar = styled.div`
+  color: ${themeCssVariables.font.color.tertiary};
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: 0 ${themeCssVariables.spacing[1]};
+`;
+
 const StyledRowWrapper = styled.div`
   position: relative;
 
@@ -192,6 +198,9 @@ export const InboxThreadList = ({
   return (
     <StyledContainer>
       <Section>
+        <StyledCountBar>
+          {t`Showing ${visibleThreads.length} of ${totalNumberOfThreads} conversations`}
+        </StyledCountBar>
         <ActivityList>
           {visibleThreads.map((thread) => (
             <StyledRowWrapper key={thread.id}>

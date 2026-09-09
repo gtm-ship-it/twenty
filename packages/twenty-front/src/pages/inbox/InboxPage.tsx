@@ -218,26 +218,43 @@ export const InboxPage = () => {
           return pipeline;
         }
 
+        // sacamos también el override manual: si no, la tarjeta seguiría visible
         const { [threadId]: _removed, ...remainingCardColumns } =
           pipeline.cardColumns;
 
         return {
           ...pipeline,
-          rules:
-            pipeline.mode === 'EXCLUDE'
-              ? pipeline.rules.includes(rule)
-                ? pipeline.rules
-                : [...pipeline.rules, rule]
-              : pipeline.rules.filter(
-                  (existingRule) =>
-                    existingRule !== rule &&
-                    !(
-                      rule.startsWith('@') && existingRule.endsWith(rule)
-                    ),
-                ),
+          excludeRules: pipeline.excludeRules.includes(rule)
+            ? pipeline.excludeRules
+            : [...pipeline.excludeRules, rule],
+          onlyRules: pipeline.onlyRules.filter(
+            (existingRule) => existingRule !== rule,
+          ),
           cardColumns: remainingCardColumns,
         };
       }),
+    );
+  };
+
+  const handleOnlyRule = async (rule: string) => {
+    if (!selectedPipeline) {
+      return;
+    }
+
+    await savePipelines(
+      pipelines.map((pipeline) =>
+        pipeline.id === selectedPipeline.id
+          ? {
+              ...pipeline,
+              onlyRules: pipeline.onlyRules.includes(rule)
+                ? pipeline.onlyRules
+                : [...pipeline.onlyRules, rule],
+              excludeRules: pipeline.excludeRules.filter(
+                (existingRule) => existingRule !== rule,
+              ),
+            }
+          : pipeline,
+      ),
     );
   };
 
@@ -363,6 +380,7 @@ export const InboxPage = () => {
           pipeline={selectedPipeline}
           onMoveCard={handleMoveCard}
           onExcludeRule={handleExcludeRule}
+          onOnlyRule={handleOnlyRule}
           onRemoveFromPipeline={handleRemoveFromPipeline}
         />
       )}
