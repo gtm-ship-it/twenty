@@ -177,6 +177,15 @@ export class ImapSmtpCaldavService {
         });
       }
 
+      // Un fallo de descubrimiento NO es un fallo de credenciales: decirle al
+      // usuario que revise su contraseña cuando el problema es la URL lo manda
+      // a buscar en el sitio equivocado.
+      if (/principalUrl|not found|404/i.test(error.message ?? '')) {
+        throw new UserInputError(`CALDAV connection failed: ${error.message}`, {
+          userFriendlyMessage: msg`We reached the server but found no calendar at that address. Check the CalDAV URL (for Google it ends in /user, not /events).`,
+        });
+      }
+
       throw new UserInputError(`CALDAV connection failed: ${error.message}`, {
         userFriendlyMessage: msg`Invalid CALDAV credentials. Please check your username and password.`,
       });

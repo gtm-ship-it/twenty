@@ -9553,9 +9553,9 @@ msgstr ""
 msgid "Google, Microsoft or CalDAV account to create the event on. Leave empty to use the default calendar account."
 msgstr "Etkinliğin oluşturulacağı Google, Microsoft veya CalDAV hesabı. Varsayılan takvim hesabını kullanmak için boş bırakın."
 
-#. js-lingui-id: wWmLpM
+#. js-lingui-id: NJ8C5P
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/events (not just a hostname)."
+msgid "Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/user (not just a hostname)."
 msgstr ""
 
 #. js-lingui-id: IagMXz
@@ -10044,9 +10044,9 @@ msgstr "https://api.example.com/endpoint"
 msgid "https://api.example.com/v1"
 msgstr "https://api.example.com/v1"
 
-#. js-lingui-id: 0CuNWs
+#. js-lingui-id: aIluVS
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "https://apidata.googleusercontent.com/caldav/v2/you@company.com/events"
+msgid "https://apidata.googleusercontent.com/caldav/v2/you@company.com/user"
 msgstr ""
 
 #. js-lingui-id: 1Un+Rf

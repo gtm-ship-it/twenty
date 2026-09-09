@@ -211,7 +211,7 @@ export const SettingsAccountsConnectionForm = ({
     if (withCalendar && cleanAddress.length > 0) {
       setValue(
         'CALDAV.host',
-        `https://apidata.googleusercontent.com/caldav/v2/${cleanAddress}/events`,
+        `https://apidata.googleusercontent.com/caldav/v2/${cleanAddress}/user`,
         { shouldDirty: true },
       );
       setValue('CALDAV.port', 443, { shouldDirty: true });
@@ -600,7 +600,7 @@ export const SettingsAccountsConnectionForm = ({
             <StyledSectionTitle>{t`CalDAV Configuration`}</StyledSectionTitle>
             <StyledSectionDescription>
               {t`Configure CalDAV settings to sync your calendar events.`}{' '}
-              {t`Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/events (not just a hostname).`}{' '}
+              {t`Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/user (not just a hostname).`}{' '}
               {t`Leave blank if you don't need calendar sync.`}
             </StyledSectionDescription>
           </StyledSectionHeader>
@@ -612,7 +612,7 @@ export const SettingsAccountsConnectionForm = ({
               <SettingsTextInput
                 instanceId="caldav-host-connection-form"
                 label={t`CalDAV Server`}
-                placeholder={t`https://apidata.googleusercontent.com/caldav/v2/you@company.com/events`}
+                placeholder={t`https://apidata.googleusercontent.com/caldav/v2/you@company.com/user`}
                 value={field.value || ''}
                 onChange={field.onChange}
                 error={fieldState.error?.message}
