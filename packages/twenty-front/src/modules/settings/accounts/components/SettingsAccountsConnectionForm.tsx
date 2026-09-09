@@ -1,14 +1,16 @@
 import { styled } from '@linaria/react';
 import { useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
-import { type Control, Controller } from 'react-hook-form';
+import { type Control, Controller, useFormContext } from 'react-hook-form';
 
 import { Select } from '@/ui/input/components/Select';
 import { SettingsTextInput } from '@/ui/input/components/SettingsTextInput';
 
 import { SettingsAccountsPasswordController } from '@/settings/accounts/components/SettingsAccountsPasswordController';
 import { type ConnectionFormData } from '@/settings/accounts/hooks/useImapSmtpCaldavConnectionForm';
+import { EmailConnectionSecurity } from '~/generated-metadata/graphql';
 import { type AccountType } from 'twenty-shared/constants';
+import { Button } from 'twenty-ui/input';
 import { H2Title } from 'twenty-ui/typography';
 import { Section } from 'twenty-ui/layout';
 import { MOBILE_VIEWPORT, themeCssVariables } from 'twenty-ui/theme-constants';
@@ -41,6 +43,49 @@ const StyledSectionDescription = styled.p`
   color: ${themeCssVariables.font.color.tertiary};
   font-size: ${themeCssVariables.font.size.sm};
   margin: 0;
+`;
+
+const StyledHelpBox = styled.div`
+  background: ${themeCssVariables.background.transparent.lighter};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.secondary};
+  display: flex;
+  flex-direction: column;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[2]};
+  line-height: 1.5;
+  padding: ${themeCssVariables.spacing[3]};
+`;
+
+const StyledHelpTitle = styled.span`
+  color: ${themeCssVariables.font.color.primary};
+  font-weight: ${themeCssVariables.font.weight.semiBold};
+`;
+
+const StyledHelpList = styled.ol`
+  margin: 0;
+  padding-left: ${themeCssVariables.spacing[4]};
+`;
+
+const StyledHelpLink = styled.a`
+  color: ${themeCssVariables.font.color.primary};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const StyledHelpActions = styled.div`
+  display: flex;
+  gap: ${themeCssVariables.spacing[2]};
+`;
+
+const StyledFieldHint = styled.span`
+  color: ${themeCssVariables.font.color.tertiary};
+  font-size: ${themeCssVariables.font.size.sm};
+  margin-top: -${themeCssVariables.spacing[1]};
 `;
 
 const StyledFieldRow = styled.div`
@@ -93,9 +138,76 @@ export const SettingsAccountsConnectionForm = ({
 
   const handlePortChange = (value: string) => Number(value);
 
+  // Autocompletado de Gmail / Google Workspace: llena todo menos las contraseñas.
+  const { setValue, watch } = useFormContext<ConnectionFormData>();
+  const emailAddress = watch('handle');
+
+  const fillGoogleDefaults = () => {
+    const address = (emailAddress ?? '').trim();
+
+    setValue('IMAP.host', 'imap.gmail.com', { shouldDirty: true });
+    setValue('IMAP.port', 993, { shouldDirty: true });
+    setValue('IMAP.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
+      shouldDirty: true,
+    });
+    setValue('SMTP.host', 'smtp.gmail.com', { shouldDirty: true });
+    setValue('SMTP.port', 465, { shouldDirty: true });
+    setValue('SMTP.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
+      shouldDirty: true,
+    });
+    setValue('CALDAV.port', 443, { shouldDirty: true });
+    setValue('CALDAV.connectionSecurity', EmailConnectionSecurity.SSL_TLS, {
+      shouldDirty: true,
+    });
+
+    if (address.length > 0) {
+      setValue('IMAP.username', address, { shouldDirty: true });
+      setValue('SMTP.username', address, { shouldDirty: true });
+      setValue('CALDAV.username', address, { shouldDirty: true });
+      setValue(
+        'CALDAV.host',
+        `https://apidata.googleusercontent.com/caldav/v2/${address}/events`,
+        { shouldDirty: true },
+      );
+    }
+  };
+
   return (
     <Section>
       <H2Title title={t`Mail Account`} description={getDescription()} />
+      <StyledHelpBox>
+        <StyledHelpTitle>{t`Using Gmail or Google Workspace?`}</StyledHelpTitle>
+        <span>
+          {t`Google does not accept your normal password here. You need a 16-character App Password:`}
+        </span>
+        <StyledHelpList>
+          <li>{t`Turn on 2-Step Verification in your Google account (required first).`}</li>
+          <li>
+            {t`Create the App Password at`}{' '}
+            <StyledHelpLink
+              href="https://myaccount.google.com/apppasswords"
+              target="_blank"
+              rel="noreferrer"
+            >
+              myaccount.google.com/apppasswords
+            </StyledHelpLink>
+            {t` — pick "Mail", any name (e.g. CRM).`}
+          </li>
+          <li>{t`Paste it, with no spaces, in every password field below.`}</li>
+        </StyledHelpList>
+        <span>
+          {t`Type your email address first, then use the button to fill in every server field for you.`}
+        </span>
+        <StyledHelpActions>
+          <Button
+            title={t`Fill in Gmail settings`}
+            size="small"
+            variant="secondary"
+            accent="blue"
+            onClick={fillGoogleDefaults}
+          />
+        </StyledHelpActions>
+      </StyledHelpBox>
       <StyledFormContainer>
         <Controller
           name="name"
@@ -133,7 +245,8 @@ export const SettingsAccountsConnectionForm = ({
             <StyledSectionTitle>{t`IMAP Configuration`}</StyledSectionTitle>
             <StyledSectionDescription>
               {t`Configure IMAP settings to receive and sync your emails.`}{' '}
-              {t`Leave blank if you don't need to import emails.`}
+              {t`Leave blank if you don't need to import emails.`}{' '}
+              {t`Gmail: imap.gmail.com, port 993, SSL/TLS.`}
             </StyledSectionDescription>
           </StyledSectionHeader>
 
@@ -144,7 +257,7 @@ export const SettingsAccountsConnectionForm = ({
               <SettingsTextInput
                 instanceId="imap-host-connection-form"
                 label={t`IMAP Server`}
-                placeholder={t`imap.example.com`}
+                placeholder={t`imap.gmail.com`}
                 value={field.value || ''}
                 onChange={field.onChange}
                 error={fieldState.error?.message}
@@ -171,7 +284,7 @@ export const SettingsAccountsConnectionForm = ({
 
           <SettingsAccountsPasswordController
             protocol="IMAP"
-            label={t`IMAP Password`}
+            label={t`IMAP Password (App Password)`}
             control={control}
             disabled={isPasswordInputDisabled('IMAP')}
             onUnlock={() =>
@@ -230,6 +343,7 @@ export const SettingsAccountsConnectionForm = ({
             <StyledSectionTitle>{t`SMTP Configuration`}</StyledSectionTitle>
             <StyledSectionDescription>
               {t`Configure SMTP settings to send emails from your account.`}{' '}
+              {t`Gmail: smtp.gmail.com, port 465, SSL/TLS.`}{' '}
               {t`Leave blank if you don't need to send emails.`}
             </StyledSectionDescription>
           </StyledSectionHeader>
@@ -241,7 +355,7 @@ export const SettingsAccountsConnectionForm = ({
               <SettingsTextInput
                 instanceId="smtp-host-connection-form"
                 label={t`SMTP Server`}
-                placeholder={t`smtp.example.com`}
+                placeholder={t`smtp.gmail.com`}
                 value={field.value || ''}
                 onChange={field.onChange}
                 error={fieldState.error?.message}
@@ -267,7 +381,7 @@ export const SettingsAccountsConnectionForm = ({
 
           <SettingsAccountsPasswordController
             protocol="SMTP"
-            label={t`SMTP Password`}
+            label={t`SMTP Password (App Password)`}
             control={control}
             disabled={isPasswordInputDisabled('SMTP')}
             onUnlock={() =>
@@ -326,6 +440,7 @@ export const SettingsAccountsConnectionForm = ({
             <StyledSectionTitle>{t`CalDAV Configuration`}</StyledSectionTitle>
             <StyledSectionDescription>
               {t`Configure CalDAV settings to sync your calendar events.`}{' '}
+              {t`Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/events (not just a hostname).`}{' '}
               {t`Leave blank if you don't need calendar sync.`}
             </StyledSectionDescription>
           </StyledSectionHeader>
@@ -337,7 +452,7 @@ export const SettingsAccountsConnectionForm = ({
               <SettingsTextInput
                 instanceId="caldav-host-connection-form"
                 label={t`CalDAV Server`}
-                placeholder={t`caldav.example.com`}
+                placeholder={t`https://apidata.googleusercontent.com/caldav/v2/you@company.com/events`}
                 value={field.value || ''}
                 onChange={field.onChange}
                 error={fieldState.error?.message}
@@ -363,7 +478,7 @@ export const SettingsAccountsConnectionForm = ({
 
           <SettingsAccountsPasswordController
             protocol="CALDAV"
-            label={t`CalDAV Password`}
+            label={t`CalDAV Password (App Password)`}
             control={control}
             disabled={isPasswordInputDisabled('CALDAV')}
             onUnlock={() =>

@@ -18,6 +18,11 @@ msgstr ""
 "X-Crowdin-File: /packages/twenty-front/src/locales/en.po\n"
 "X-Crowdin-File-ID: 29\n"
 
+#. js-lingui-id: EJ/Ifr
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid " — pick \"Mail\", any name (e.g. CRM)."
+msgstr ""
+
 #. js-lingui-id: lndIq/
 #: src/modules/settings/billing/hooks/useBillingWording.ts
 #: src/modules/settings/billing/hooks/useBillingWording.ts
@@ -3433,10 +3438,10 @@ msgstr "计算"
 msgid "CalDAV Configuration"
 msgstr "CalDAV 配置"
 
-#. js-lingui-id: 4dwQbl
+#. js-lingui-id: lFqQDN
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "CalDAV Password"
-msgstr "CalDAV 密码"
+msgid "CalDAV Password (App Password)"
+msgstr ""
 
 #. js-lingui-id: JUGLyW
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
@@ -3447,11 +3452,6 @@ msgstr "CalDAV 服务器"
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 msgid "CalDAV Username"
 msgstr "CalDAV 用户名"
-
-#. js-lingui-id: +x0fpb
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "caldav.example.com"
-msgstr "caldav.example.com"
 
 #. js-lingui-id: AjVXBS
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
@@ -5325,6 +5325,11 @@ msgstr "创建选择字段"
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
 msgid "Create Select..."
 msgstr "创建选择……"
+
+#. js-lingui-id: XXKqUi
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Create the App Password at"
+msgstr ""
 
 #. js-lingui-id: JjK4rW
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -8978,6 +8983,11 @@ msgstr "文件标签"
 msgid "File no longer exists - {label}"
 msgstr "文件已不存在 - {label}"
 
+#. js-lingui-id: h0VO7u
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Fill in Gmail settings"
+msgstr ""
+
 #. js-lingui-id: BZGmTs
 #: src/modules/settings/logic-functions/components/tabs/SettingsLogicFunctionTestTab.tsx
 msgid "Fill with sample input from"
@@ -9456,6 +9466,16 @@ msgstr "GitHub 授权失败或被拒绝。请重新连接你的 GitHub 帐户。
 msgid "Global search"
 msgstr "全局搜索"
 
+#. js-lingui-id: 11BS4v
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Gmail: imap.gmail.com, port 993, SSL/TLS."
+msgstr ""
+
+#. js-lingui-id: 4xajGo
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Gmail: smtp.gmail.com, port 465, SSL/TLS."
+msgstr ""
+
 #. js-lingui-id: CKyk7Q
 #: src/modules/onboarding/components/OnboardingHeader.tsx
 msgid "Go back"
@@ -9496,6 +9516,11 @@ msgstr "三月事件后的善意补偿"
 msgid "Google"
 msgstr "谷歌"
 
+#. js-lingui-id: lCd2VR
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Google does not accept your normal password here. You need a 16-character App Password:"
+msgstr ""
+
 #. js-lingui-id: CQwSng
 #: src/modules/settings/security/components/SSO/SettingsSSOIdentitiesProvidersForm.tsx
 msgid "Google OIDC"
@@ -9505,6 +9530,11 @@ msgstr "Google OIDC"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 msgid "Google, Microsoft or CalDAV account to create the event on. Leave empty to use the default calendar account."
 msgstr "用于创建事件的 Google、Microsoft 或 CalDAV 帐户。留空则使用默认日历帐户。"
+
+#. js-lingui-id: wWmLpM
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Google: paste the full URL https://apidata.googleusercontent.com/caldav/v2/YOUR-EMAIL/events (not just a hostname)."
+msgstr ""
 
 #. js-lingui-id: IagMXz
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
@@ -9969,6 +9999,11 @@ msgstr "https://api.example.com/endpoint"
 msgid "https://api.example.com/v1"
 msgstr "https://api.example.com/v1"
 
+#. js-lingui-id: 0CuNWs
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "https://apidata.googleusercontent.com/caldav/v2/you@company.com/events"
+msgstr ""
+
 #. js-lingui-id: 1Un+Rf
 #: src/pages/settings/applications/components/SettingsApplicationRegistrationRedirectURIsInput.tsx
 msgid "https://example.com/callback"
@@ -10121,10 +10156,10 @@ msgstr "IMAP 配置"
 msgid "IMAP Connection security"
 msgstr "IMAP 连接安全性"
 
-#. js-lingui-id: Ubs0tf
+#. js-lingui-id: gEKV8a
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "IMAP Password"
-msgstr "IMAP 密码"
+msgid "IMAP Password (App Password)"
+msgstr ""
 
 #. js-lingui-id: TE8s2c
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
@@ -10141,10 +10176,10 @@ msgstr "IMAP服务器"
 msgid "IMAP Username (Optional)"
 msgstr ""
 
-#. js-lingui-id: +8jOVa
+#. js-lingui-id: NEQ2Sa
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "imap.example.com"
-msgstr "imap.example.com"
+msgid "imap.gmail.com"
+msgstr ""
 
 #. js-lingui-id: tSVr6t
 #: src/modules/settings/members/components/MemberInfosTab.tsx
@@ -14712,6 +14747,11 @@ msgstr "逾期未付"
 msgid "Paste a link to a hosted image"
 msgstr "粘贴托管图片的链接"
 
+#. js-lingui-id: g8C4Tq
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Paste it, with no spaces, in every password field below."
+msgstr ""
+
 #. js-lingui-id: cpStVq
 #: src/modules/auth/sign-in-up/components/internal/SignInUpTwoFactorAuthenticationVerification.tsx
 msgid "Paste the code below"
@@ -17897,10 +17937,10 @@ msgstr "SMTP 配置"
 msgid "SMTP Connection security"
 msgstr "SMTP 连接安全性"
 
-#. js-lingui-id: UeDEV/
+#. js-lingui-id: 3N9ywW
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "SMTP Password"
-msgstr "SMTP 密码"
+msgid "SMTP Password (App Password)"
+msgstr ""
 
 #. js-lingui-id: 4waP7/
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
@@ -17917,10 +17957,10 @@ msgstr "SMTP 服务器"
 msgid "SMTP Username"
 msgstr "SMTP 用户名"
 
-#. js-lingui-id: 4oakKm
+#. js-lingui-id: DkLWbn
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "smtp.example.com"
-msgstr "smtp.example.com"
+msgid "smtp.gmail.com"
+msgstr ""
 
 #. js-lingui-id: zfjcH5
 #: src/modules/settings/roles/role-permissions/object-level-permissions/components/SettingsRolePermissionsObjectLevelSeeFieldsValueForObject.tsx
@@ -19842,6 +19882,11 @@ msgstr ""
 msgid "Turn Not Found"
 msgstr ""
 
+#. js-lingui-id: K/kGuc
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Turn on 2-Step Verification in your Google account (required first)."
+msgstr ""
+
 #. js-lingui-id: EdHWDU
 #: src/modules/settings/data-model/fields/forms/select/components/SettingsDataModelFieldSelectFormOptionRow.tsx
 msgid "Turquoise"
@@ -19937,6 +19982,11 @@ msgstr "输入内容或按 \"/\" 查看命令"
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelNewSidebarItemRecordSubPage.tsx
 msgid "Type to search records"
 msgstr "输入以搜索记录"
+
+#. js-lingui-id: RzrCQI
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Type your email address first, then use the button to fill in every server field for you."
+msgstr ""
 
 #. js-lingui-id: SILT51
 #: src/modules/ai/components/internal/AiChatQuestionOtherOption.tsx
@@ -20833,6 +20883,11 @@ msgstr "使用默认的应用程序值。通过环境变量进行配置。"
 #: src/modules/settings/admin-panel/config-variables/components/ConfigVariableHelpText.tsx
 msgid "Using default value. Set a custom value to override."
 msgstr "使用默认值。设置自定义值以覆盖。"
+
+#. js-lingui-id: tNYLZh
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Using Gmail or Google Workspace?"
+msgstr ""
 
 #. js-lingui-id: zzp4XX
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
