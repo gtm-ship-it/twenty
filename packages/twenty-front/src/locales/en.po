@@ -3452,6 +3452,7 @@ msgstr "caldav.example.com"
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
+#: src/pages/inbox/InboxPage.tsx
 msgid "Calendar"
 msgstr "Calendar"
 
@@ -17697,6 +17698,12 @@ msgstr "Show this object's records in the command menu (⌘K)."
 #: src/modules/side-panel/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
 msgid "Show value in center"
 msgstr "Show value in center"
+
+#. js-lingui-id: esIpb7
+#. placeholder {0}: calendarEvents?.length ?? 0
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Showing {0} of {totalNumberOfCalendarEvents} events"
+msgstr "Showing {0} of {totalNumberOfCalendarEvents} events"
 
 #. js-lingui-id: oMza0r
 #. placeholder {0}: visibleThreads.length

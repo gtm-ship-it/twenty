@@ -48,6 +48,101 @@ export class TimelineCalendarEventService {
     page: number;
     pageSize: number;
   }): Promise<TimelineCalendarEventsWithTotalDTO> {
+    return this.getCalendarEventsByFilter({
+      currentWorkspaceMemberId,
+      workspaceId,
+      page,
+      pageSize,
+      eventWhere: { calendarEventParticipants: { personId: Any(personIds) } },
+      relatedPersonIds: personIds,
+    });
+  }
+
+  /**
+   * Eventos de las cuentas conectadas del propio usuario (vista Calendar del
+   * modulo Email). Solo devuelve cuentas cuyo dueño es el usuario que pregunta.
+   */
+  async getCalendarEventsFromConnectedAccountIds({
+    currentWorkspaceMemberId,
+    userWorkspaceId,
+    connectedAccountIds,
+    workspaceId,
+    page = 1,
+    pageSize = TIMELINE_CALENDAR_EVENTS_DEFAULT_PAGE_SIZE,
+  }: {
+    currentWorkspaceMemberId: string;
+    userWorkspaceId: string;
+    connectedAccountIds: string[];
+    workspaceId: string;
+    page: number;
+    pageSize: number;
+  }): Promise<TimelineCalendarEventsWithTotalDTO> {
+    if (connectedAccountIds.length === 0) {
+      return {
+        totalNumberOfCalendarEvents: 0,
+        timelineCalendarEvents: [],
+        relatedPersonIds: [],
+      };
+    }
+
+    const ownedAccounts = await this.connectedAccountRepository.find({
+      where: { id: In(connectedAccountIds), workspaceId, userWorkspaceId },
+      select: { id: true },
+    });
+
+    if (ownedAccounts.length === 0) {
+      return {
+        totalNumberOfCalendarEvents: 0,
+        timelineCalendarEvents: [],
+        relatedPersonIds: [],
+      };
+    }
+
+    const calendarChannels = await this.calendarChannelRepository.find({
+      where: {
+        connectedAccountId: In(ownedAccounts.map((account) => account.id)),
+        workspaceId,
+      },
+      select: { id: true },
+    });
+
+    if (calendarChannels.length === 0) {
+      return {
+        totalNumberOfCalendarEvents: 0,
+        timelineCalendarEvents: [],
+        relatedPersonIds: [],
+      };
+    }
+
+    return this.getCalendarEventsByFilter({
+      currentWorkspaceMemberId,
+      workspaceId,
+      page,
+      pageSize,
+      eventWhere: {
+        calendarChannelEventAssociations: {
+          calendarChannelId: Any(calendarChannels.map((c) => c.id)),
+        },
+      },
+      relatedPersonIds: [],
+    });
+  }
+
+  private async getCalendarEventsByFilter({
+    currentWorkspaceMemberId,
+    workspaceId,
+    page,
+    pageSize,
+    eventWhere,
+    relatedPersonIds,
+  }: {
+    currentWorkspaceMemberId: string;
+    workspaceId: string;
+    page: number;
+    pageSize: number;
+    eventWhere: Record<string, unknown>;
+    relatedPersonIds: string[];
+  }): Promise<TimelineCalendarEventsWithTotalDTO> {
     const authContext = buildSystemAuthContext(workspaceId);
 
     return this.globalWorkspaceOrmManager.executeInWorkspaceContext(
@@ -71,20 +166,12 @@ export class TimelineCalendarEventService {
 
         const totalNumberOfCalendarEvents = await calendarEventRepository.count(
           {
-            where: {
-              calendarEventParticipants: {
-                personId: Any(personIds),
-              },
-            },
+            where: eventWhere,
           },
         );
 
         const calendarEventIds = await calendarEventRepository.find({
-          where: {
-            calendarEventParticipants: {
-              personId: Any(personIds),
-            },
-          },
+          where: eventWhere,
           select: {
             id: true,
             startsAt: true,
@@ -102,7 +189,7 @@ export class TimelineCalendarEventService {
           return {
             totalNumberOfCalendarEvents,
             timelineCalendarEvents: [],
-            relatedPersonIds: personIds,
+            relatedPersonIds,
           };
         }
 
@@ -330,7 +417,7 @@ export class TimelineCalendarEventService {
         return {
           totalNumberOfCalendarEvents,
           timelineCalendarEvents,
-          relatedPersonIds: personIds,
+          relatedPersonIds,
         };
       },
       authContext,

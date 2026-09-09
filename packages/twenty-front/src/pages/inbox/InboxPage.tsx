@@ -6,6 +6,7 @@ import { IconInbox } from 'twenty-ui/icon';
 
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
+import { InboxCalendarView } from '@/inbox/components/InboxCalendarView';
 import { InboxPipelineBoard } from '@/inbox/components/InboxPipelineBoard';
 import { InboxThreadList } from '@/inbox/components/InboxThreadList';
 import { PipelineEditorModal } from '@/inbox/components/PipelineEditorModal';
@@ -152,6 +153,7 @@ export const InboxPage = () => {
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null,
   );
+  const [isCalendarView, setIsCalendarView] = useState(false);
   const [pipelineEditorState, setPipelineEditorState] = useState<
     { pipeline: InboxPipeline | null } | null
   >(null);
@@ -298,12 +300,14 @@ export const InboxPage = () => {
       <StyledHeader>
         <IconInbox size={16} />
         <StyledTitle>Email</StyledTitle>
+        {!isCalendarView && (
         <StyledSearchInput
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
           placeholder={t`Search emails by name, address, subject or text`}
         />
-        {accounts.length > 1 && !selectedPipeline && (
+        )}
+        {accounts.length > 1 && (isCalendarView || !selectedPipeline) && (
           <StyledAccountTabs>
             <Select
               dropdownId="inbox-account-select"
@@ -325,16 +329,31 @@ export const InboxPage = () => {
       {activeAccountId && (
         <StyledViewTabs>
           <StyledAccountTab
-            active={selectedPipeline === null}
-            onClick={() => setSelectedPipelineId(null)}
+            active={selectedPipeline === null && !isCalendarView}
+            onClick={() => {
+              setSelectedPipelineId(null);
+              setIsCalendarView(false);
+            }}
           >
             {t`Inbox`}
+          </StyledAccountTab>
+          <StyledAccountTab
+            active={isCalendarView}
+            onClick={() => {
+              setSelectedPipelineId(null);
+              setIsCalendarView(true);
+            }}
+          >
+            {t`Calendar`}
           </StyledAccountTab>
           {pipelines.map((pipeline) => (
             <StyledAccountTab
               key={pipeline.id}
               active={pipeline.id === selectedPipelineId}
-              onClick={() => setSelectedPipelineId(pipeline.id)}
+              onClick={() => {
+                setSelectedPipelineId(pipeline.id);
+                setIsCalendarView(false);
+              }}
               onDoubleClick={() => setPipelineEditorState({ pipeline })}
             >
               {pipeline.name}
@@ -368,7 +387,13 @@ export const InboxPage = () => {
           )}
         </StyledViewTabs>
       )}
-      {activeAccountId && selectedPipeline && (
+      {activeAccountId && isCalendarView && (
+        <InboxCalendarView
+          key={`cal-${activeAccountId}`}
+          accountIds={[activeAccountId]}
+        />
+      )}
+      {activeAccountId && !isCalendarView && selectedPipeline && (
         <InboxPipelineBoard
           key={selectedPipeline.id}
           accountIds={
@@ -384,7 +409,7 @@ export const InboxPage = () => {
           onRemoveFromPipeline={handleRemoveFromPipeline}
         />
       )}
-      {activeAccountId && !selectedPipeline && (
+      {activeAccountId && !isCalendarView && !selectedPipeline && (
         <InboxThreadList
           key={activeAccountId}
           connectedAccountId={activeAccountId}

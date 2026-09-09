@@ -3452,6 +3452,7 @@ msgstr ""
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
+#: src/pages/inbox/InboxPage.tsx
 msgid "Calendar"
 msgstr ""
 
@@ -17673,6 +17674,12 @@ msgstr ""
 #. js-lingui-id: TJ4tz9
 #: src/modules/side-panel/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
 msgid "Show value in center"
+msgstr ""
+
+#. js-lingui-id: esIpb7
+#. placeholder {0}: calendarEvents?.length ?? 0
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Showing {0} of {totalNumberOfCalendarEvents} events"
 msgstr ""
 
 #. js-lingui-id: oMza0r

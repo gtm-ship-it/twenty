@@ -10,6 +10,7 @@ import { TimelineCalendarEventsWithTotalDTO } from 'src/engine/core-modules/cale
 import { TimelineCalendarEventService } from 'src/engine/core-modules/calendar/timeline-calendar-event.service';
 import { AuthWorkspace } from 'src/engine/decorators/auth/auth-workspace.decorator';
 import { AuthWorkspaceMemberId } from 'src/engine/decorators/auth/auth-workspace-member-id.decorator';
+import { AuthUserWorkspaceId } from 'src/engine/decorators/auth/auth-user-workspace-id.decorator';
 import { CoreResolver } from 'src/engine/api/graphql/graphql-config/decorators/core-resolver.decorator';
 import { CustomPermissionGuard } from 'src/engine/guards/custom-permission.guard';
 import { WorkspaceAuthGuard } from 'src/engine/guards/workspace-auth.guard';
@@ -76,6 +77,28 @@ export class TimelineCalendarEventResolver {
   constructor(
     private readonly timelineCalendarEventService: TimelineCalendarEventService,
   ) {}
+
+  @Query(() => TimelineCalendarEventsWithTotalDTO)
+  async getTimelineCalendarEventsFromConnectedAccountIds(
+    @Args('connectedAccountIds', { type: () => [UUIDScalarType] })
+    connectedAccountIds: string[],
+    @Args('page', { type: () => Int }) page: number,
+    @Args('pageSize', { type: () => Int }) pageSize: number,
+    @AuthWorkspaceMemberId() workspaceMemberId: string,
+    @AuthUserWorkspaceId() userWorkspaceId: string,
+    @AuthWorkspace() workspace: WorkspaceEntity,
+  ) {
+    return this.timelineCalendarEventService.getCalendarEventsFromConnectedAccountIds(
+      {
+        currentWorkspaceMemberId: workspaceMemberId,
+        userWorkspaceId,
+        connectedAccountIds,
+        workspaceId: workspace.id,
+        page,
+        pageSize: Math.min(pageSize, TIMELINE_CALENDAR_EVENTS_MAX_PAGE_SIZE),
+      },
+    );
+  }
 
   @Query(() => TimelineCalendarEventsWithTotalDTO)
   async getTimelineCalendarEventsFromObjectRecord(
