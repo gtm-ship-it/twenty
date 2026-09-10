@@ -143,6 +143,11 @@ msgstr "(未选择图标)"
 msgid "(No name)"
 msgstr "(无名称)"
 
+#. js-lingui-id: mo7HDj
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "(No title)"
+msgstr ""
+
 #. js-lingui-id: p35p2M
 #: src/modules/ui/input/components/IconPicker.tsx
 msgid "(selected: {selectedIconKey})"
@@ -238,6 +243,12 @@ msgstr "{0} 个重复项"
 #: src/modules/settings/applications/hooks/useComputeObjectAndFieldsContentForApplication.ts
 msgid "{0} fields"
 msgstr "{0}个字段"
+
+#. js-lingui-id: e2WoFB
+#. placeholder {0}: event.participants?.length
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "{0} guests"
+msgstr ""
 
 #. js-lingui-id: l8kqMU
 #. placeholder {0}: loadBalanceObjectMetadataItem.labelPlural
@@ -1996,6 +2007,7 @@ msgstr "整个平台上的所有应用注册，包括孤立的应用市场应用
 
 #. js-lingui-id: 1kLn6M
 #: src/modules/activities/calendar/components/CalendarEventRow.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/record-calendar/time-grid/components/RecordCalendarTimeGrid.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 msgid "All day"
@@ -13688,6 +13700,11 @@ msgstr "未启用任何触发器。切换上方的选项之一以选择此函数
 msgid "No unsubscribers found"
 msgstr "未找到退订用户"
 
+#. js-lingui-id: gR1NAu
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "No upcoming events on this account."
+msgstr ""
+
 #. js-lingui-id: WwlPOG
 #: src/pages/settings/ai/SettingsAiUsageUserDetail.tsx
 #: src/pages/settings/billing/SettingsUsageUserDetail.tsx
@@ -17754,10 +17771,10 @@ msgstr "在命令菜单（⌘K）中显示此对象的记录。"
 msgid "Show value in center"
 msgstr ""
 
-#. js-lingui-id: esIpb7
-#. placeholder {0}: calendarEvents?.length ?? 0
+#. js-lingui-id: MYQwkK
+#. placeholder {0}: events.length
 #: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "Showing {0} of {totalNumberOfCalendarEvents} events"
+msgid "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
 msgstr ""
 
 #. js-lingui-id: oMza0r
@@ -19559,6 +19576,7 @@ msgstr ""
 
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 #: src/modules/object-record/record-calendar/components/RecordCalendarTopBar.tsx
 #: src/modules/settings/admin-panel/health-status/constants/WorkerQueueMetricsSelectOptions.ts
@@ -19613,6 +19631,7 @@ msgid "Tomato"
 msgstr "番茄色"
 
 #. js-lingui-id: BRMXj0
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 msgid "Tomorrow"
 msgstr "明天"

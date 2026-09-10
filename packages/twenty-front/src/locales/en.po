@@ -138,6 +138,11 @@ msgstr "(no icon selected)"
 msgid "(No name)"
 msgstr "(No name)"
 
+#. js-lingui-id: mo7HDj
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "(No title)"
+msgstr "(No title)"
+
 #. js-lingui-id: p35p2M
 #: src/modules/ui/input/components/IconPicker.tsx
 msgid "(selected: {selectedIconKey})"
@@ -233,6 +238,12 @@ msgstr "{0} duplicate"
 #: src/modules/settings/applications/hooks/useComputeObjectAndFieldsContentForApplication.ts
 msgid "{0} fields"
 msgstr "{0} fields"
+
+#. js-lingui-id: e2WoFB
+#. placeholder {0}: event.participants?.length
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "{0} guests"
+msgstr "{0} guests"
 
 #. js-lingui-id: l8kqMU
 #. placeholder {0}: loadBalanceObjectMetadataItem.labelPlural
@@ -1991,6 +2002,7 @@ msgstr "All application registrations across the platform, including orphaned ma
 
 #. js-lingui-id: 1kLn6M
 #: src/modules/activities/calendar/components/CalendarEventRow.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/record-calendar/time-grid/components/RecordCalendarTimeGrid.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 msgid "All day"
@@ -13706,6 +13718,11 @@ msgstr "No trigger is enabled. Toggle one of the options above to choose how thi
 msgid "No unsubscribers found"
 msgstr "No unsubscribers found"
 
+#. js-lingui-id: gR1NAu
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "No upcoming events on this account."
+msgstr "No upcoming events on this account."
+
 #. js-lingui-id: WwlPOG
 #: src/pages/settings/ai/SettingsAiUsageUserDetail.tsx
 #: src/pages/settings/billing/SettingsUsageUserDetail.tsx
@@ -17772,11 +17789,11 @@ msgstr "Show this object's records in the command menu (⌘K)."
 msgid "Show value in center"
 msgstr "Show value in center"
 
-#. js-lingui-id: esIpb7
-#. placeholder {0}: calendarEvents?.length ?? 0
+#. js-lingui-id: MYQwkK
+#. placeholder {0}: events.length
 #: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "Showing {0} of {totalNumberOfCalendarEvents} events"
-msgstr "Showing {0} of {totalNumberOfCalendarEvents} events"
+msgid "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
+msgstr "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
 
 #. js-lingui-id: oMza0r
 #. placeholder {0}: visibleThreads.length
@@ -19609,6 +19626,7 @@ msgstr "To pipeline"
 
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 #: src/modules/object-record/record-calendar/components/RecordCalendarTopBar.tsx
 #: src/modules/settings/admin-panel/health-status/constants/WorkerQueueMetricsSelectOptions.ts
@@ -19663,6 +19681,7 @@ msgid "Tomato"
 msgstr "Tomato"
 
 #. js-lingui-id: BRMXj0
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 msgid "Tomorrow"
 msgstr "Tomorrow"

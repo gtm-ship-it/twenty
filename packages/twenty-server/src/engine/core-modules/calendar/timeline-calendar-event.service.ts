@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import omit from 'lodash.omit';
 import { FIELD_RESTRICTED_ADDITIONAL_PERMISSIONS_REQUIRED } from 'twenty-shared/constants';
 import { isDefined } from 'twenty-shared/utils';
-import { Any, In, type Repository } from 'typeorm';
+import { Any, In, MoreThanOrEqual, type Repository } from 'typeorm';
 
 import { CalendarChannelVisibility } from 'twenty-shared/types';
 import { TIMELINE_CALENDAR_EVENTS_DEFAULT_PAGE_SIZE } from 'src/engine/core-modules/calendar/constants/calendar.constants';
@@ -114,6 +114,11 @@ export class TimelineCalendarEventService {
       };
     }
 
+    // Agenda, no historial: desde el inicio del dia de hoy y hacia adelante.
+    const startOfToday = new Date();
+
+    startOfToday.setHours(0, 0, 0, 0);
+
     return this.getCalendarEventsByFilter({
       currentWorkspaceMemberId,
       workspaceId,
@@ -123,8 +128,10 @@ export class TimelineCalendarEventService {
         calendarChannelEventAssociations: {
           calendarChannelId: Any(calendarChannels.map((c) => c.id)),
         },
+        startsAt: MoreThanOrEqual(startOfToday),
       },
       relatedPersonIds: [],
+      startsAtOrder: 'ASC',
     });
   }
 
@@ -135,6 +142,7 @@ export class TimelineCalendarEventService {
     pageSize,
     eventWhere,
     relatedPersonIds,
+    startsAtOrder = 'DESC',
   }: {
     currentWorkspaceMemberId: string;
     workspaceId: string;
@@ -142,6 +150,7 @@ export class TimelineCalendarEventService {
     pageSize: number;
     eventWhere: Record<string, unknown>;
     relatedPersonIds: string[];
+    startsAtOrder?: 'ASC' | 'DESC';
   }): Promise<TimelineCalendarEventsWithTotalDTO> {
     const authContext = buildSystemAuthContext(workspaceId);
 
@@ -179,7 +188,7 @@ export class TimelineCalendarEventService {
           skip: offset,
           take: pageSize,
           order: {
-            startsAt: 'DESC',
+            startsAt: startsAtOrder,
           },
         });
 
