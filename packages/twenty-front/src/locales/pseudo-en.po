@@ -2204,11 +2204,6 @@ msgstr ""
 msgid "Already in navbar"
 msgstr ""
 
-#. js-lingui-id: qtVOvp
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "Also sync my calendar events (recommended)."
-msgstr ""
-
 #. js-lingui-id: u/DP73
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Alt text"
@@ -3475,7 +3470,6 @@ msgstr ""
 
 #. js-lingui-id: AjVXBS
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
-#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
 #: src/pages/inbox/InboxPage.tsx
@@ -3528,6 +3522,11 @@ msgstr ""
 #. js-lingui-id: mhcSf1
 #: src/modules/views/types/ViewType.ts
 msgid "Calendar widget"
+msgstr ""
+
+#. js-lingui-id: qUW2yZ
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
+msgid "Calendar: Google stopped accepting App Passwords for calendars in March 2025, so it cannot be connected here. It needs the \"Connect with Google\" option — ask your administrator to enable it."
 msgstr ""
 
 #. js-lingui-id: EUpfsd
@@ -16583,6 +16582,7 @@ msgstr ""
 #. js-lingui-id: tfDRzk
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/inbox/components/SignatureEditorModal.tsx
+#: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
 msgid "Save"
@@ -18835,9 +18835,9 @@ msgstr ""
 msgid "Text Editor"
 msgstr ""
 
-#. js-lingui-id: 5cvN3t
+#. js-lingui-id: QBGnuC
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
-msgid "That is all — servers, ports and security are set for you. Click Save."
+msgid "That is all — servers, ports and security are set for you. Click Save and your email starts syncing."
 msgstr ""
 
 #. js-lingui-id: Z4WP0F

@@ -10,7 +10,6 @@ import { SettingsAccountsPasswordController } from '@/settings/accounts/componen
 import { type ConnectionFormData } from '@/settings/accounts/hooks/useImapSmtpCaldavConnectionForm';
 import { EmailConnectionSecurity } from '~/generated-metadata/graphql';
 import { type AccountType } from 'twenty-shared/constants';
-import { Toggle } from 'twenty-ui/input';
 import { H2Title } from 'twenty-ui/typography';
 import { Section } from 'twenty-ui/layout';
 import { MOBILE_VIEWPORT, themeCssVariables } from 'twenty-ui/theme-constants';
@@ -99,12 +98,6 @@ const StyledStepText = styled.span`
   line-height: 1.5;
 `;
 
-const StyledToggleRow = styled.div`
-  align-items: center;
-  display: flex;
-  gap: ${themeCssVariables.spacing[2]};
-`;
-
 const StyledAdvancedLink = styled.button`
   align-self: flex-start;
   background: transparent;
@@ -176,7 +169,9 @@ export const SettingsAccountsConnectionForm = ({
   const { setValue, watch } = useFormContext<ConnectionFormData>();
   const emailAddress = watch('handle');
   const [isAdvancedMode, setIsAdvancedMode] = useState(isEditing);
-  const [shouldSyncCalendar, setShouldSyncCalendar] = useState(true);
+  // Google exige OAuth para CalDAV desde 2025-03: con App Password el
+  // calendario SIEMPRE falla, asi que el modo guiado solo configura correo.
+  const shouldSyncCalendar = false;
 
   const applyGoogleSettings = ({
     address,
@@ -244,15 +239,6 @@ export const SettingsAccountsConnectionForm = ({
       address: emailAddress ?? '',
       password: value,
       withCalendar: shouldSyncCalendar,
-    });
-  };
-
-  const handleToggleCalendar = (value: boolean) => {
-    setShouldSyncCalendar(value);
-    applyGoogleSettings({
-      address: emailAddress ?? '',
-      password: simplePassword,
-      withCalendar: value,
     });
   };
 
@@ -337,18 +323,12 @@ export const SettingsAccountsConnectionForm = ({
           <StyledStep>
             <StyledStepNumber>5</StyledStepNumber>
             <StyledStepBody>
-              <StyledStepTitle>{t`Calendar`}</StyledStepTitle>
-              <StyledToggleRow>
-                <Toggle
-                  value={shouldSyncCalendar}
-                  onChange={handleToggleCalendar}
-                />
-                <StyledStepText>
-                  {t`Also sync my calendar events (recommended).`}
-                </StyledStepText>
-              </StyledToggleRow>
+              <StyledStepTitle>{t`Save`}</StyledStepTitle>
               <StyledStepText>
-                {t`That is all — servers, ports and security are set for you. Click Save.`}
+                {t`That is all — servers, ports and security are set for you. Click Save and your email starts syncing.`}
+              </StyledStepText>
+              <StyledStepText>
+                {t`Calendar: Google stopped accepting App Passwords for calendars in March 2025, so it cannot be connected here. It needs the "Connect with Google" option — ask your administrator to enable it.`}
               </StyledStepText>
             </StyledStepBody>
           </StyledStep>
