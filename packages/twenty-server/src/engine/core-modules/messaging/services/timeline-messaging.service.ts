@@ -9,7 +9,6 @@ import {
   In,
   type ObjectLiteral,
   type Repository,
-  type SelectQueryBuilder,
 } from 'typeorm';
 
 import { FileUrlService } from 'src/engine/core-modules/file/file-url/file-url.service';
@@ -272,9 +271,18 @@ export class TimelineMessagingService {
           }
         }
 
-        const applySearchFilter = <Entity extends ObjectLiteral>(
-          queryBuilder: SelectQueryBuilder<Entity>,
-        ): SelectQueryBuilder<Entity> =>
+        // Tipado estructural: el ORM de Twenty devuelve WorkspaceSelectQueryBuilder,
+        // que no es asignable a SelectQueryBuilder pero expone el mismo andWhere.
+        const applySearchFilter = <
+          QueryBuilder extends {
+            andWhere: (
+              condition: string,
+              parameters?: ObjectLiteral,
+            ) => QueryBuilder;
+          },
+        >(
+          queryBuilder: QueryBuilder,
+        ): QueryBuilder =>
           hasSearch
             ? queryBuilder.andWhere(
                 'messageThread.id IN (:...matchingThreadIds)',

@@ -239,12 +239,6 @@ msgstr ""
 msgid "{0} fields"
 msgstr ""
 
-#. js-lingui-id: e2WoFB
-#. placeholder {0}: event.participants?.length
-#: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "{0} guests"
-msgstr ""
-
 #. js-lingui-id: l8kqMU
 #. placeholder {0}: loadBalanceObjectMetadataItem.labelPlural
 #: src/modules/workflow/workflow-steps/workflow-actions/pick-record-action/components/WorkflowEditActionPickRecord.tsx
@@ -4115,6 +4109,11 @@ msgstr ""
 #. js-lingui-id: QvOsdy
 #: src/modules/ui/input/components/IconPicker.tsx
 msgid "Click to select icon {iconAriaLabel}"
+msgstr ""
+
+#. js-lingui-id: Dqo+Nd
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Click to show only this one, again to exclude it"
 msgstr ""
 
 #. js-lingui-id: ss6vFU
@@ -10963,6 +10962,11 @@ msgstr ""
 msgid "john.doe@example.com"
 msgstr ""
 
+#. js-lingui-id: 0wdd7X
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Join"
+msgstr ""
+
 #. js-lingui-id: fSPjtl
 #: src/pages/auth/SignInUp.tsx
 msgid "Join {workspaceName} team"
@@ -11850,6 +11854,11 @@ msgstr ""
 #. js-lingui-id: MsaCqr
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 msgid "Mail Account"
+msgstr ""
+
+#. js-lingui-id: xaPsED
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Mailboxes:"
 msgstr ""
 
 #. js-lingui-id: 6Dd2PM
@@ -13426,6 +13435,11 @@ msgstr ""
 msgid "No matching activity"
 msgstr ""
 
+#. js-lingui-id: rj/R6i
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "No meeting link"
+msgstr ""
+
 #. js-lingui-id: UwvrGq
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersTeamTab.tsx
 msgid "No members"
@@ -13700,9 +13714,9 @@ msgstr ""
 msgid "No unsubscribers found"
 msgstr ""
 
-#. js-lingui-id: gR1NAu
+#. js-lingui-id: XAv6XD
 #: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "No upcoming events on this account."
+msgid "No upcoming events."
 msgstr ""
 
 #. js-lingui-id: WwlPOG
@@ -17772,7 +17786,7 @@ msgid "Show value in center"
 msgstr ""
 
 #. js-lingui-id: MYQwkK
-#. placeholder {0}: events.length
+#. placeholder {0}: visibleEvents.length
 #: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
 msgstr ""

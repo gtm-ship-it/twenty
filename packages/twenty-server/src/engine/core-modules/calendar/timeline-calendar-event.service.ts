@@ -319,6 +319,20 @@ export class TimelineCalendarEventService {
               )
             : new Set<string>();
 
+        // handle de la cuenta por canal: el front necesita saber de cual de
+        // MIS buzones viene cada evento (y un evento puede estar en varios).
+        const accountHandleById = new Map(
+          (
+            await this.connectedAccountRepository.find({
+              where: {
+                id: In(calendarChannels.map((c) => c.connectedAccountId)),
+                workspaceId,
+              },
+              select: { id: true, handle: true },
+            })
+          ).map((account) => [account.id, account.handle]),
+        );
+
         const calendarChannelMap = new Map(
           calendarChannels.map((channel) => [
             channel.id,
@@ -327,6 +341,8 @@ export class TimelineCalendarEventService {
               isOwnedByCurrentUser: ownedAccountIds.has(
                 channel.connectedAccountId,
               ),
+              accountHandle:
+                accountHandleById.get(channel.connectedAccountId) ?? '',
             },
           ]),
         );
@@ -394,11 +410,27 @@ export class TimelineCalendarEventService {
               ? CalendarChannelVisibility.SHARE_EVERYTHING
               : CalendarChannelVisibility.METADATA;
 
+            const accountHandles = [
+              ...new Set(
+                event.calendarChannelEventAssociations
+                  .map(
+                    (association) =>
+                      calendarChannelMap.get(association.calendarChannelId)
+                        ?.accountHandle,
+                  )
+                  .filter(
+                    (handle): handle is string =>
+                      typeof handle === 'string' && handle.length > 0,
+                  ),
+              ),
+            ];
+
             return {
               ...omit(event, [
                 'calendarEventParticipants',
                 'calendarChannelEventAssociations',
               ]),
+              accountHandles,
               title:
                 visibility === CalendarChannelVisibility.METADATA
                   ? FIELD_RESTRICTED_ADDITIONAL_PERMISSIONS_REQUIRED

@@ -1,4 +1,3 @@
-import { timelineCalendarEventWithTotalFragment } from '@/activities/calendar/graphql/queries/fragments/timelineCalendarEventWithTotalFragment';
 import { gql } from '@apollo/client';
 
 export const getTimelineCalendarEventsFromConnectedAccountIds = gql`
@@ -12,8 +11,26 @@ export const getTimelineCalendarEventsFromConnectedAccountIds = gql`
       page: $page
       pageSize: $pageSize
     ) {
-      ...TimelineCalendarEventsWithTotalFragment
+      totalNumberOfCalendarEvents
+      timelineCalendarEvents {
+        id
+        title
+        startsAt
+        endsAt
+        isFullDay
+        location
+        visibility
+        conferenceSolution
+        accountHandles
+        conferenceLink {
+          primaryLinkLabel
+          primaryLinkUrl
+        }
+        participants {
+          displayName
+          handle
+        }
+      }
     }
   }
-  ${timelineCalendarEventWithTotalFragment}
 `;

@@ -58,6 +58,9 @@ export class TimelineCalendarEventDTO {
   @Field(() => LinksMetadataDTO)
   conferenceLink: LinksMetadataDTO;
 
+  @Field(() => [String])
+  accountHandles: string[];
+
   @Field(() => [TimelineCalendarEventParticipantDTO])
   participants: TimelineCalendarEventParticipantDTO[];
 

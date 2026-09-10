@@ -4,10 +4,25 @@ import { useState } from 'react';
 import { useSnackBarOnQueryError } from '@/apollo/hooks/useSnackBarOnQueryError';
 import { getTimelineCalendarEventsFromConnectedAccountIds } from '@/inbox/graphql/getTimelineCalendarEventsFromConnectedAccountIds';
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
-import { type TimelineCalendarEventsWithTotal } from '~/generated/graphql';
+import {
+  type TimelineCalendarEvent as GeneratedTimelineCalendarEvent,
+  type TimelineCalendarEventsWithTotal,
+} from '~/generated/graphql';
+
+/**
+ * `accountHandles` lo agrega nuestro fork al DTO (de que buzon del usuario
+ * viene el evento). Los tipos generados salen del schema publicado, asi que
+ * lo declaramos aqui hasta que se regeneren.
+ */
+export type InboxCalendarEvent = GeneratedTimelineCalendarEvent & {
+  accountHandles?: string[] | null;
+};
 
 type InboxCalendarQueryResult = {
-  getTimelineCalendarEventsFromConnectedAccountIds: TimelineCalendarEventsWithTotal;
+  getTimelineCalendarEventsFromConnectedAccountIds: Omit<
+    TimelineCalendarEventsWithTotal,
+    'timelineCalendarEvents'
+  > & { timelineCalendarEvents: InboxCalendarEvent[] };
 };
 
 export const useInboxCalendarEvents = (

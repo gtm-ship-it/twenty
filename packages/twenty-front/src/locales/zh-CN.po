@@ -244,12 +244,6 @@ msgstr "{0} 个重复项"
 msgid "{0} fields"
 msgstr "{0}个字段"
 
-#. js-lingui-id: e2WoFB
-#. placeholder {0}: event.participants?.length
-#: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "{0} guests"
-msgstr ""
-
 #. js-lingui-id: l8kqMU
 #. placeholder {0}: loadBalanceObjectMetadataItem.labelPlural
 #: src/modules/workflow/workflow-steps/workflow-actions/pick-record-action/components/WorkflowEditActionPickRecord.tsx
@@ -4121,6 +4115,11 @@ msgstr "点击查看数据"
 #: src/modules/ui/input/components/IconPicker.tsx
 msgid "Click to select icon {iconAriaLabel}"
 msgstr "点击选择图标 {iconAriaLabel}"
+
+#. js-lingui-id: Dqo+Nd
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Click to show only this one, again to exclude it"
+msgstr ""
 
 #. js-lingui-id: ss6vFU
 #: src/modules/settings/legal/components/SettingsDpaAgreementRow.tsx
@@ -10968,6 +10967,11 @@ msgstr "john.doe"
 msgid "john.doe@example.com"
 msgstr "john.doe@example.com"
 
+#. js-lingui-id: 0wdd7X
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Join"
+msgstr ""
+
 #. js-lingui-id: fSPjtl
 #: src/pages/auth/SignInUp.tsx
 msgid "Join {workspaceName} team"
@@ -11856,6 +11860,11 @@ msgstr "循环"
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 msgid "Mail Account"
 msgstr "邮件账户"
+
+#. js-lingui-id: xaPsED
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Mailboxes:"
+msgstr ""
 
 #. js-lingui-id: 6Dd2PM
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
@@ -13431,6 +13440,11 @@ msgstr ""
 msgid "No matching activity"
 msgstr "没有匹配的活动"
 
+#. js-lingui-id: rj/R6i
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "No meeting link"
+msgstr ""
+
 #. js-lingui-id: UwvrGq
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersTeamTab.tsx
 msgid "No members"
@@ -13705,9 +13719,9 @@ msgstr "未启用任何触发器。切换上方的选项之一以选择此函数
 msgid "No unsubscribers found"
 msgstr "未找到退订用户"
 
-#. js-lingui-id: gR1NAu
+#. js-lingui-id: XAv6XD
 #: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "No upcoming events on this account."
+msgid "No upcoming events."
 msgstr ""
 
 #. js-lingui-id: WwlPOG
@@ -17777,7 +17791,7 @@ msgid "Show value in center"
 msgstr ""
 
 #. js-lingui-id: MYQwkK
-#. placeholder {0}: events.length
+#. placeholder {0}: visibleEvents.length
 #: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
 msgstr ""

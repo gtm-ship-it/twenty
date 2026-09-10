@@ -239,12 +239,6 @@ msgstr "{0} duplicate"
 msgid "{0} fields"
 msgstr "{0} fields"
 
-#. js-lingui-id: e2WoFB
-#. placeholder {0}: event.participants?.length
-#: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "{0} guests"
-msgstr "{0} guests"
-
 #. js-lingui-id: l8kqMU
 #. placeholder {0}: loadBalanceObjectMetadataItem.labelPlural
 #: src/modules/workflow/workflow-steps/workflow-actions/pick-record-action/components/WorkflowEditActionPickRecord.tsx
@@ -4116,6 +4110,11 @@ msgstr "Click to see data"
 #: src/modules/ui/input/components/IconPicker.tsx
 msgid "Click to select icon {iconAriaLabel}"
 msgstr "Click to select icon {iconAriaLabel}"
+
+#. js-lingui-id: Dqo+Nd
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Click to show only this one, again to exclude it"
+msgstr "Click to show only this one, again to exclude it"
 
 #. js-lingui-id: ss6vFU
 #: src/modules/settings/legal/components/SettingsDpaAgreementRow.tsx
@@ -10986,6 +10985,11 @@ msgstr "john.doe"
 msgid "john.doe@example.com"
 msgstr "john.doe@example.com"
 
+#. js-lingui-id: 0wdd7X
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Join"
+msgstr "Join"
+
 #. js-lingui-id: fSPjtl
 #: src/pages/auth/SignInUp.tsx
 msgid "Join {workspaceName} team"
@@ -11874,6 +11878,11 @@ msgstr "loop"
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 msgid "Mail Account"
 msgstr "Mail Account"
+
+#. js-lingui-id: xaPsED
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "Mailboxes:"
+msgstr "Mailboxes:"
 
 #. js-lingui-id: 6Dd2PM
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
@@ -13449,6 +13458,11 @@ msgstr "No logs yet"
 msgid "No matching activity"
 msgstr "No matching activity"
 
+#. js-lingui-id: rj/R6i
+#: src/modules/inbox/components/InboxCalendarView.tsx
+msgid "No meeting link"
+msgstr "No meeting link"
+
 #. js-lingui-id: UwvrGq
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersTeamTab.tsx
 msgid "No members"
@@ -13723,10 +13737,10 @@ msgstr "No trigger is enabled. Toggle one of the options above to choose how thi
 msgid "No unsubscribers found"
 msgstr "No unsubscribers found"
 
-#. js-lingui-id: gR1NAu
+#. js-lingui-id: XAv6XD
 #: src/modules/inbox/components/InboxCalendarView.tsx
-msgid "No upcoming events on this account."
-msgstr "No upcoming events on this account."
+msgid "No upcoming events."
+msgstr "No upcoming events."
 
 #. js-lingui-id: WwlPOG
 #: src/pages/settings/ai/SettingsAiUsageUserDetail.tsx
@@ -17795,7 +17809,7 @@ msgid "Show value in center"
 msgstr "Show value in center"
 
 #. js-lingui-id: MYQwkK
-#. placeholder {0}: events.length
+#. placeholder {0}: visibleEvents.length
 #: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
 msgstr "Showing {0} of {totalNumberOfCalendarEvents} upcoming events"
