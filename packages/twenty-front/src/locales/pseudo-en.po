@@ -3484,7 +3484,7 @@ msgstr ""
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
-#: src/pages/inbox/InboxPage.tsx
+#: src/pages/calendar/CalendarPage.tsx
 msgid "Calendar"
 msgstr ""
 
@@ -4711,6 +4711,11 @@ msgstr ""
 #. js-lingui-id: vPCRNy
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "Connect AI assistants like Claude or Cursor to your workspace via the Model Context Protocol"
+msgstr ""
+
+#. js-lingui-id: 7q0Bnb
+#: src/pages/calendar/CalendarPage.tsx
+msgid "Connect an account in Settings → Accounts to see your calendar here."
 msgstr ""
 
 #. js-lingui-id: oHZ6RM

@@ -3489,7 +3489,7 @@ msgstr "שם משתמש CalDAV"
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/settings/accounts/components/SettingsAccountsSettingsSection.tsx
 #: src/modules/views/types/ViewType.ts
-#: src/pages/inbox/InboxPage.tsx
+#: src/pages/calendar/CalendarPage.tsx
 msgid "Calendar"
 msgstr "לוח שנה"
 
@@ -4717,6 +4717,11 @@ msgstr "חבר לקוחות MCP נוספים באמצעות קישורי התק�
 #: src/pages/settings/ai/components/SettingsAiOverviewTab.tsx
 msgid "Connect AI assistants like Claude or Cursor to your workspace via the Model Context Protocol"
 msgstr "חבר עוזרי AI כמו Claude או Cursor לסביבת העבודה שלך באמצעות Model Context Protocol"
+
+#. js-lingui-id: 7q0Bnb
+#: src/pages/calendar/CalendarPage.tsx
+msgid "Connect an account in Settings → Accounts to see your calendar here."
+msgstr ""
 
 #. js-lingui-id: oHZ6RM
 #: src/pages/inbox/InboxPage.tsx

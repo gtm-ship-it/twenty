@@ -46,6 +46,12 @@ const InboxPage = lazy(() =>
   })),
 );
 
+const CalendarPage = lazy(() =>
+  import('~/pages/calendar/CalendarPage').then((module) => ({
+    default: module.CalendarPage,
+  })),
+);
+
 const RecordShowPage = lazy(() =>
   import('~/pages/object-record/RecordShowPage').then((module) => ({
     default: module.RecordShowPage,
@@ -225,6 +231,14 @@ const createWorkspaceAppRouter = ({
                 element={
                   <LazyRoute>
                     <InboxPage />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path={AppPath.CalendarPage}
+                element={
+                  <LazyRoute>
+                    <CalendarPage />
                   </LazyRoute>
                 }
               />
