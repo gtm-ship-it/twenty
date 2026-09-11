@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { WorkspaceIteratorModule } from 'src/database/commands/command-runners/workspace-iterator.module';
+import { AddMessageBodyHtmlFieldCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608400-add-message-body-html-field.command';
 import { AddTimelineActivityTypeSnapshotCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608319-add-timeline-activity-type-snapshot.command';
 import { ConfigureTimelineActivityRoutingCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608317-configure-timeline-activity-routing.command';
 import { ConfigureStandardTimelineRenderersCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608318-configure-standard-timeline-renderers.command';
@@ -23,6 +24,7 @@ import { WorkspaceMigrationModule } from 'src/engine/workspace-manager/workspace
     WorkspaceMigrationModule,
   ],
   providers: [
+    AddMessageBodyHtmlFieldCommand,
     AddTimelineActivityTypeSnapshotCommand,
     ConfigureTimelineActivityRoutingCommand,
     ConfigureStandardTimelineRenderersCommand,
