@@ -28,6 +28,16 @@ const getPurifier = () => {
         }
       }
 
+      // Un `url(...)` dentro de un style en linea descarga un recurso remoto
+      // igual que una imagen, asi que delata la apertura del correo aunque
+      // las imagenes esten bloqueadas. Se quita el atributo entero: no
+      // merece la pena parsear CSS para salvar el resto de la declaracion.
+      const style = node.getAttribute?.('style');
+
+      if (isNonEmptyString(style) && /url\s*\(/i.test(style)) {
+        node.removeAttribute('style');
+      }
+
       // Todo enlace se abre fuera y sin filtrar el referrer.
       if (node.tagName === 'A') {
         node.setAttribute('target', '_blank');

@@ -114,10 +114,10 @@ export class TimelineCalendarEventService {
       };
     }
 
-    // Agenda, no historial: desde el inicio del dia de hoy y hacia adelante.
-    const startOfToday = new Date();
-
-    startOfToday.setHours(0, 0, 0, 0);
+    // Agenda, no historial: se filtra por `endsAt`, no por `startsAt`, para
+    // que una reunion desaparezca cuando termina de verdad y no al empezar.
+    // Una que ya paso se va sola; una en curso se queda hasta su hora final.
+    const now = new Date();
 
     return this.getCalendarEventsByFilter({
       currentWorkspaceMemberId,
@@ -128,7 +128,7 @@ export class TimelineCalendarEventService {
         calendarChannelEventAssociations: {
           calendarChannelId: Any(calendarChannels.map((c) => c.id)),
         },
-        startsAt: MoreThanOrEqual(startOfToday),
+        endsAt: MoreThanOrEqual(now),
       },
       relatedPersonIds: [],
       startsAtOrder: 'ASC',
