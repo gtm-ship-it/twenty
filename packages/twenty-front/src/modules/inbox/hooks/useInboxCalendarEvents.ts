@@ -25,9 +25,14 @@ type InboxCalendarQueryResult = {
   > & { timelineCalendarEvents: InboxCalendarEvent[] };
 };
 
+type DateRange = { startDate: string; endDate: string } | null;
+
 export const useInboxCalendarEvents = (
   connectedAccountIds: string[],
   pageSize: number,
+  // Sin rango, el servidor devuelve la agenda (de ahora en adelante). La
+  // vista de calendario manda uno para traer tambien lo ya pasado del mes.
+  dateRange: DateRange = null,
 ) => {
   const apolloCoreClient = useApolloCoreClient();
 
@@ -40,7 +45,13 @@ export const useInboxCalendarEvents = (
       {
         client: apolloCoreClient,
         skip: connectedAccountIds.length === 0,
-        variables: { connectedAccountIds, page: 1, pageSize },
+        variables: {
+          connectedAccountIds,
+          page: 1,
+          pageSize,
+          startDate: dateRange?.startDate ?? null,
+          endDate: dateRange?.endDate ?? null,
+        },
       },
     );
 
@@ -60,6 +71,8 @@ export const useInboxCalendarEvents = (
         connectedAccountIds,
         page: page.pageNumber + 1,
         pageSize,
+        startDate: dateRange?.startDate ?? null,
+        endDate: dateRange?.endDate ?? null,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         const previous =

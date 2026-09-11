@@ -84,6 +84,13 @@ export class TimelineCalendarEventResolver {
     connectedAccountIds: string[],
     @Args('page', { type: () => Int }) page: number,
     @Args('pageSize', { type: () => Int }) pageSize: number,
+    // Rango opcional. Sin el, se devuelve la agenda: de ahora en adelante.
+    // La vista de calendario si lo manda, porque necesita el mes entero
+    // incluidas las reuniones que ya pasaron.
+    @Args('startDate', { type: () => String, nullable: true })
+    startDate: string | null,
+    @Args('endDate', { type: () => String, nullable: true })
+    endDate: string | null,
     @AuthWorkspaceMemberId() workspaceMemberId: string,
     @AuthUserWorkspaceId() userWorkspaceId: string,
     @AuthWorkspace() workspace: WorkspaceEntity,
@@ -96,6 +103,8 @@ export class TimelineCalendarEventResolver {
         workspaceId: workspace.id,
         page,
         pageSize: Math.min(pageSize, TIMELINE_CALENDAR_EVENTS_MAX_PAGE_SIZE),
+        startDate,
+        endDate,
       },
     );
   }

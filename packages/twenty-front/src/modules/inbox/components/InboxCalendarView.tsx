@@ -6,6 +6,8 @@ import { themeCssVariables } from 'twenty-ui/theme-constants';
 
 import { CustomResolverFetchMoreLoader } from '@/activities/components/CustomResolverFetchMoreLoader';
 import { SkeletonLoader } from '@/activities/components/SkeletonLoader';
+import { CalendarMonthGrid } from '@/inbox/components/CalendarMonthGrid';
+import { CalendarWeekGrid } from '@/inbox/components/CalendarWeekGrid';
 import {
   useInboxCalendarEvents,
   type InboxCalendarEvent as TimelineCalendarEvent,
@@ -221,19 +223,166 @@ const getJoinUrl = (event: TimelineCalendarEvent): string | null => {
   return typeof url === 'string' && url.length > 0 ? url : null;
 };
 
+
+type CalendarViewMode = 'list' | 'week' | 'month';
+
+const VIEW_MODES: { value: CalendarViewMode; label: () => string }[] = [
+  { value: 'list', label: () => t`List` },
+  { value: 'week', label: () => t`Week` },
+  { value: 'month', label: () => t`Month` },
+];
+
+// Las rejillas traen un periodo entero de golpe, no una agenda paginada.
+const GRID_PAGE_SIZE = 500;
+
+const StyledToolbar = styled.div`
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${themeCssVariables.spacing[2]};
+  justify-content: space-between;
+`;
+
+const StyledViewSwitch = styled.div`
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  display: flex;
+  overflow: hidden;
+`;
+
+const StyledViewButton = styled.button<{ isActive: boolean }>`
+  background: ${({ isActive }) =>
+    isActive
+      ? themeCssVariables.background.tertiary
+      : themeCssVariables.background.primary};
+  border: none;
+  color: ${({ isActive }) =>
+    isActive
+      ? themeCssVariables.font.color.primary
+      : themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[3]};
+`;
+
+const StyledNav = styled.div`
+  align-items: center;
+  display: flex;
+  gap: ${themeCssVariables.spacing[1]};
+`;
+
+const StyledNavButton = styled.button`
+  background: ${themeCssVariables.background.primary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.secondary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
+`;
+
+const StyledPeriodLabel = styled.span`
+  color: ${themeCssVariables.font.color.primary};
+  font-size: ${themeCssVariables.font.size.sm};
+  font-weight: ${themeCssVariables.font.weight.medium};
+  padding-left: ${themeCssVariables.spacing[2]};
+`;
+
+/** Lunes de la semana que contiene `date`. */
+const startOfWeek = (date: Date) => {
+  const result = new Date(date);
+  const weekdayFromMonday = (result.getDay() + 6) % 7;
+
+  result.setDate(result.getDate() - weekdayFromMonday);
+  result.setHours(0, 0, 0, 0);
+
+  return result;
+};
+
+const shiftAnchor = (
+  mode: CalendarViewMode,
+  anchor: Date,
+  direction: 1 | -1,
+) => {
+  const result = new Date(anchor);
+
+  if (mode === 'week') {
+    result.setDate(result.getDate() + 7 * direction);
+  } else {
+    result.setMonth(result.getMonth() + direction);
+  }
+
+  return result;
+};
+
+/**
+ * Ventana a pedir al servidor. Se piden margenes generosos (la semana
+ * completa de los bordes del mes) porque la rejilla del mes dibuja dias del
+ * mes anterior y del siguiente.
+ */
+const getRangeForView = (mode: CalendarViewMode, anchor: Date) => {
+  const start =
+    mode === 'week'
+      ? startOfWeek(anchor)
+      : startOfWeek(new Date(anchor.getFullYear(), anchor.getMonth(), 1));
+
+  const end = new Date(start);
+
+  end.setDate(start.getDate() + (mode === 'week' ? 7 : 42));
+  end.setHours(23, 59, 59, 999);
+
+  return { startDate: start.toISOString(), endDate: end.toISOString() };
+};
+
+const formatPeriodLabel = (mode: CalendarViewMode, anchor: Date) => {
+  if (mode === 'month') {
+    return anchor.toLocaleDateString(undefined, {
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  const start = startOfWeek(anchor);
+  const end = new Date(start);
+
+  end.setDate(start.getDate() + 6);
+
+  return `${start.toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+  })} – ${end.toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+  })}`;
+};
+
 type InboxCalendarViewProps = {
   /** Todas las cuentas del usuario: el calendario es centralizado. */
   accountIds: string[];
 };
 
 export const InboxCalendarView = ({ accountIds }: InboxCalendarViewProps) => {
+  const [viewMode, setViewMode] = useState<CalendarViewMode>('list');
+  // Ancla de navegacion: en semana avanza de 7 en 7 dias, en mes de mes en mes.
+  const [anchorDate, setAnchorDate] = useState(() => new Date());
+
+  // La lista es una agenda (sin rango: el servidor devuelve de ahora en
+  // adelante). Las rejillas si piden ventana, porque un mes sin lo ya pasado
+  // tendria huecos.
+  const dateRange =
+    viewMode === 'list' ? null : getRangeForView(viewMode, anchorDate);
+
   const {
     calendarEvents,
     totalNumberOfCalendarEvents,
     firstQueryLoading,
     isFetchingMore,
     fetchMoreRecords,
-  } = useInboxCalendarEvents(accountIds, CALENDAR_PAGE_SIZE);
+  } = useInboxCalendarEvents(
+    accountIds,
+    viewMode === 'list' ? CALENDAR_PAGE_SIZE : GRID_PAGE_SIZE,
+    dateRange,
+  );
 
   // Filtro por buzón: sin selección = todos. Un clic incluye solo ese,
   // otro clic lo excluye, otro lo devuelve a neutro.
@@ -319,7 +468,114 @@ export const InboxCalendarView = ({ accountIds }: InboxCalendarViewProps) => {
         </StyledFilterBar>
       )}
 
-      {visibleEvents.length === 0 ? (
+      <StyledToolbar>
+        <StyledViewSwitch>
+          {VIEW_MODES.map((mode) => (
+            <StyledViewButton
+              key={mode.value}
+              type="button"
+              isActive={viewMode === mode.value}
+              onClick={() => {
+                setViewMode(mode.value);
+                setAnchorDate(new Date());
+              }}
+            >
+              {mode.label()}
+            </StyledViewButton>
+          ))}
+        </StyledViewSwitch>
+
+        {viewMode !== 'list' && (
+          <StyledNav>
+            <StyledNavButton
+              type="button"
+              onClick={() => setAnchorDate(shiftAnchor(viewMode, anchorDate, -1))}
+            >
+              ‹
+            </StyledNavButton>
+            <StyledNavButton
+              type="button"
+              onClick={() => setAnchorDate(new Date())}
+            >
+              {t`Today`}
+            </StyledNavButton>
+            <StyledNavButton
+              type="button"
+              onClick={() => setAnchorDate(shiftAnchor(viewMode, anchorDate, 1))}
+            >
+              ›
+            </StyledNavButton>
+            <StyledPeriodLabel>
+              {formatPeriodLabel(viewMode, anchorDate)}
+            </StyledPeriodLabel>
+          </StyledNav>
+        )}
+      </StyledToolbar>
+
+      {viewMode === 'month' && (
+        <CalendarMonthGrid
+          monthDate={anchorDate}
+          events={visibleEvents}
+          onEventClick={(eventId) =>
+            setExpandedEventId(expandedEventId === eventId ? null : eventId)
+          }
+        />
+      )}
+
+      {viewMode === 'week' && (
+        <CalendarWeekGrid
+          weekStart={startOfWeek(anchorDate)}
+          events={visibleEvents}
+          onEventClick={(eventId) =>
+            setExpandedEventId(expandedEventId === eventId ? null : eventId)
+          }
+        />
+      )}
+
+      {viewMode !== 'list' &&
+        (() => {
+          const selected = visibleEvents.find(
+            (event) => event.id === expandedEventId,
+          );
+
+          if (!selected) {
+            return null;
+          }
+
+          const joinUrl = getJoinUrl(selected);
+
+          return (
+            <StyledEventCard>
+              <StyledEventRow>
+                <StyledEventTime>{formatTimeRange(selected)}</StyledEventTime>
+                <StyledEventTitle>
+                  {selected.title || t`(No title)`}
+                </StyledEventTitle>
+                {(selected.accountHandles ?? []).map((handle) => (
+                  <StyledAccountBadge key={handle}>{handle}</StyledAccountBadge>
+                ))}
+                {joinUrl && (
+                  <StyledJoinButton
+                    href={joinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <IconVideo size={14} />
+                    {t`Join`}
+                  </StyledJoinButton>
+                )}
+              </StyledEventRow>
+              {selected.location && (
+                <StyledEventDetails>
+                  <span>📍 {selected.location}</span>
+                </StyledEventDetails>
+              )}
+            </StyledEventCard>
+          );
+        })()}
+
+      {viewMode === 'list' &&
+        (visibleEvents.length === 0 ? (
         <StyledEmptyState>{t`No upcoming events.`}</StyledEmptyState>
       ) : (
         <>
@@ -398,6 +654,13 @@ export const InboxCalendarView = ({ accountIds }: InboxCalendarViewProps) => {
             onLastRowVisible={fetchMoreRecords}
           />
         </>
+        ))}
+
+      {viewMode !== 'list' && (
+        <CustomResolverFetchMoreLoader
+          loading={isFetchingMore}
+          onLastRowVisible={fetchMoreRecords}
+        />
       )}
     </StyledContainer>
   );

@@ -4,7 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import omit from 'lodash.omit';
 import { FIELD_RESTRICTED_ADDITIONAL_PERMISSIONS_REQUIRED } from 'twenty-shared/constants';
 import { isDefined } from 'twenty-shared/utils';
-import { Any, In, MoreThanOrEqual, type Repository } from 'typeorm';
+import {
+  Any,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  type Repository,
+} from 'typeorm';
 
 import { CalendarChannelVisibility } from 'twenty-shared/types';
 import { TIMELINE_CALENDAR_EVENTS_DEFAULT_PAGE_SIZE } from 'src/engine/core-modules/calendar/constants/calendar.constants';
@@ -69,6 +75,8 @@ export class TimelineCalendarEventService {
     workspaceId,
     page = 1,
     pageSize = TIMELINE_CALENDAR_EVENTS_DEFAULT_PAGE_SIZE,
+    startDate = null,
+    endDate = null,
   }: {
     currentWorkspaceMemberId: string;
     userWorkspaceId: string;
@@ -76,6 +84,8 @@ export class TimelineCalendarEventService {
     workspaceId: string;
     page: number;
     pageSize: number;
+    startDate?: string | null;
+    endDate?: string | null;
   }): Promise<TimelineCalendarEventsWithTotalDTO> {
     if (connectedAccountIds.length === 0) {
       return {
@@ -114,10 +124,24 @@ export class TimelineCalendarEventService {
       };
     }
 
-    // Agenda, no historial: se filtra por `endsAt`, no por `startsAt`, para
-    // que una reunion desaparezca cuando termina de verdad y no al empezar.
-    // Una que ya paso se va sola; una en curso se queda hasta su hora final.
-    const now = new Date();
+    // Dos modos. Con rango (vista calendario) se devuelve la ventana pedida
+    // tal cual, incluidas las reuniones ya pasadas: un mes con huecos donde
+    // ya paso la hora no seria un calendario.
+    // Sin rango (agenda) se filtra por `endsAt`, no por `startsAt`, para que
+    // una reunion desaparezca cuando termina de verdad y no al empezar; una
+    // en curso se mantiene hasta su hora final.
+    const hasExplicitRange = isDefined(startDate) || isDefined(endDate);
+
+    const dateFilter = hasExplicitRange
+      ? {
+          ...(isDefined(endDate)
+            ? { startsAt: LessThanOrEqual(new Date(endDate)) }
+            : {}),
+          ...(isDefined(startDate)
+            ? { endsAt: MoreThanOrEqual(new Date(startDate)) }
+            : {}),
+        }
+      : { endsAt: MoreThanOrEqual(new Date()) };
 
     return this.getCalendarEventsByFilter({
       currentWorkspaceMemberId,
@@ -128,7 +152,7 @@ export class TimelineCalendarEventService {
         calendarChannelEventAssociations: {
           calendarChannelId: Any(calendarChannels.map((c) => c.id)),
         },
-        endsAt: MoreThanOrEqual(now),
+        ...dateFilter,
       },
       relatedPersonIds: [],
       startsAtOrder: 'ASC',

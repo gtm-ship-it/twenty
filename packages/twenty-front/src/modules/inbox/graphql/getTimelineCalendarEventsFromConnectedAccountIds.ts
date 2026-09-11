@@ -5,11 +5,15 @@ export const getTimelineCalendarEventsFromConnectedAccountIds = gql`
     $connectedAccountIds: [UUID!]!
     $page: Int!
     $pageSize: Int!
+    $startDate: String
+    $endDate: String
   ) {
     getTimelineCalendarEventsFromConnectedAccountIds(
       connectedAccountIds: $connectedAccountIds
       page: $page
       pageSize: $pageSize
+      startDate: $startDate
+      endDate: $endDate
     ) {
       totalNumberOfCalendarEvents
       timelineCalendarEvents {
