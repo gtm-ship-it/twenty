@@ -338,7 +338,7 @@ export class EmailComposerService {
     context: ToolExecutionContext,
   ): Promise<EmailComposerResult> {
     const { workspaceId, userWorkspaceId } = context;
-    const { subject, body, files, inReplyTo } = parameters;
+    const { subject, body, files, inReplyTo, signatureHtml } = parameters;
     let { connectedAccountId } = parameters;
 
     let recipients: { to: string[]; cc: string[]; bcc: string[] };
@@ -417,8 +417,17 @@ export class EmailComposerService {
 
     const attachments = await this.getAttachments(files || [], workspaceId);
 
-    const { html: sanitizedHtmlBody, plainText: plainTextBody } =
-      await compileOutboundEmailContent(body ?? '');
+    const compiledBody = await compileOutboundEmailContent(body ?? '');
+    const compiledSignature = isDefined(signatureHtml)
+      ? await compileOutboundEmailContent(signatureHtml)
+      : undefined;
+
+    const sanitizedHtmlBody = isDefined(compiledSignature)
+      ? `${compiledBody.html}<br /><br />${compiledSignature.html}`
+      : compiledBody.html;
+    const plainTextBody = isDefined(compiledSignature)
+      ? `${compiledBody.plainText}\n\n${compiledSignature.plainText}`
+      : compiledBody.plainText;
     const sanitizedSubject = await sanitizeOutboundEmailSubject(subject || '');
 
     const { threadExternalId, references } =

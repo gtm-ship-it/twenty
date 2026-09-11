@@ -65,6 +65,7 @@ export class SendEmailResolver {
           },
           subject: input.subject,
           body: input.body,
+          signatureHtml: input.signatureHtml ?? undefined,
           connectedAccountId: input.connectedAccountId,
           files: input.files ?? [],
           inReplyTo: input.inReplyTo,

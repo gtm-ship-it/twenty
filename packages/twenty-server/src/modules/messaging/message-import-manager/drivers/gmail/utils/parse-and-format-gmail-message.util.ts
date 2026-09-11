@@ -9,6 +9,7 @@ import { parseGmailMessage } from 'src/modules/messaging/message-import-manager/
 import { type MessageWithParticipants } from 'src/modules/messaging/message-import-manager/types/message';
 import { buildReplyToParticipants } from 'src/modules/messaging/message-import-manager/utils/build-reply-to-participants.util';
 import { extractMessageBodyText } from 'src/modules/messaging/message-import-manager/utils/extract-message-body-text.util';
+import { sanitizeMessageBodyHtml } from 'src/modules/messaging/message-import-manager/utils/sanitize-message-body-html.util';
 import { formatAddressObjectAsParticipants } from 'src/modules/messaging/message-import-manager/utils/format-address-object-as-participants.util';
 
 export const parseAndFormatGmailMessage = (
@@ -28,6 +29,7 @@ export const parseAndFormatGmailMessage = (
     headerMessageId,
     body,
     isHtml,
+    htmlBody,
     attachments,
     deliveredTo,
     labelIds,
@@ -83,6 +85,7 @@ export const parseAndFormatGmailMessage = (
     direction: computeMessageDirection(from.address || '', connectedAccount),
     participants,
     text: extractMessageBodyText(isHtml ? { html: body } : { text: body }),
+    bodyHtml: sanitizeMessageBodyHtml(htmlBody ?? (isHtml ? body : null)),
     attachments,
     messageFolderExternalIds: labelIds,
     labelIds,

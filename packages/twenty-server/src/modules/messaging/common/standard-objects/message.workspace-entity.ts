@@ -9,6 +9,9 @@ export class MessageWorkspaceEntity extends BaseWorkspaceEntity {
   headerMessageId: string | null;
   subject: string | null;
   text: string | null;
+  // HTML original del correo, ya saneado en el import.
+  // `text` sigue siendo la version plana (busqueda, previews, fallback).
+  bodyHtml: string | null;
   receivedAt: Date | null;
   messageThread: EntityRelation<MessageThreadWorkspaceEntity> | null;
   messageThreadId: string | null;

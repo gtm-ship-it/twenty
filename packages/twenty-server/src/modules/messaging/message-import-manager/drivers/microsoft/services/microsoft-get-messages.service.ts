@@ -12,6 +12,7 @@ import { type MicrosoftGraphBatchResponse } from 'src/modules/messaging/message-
 import { type MessageWithParticipants } from 'src/modules/messaging/message-import-manager/types/message';
 import { buildReplyToParticipants } from 'src/modules/messaging/message-import-manager/utils/build-reply-to-participants.util';
 import { extractMessageBodyText } from 'src/modules/messaging/message-import-manager/utils/extract-message-body-text.util';
+import { sanitizeMessageBodyHtml } from 'src/modules/messaging/message-import-manager/utils/sanitize-message-body-html.util';
 import { formatAddressObjectAsParticipants } from 'src/modules/messaging/message-import-manager/utils/format-address-object-as-participants.util';
 import { safeParseEmailAddress } from 'src/modules/messaging/message-import-manager/utils/safe-parse-email-address.util';
 
@@ -150,6 +151,10 @@ export class MicrosoftGetMessagesService {
         subject: response.subject || '',
         receivedAt: new Date(response.receivedDateTime),
         text,
+        bodyHtml:
+          response.body?.contentType === 'text'
+            ? null
+            : sanitizeMessageBodyHtml(response.body?.content),
         headerMessageId: response.internetMessageId,
         messageThreadExternalId: response.conversationId,
         direction: response.from

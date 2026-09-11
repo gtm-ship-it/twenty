@@ -30,6 +30,9 @@ export class SendEmailInput {
   body: string;
 
   @Field(() => String, { nullable: true })
+  signatureHtml?: string;
+
+  @Field(() => String, { nullable: true })
   inReplyTo?: string;
 
   @Field(() => String, { nullable: true })

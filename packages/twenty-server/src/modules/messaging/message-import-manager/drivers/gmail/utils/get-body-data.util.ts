@@ -5,6 +5,9 @@ type MessagePart = gmailV1.Schema$MessagePart;
 type BodyData = {
   data: string;
   isHtml: boolean;
+  // El HTML se devuelve SIEMPRE que exista, aunque se prefiera text/plain
+  // para `data`: es lo que permite mostrar el correo con su formato real.
+  htmlData?: string;
 };
 
 const MAX_PARTS_TO_PROCESS = 100;
@@ -46,11 +49,15 @@ export const getBodyData = (
   }
 
   if (result.textPlain) {
-    return { data: result.textPlain, isHtml: false };
+    return {
+      data: result.textPlain,
+      isHtml: false,
+      htmlData: result.textHtml,
+    };
   }
 
   if (result.textHtml) {
-    return { data: result.textHtml, isHtml: true };
+    return { data: result.textHtml, isHtml: true, htmlData: result.textHtml };
   }
 
   return undefined;

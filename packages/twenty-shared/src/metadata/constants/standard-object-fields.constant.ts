@@ -642,6 +642,7 @@ export const STANDARD_OBJECT_FIELDS = {
     },
     subject: { universalIdentifier: '20202020-52d1-4036-b9ae-84bd722bb37a' },
     text: { universalIdentifier: '20202020-d2ee-4e7e-89de-9a0a9044a143' },
+    bodyHtml: { universalIdentifier: '251f8275-b4eb-4a8c-be0f-c77b515a7413' },
     receivedAt: {
       universalIdentifier: '20202020-140a-4a2a-9f86-f13b6a979afc',
     },

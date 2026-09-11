@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
+import { isNonEmptyString } from '@sniptt/guards';
 import { EmailThreadMessageBody } from '@/activities/emails/components/EmailThreadMessageBody';
+import { EmailThreadMessageHtmlBody } from '@/activities/emails/components/EmailThreadMessageHtmlBody';
 import { EmailThreadMessageBodyPreview } from '@/activities/emails/components/EmailThreadMessageBodyPreview';
 import { EmailThreadMessageLayout } from '@/activities/emails/components/EmailThreadMessageLayout';
 import { EmailThreadMessageReceivers } from '@/activities/emails/components/EmailThreadMessageReceivers';
@@ -86,7 +88,11 @@ export const EmailThreadMessage = ({
         <EmailThreadNotShared visibility={MessageChannelVisibility.METADATA} />
       ) : isDraft || !isOpen ? (
         <EmailThreadMessageBodyPreview body={message.text} />
+      ) : isNonEmptyString(message.bodyHtml) ? (
+        <EmailThreadMessageHtmlBody bodyHtml={message.bodyHtml} />
       ) : (
+        // Correos solo-texto y todo lo importado antes de que existiera
+        // `bodyHtml`: se sigue pintando la version plana.
         <EmailThreadMessageBody body={message.text} isDisplayed />
       )}
     </EmailThreadMessageLayout>

@@ -37,6 +37,9 @@ export const parseGmailMessage = (message: gmail_v1.Schema$Message) => {
     ? Buffer.from(bodyResult.data, 'base64').toString()
     : '';
   const isHtml = bodyResult?.isHtml ?? false;
+  const decodedHtmlBody = bodyResult?.htmlData
+    ? Buffer.from(bodyResult.htmlData, 'base64').toString()
+    : undefined;
 
   const attachments = getAttachmentData(message);
 
@@ -57,6 +60,7 @@ export const parseGmailMessage = (message: gmail_v1.Schema$Message) => {
     bcc: rawBcc ? safeParseEmailAddresses(rawBcc) : [],
     body: decodedBody,
     isHtml,
+    htmlBody: decodedHtmlBody,
     attachments,
     labelIds,
     messageHeaders,

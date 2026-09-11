@@ -45,26 +45,29 @@ export const useSendEmail = () => {
   const sendEmail = useCallback(
     async (params: SendEmailParams): Promise<SendEmailResult> => {
       try {
-        // Firma del usuario (configurada en el Inbox) al final del cuerpo.
-        const bodyWithSignature =
-          signature && signature.trim().length > 0
-            ? `${params.body}<br/><br/>${signature}`
-            : params.body;
+        // La firma va en su propio campo, NUNCA concatenada al body: el body
+        // es un documento TipTap serializado y pegarle HTML lo invalida, con
+        // lo que el destinatario recibia el JSON crudo.
+        const signatureHtml =
+          signature && signature.trim().length > 0 ? signature : undefined;
+
+        // `signatureHtml` es un campo del fork; los tipos generados de
+        // GraphQL aun no lo conocen (el codegen no corre en el build).
+        const input = {
+          connectedAccountId: params.connectedAccountId,
+          to: params.to,
+          cc: params.cc,
+          bcc: params.bcc,
+          subject: params.subject,
+          body: params.body,
+          signatureHtml,
+          inReplyTo: params.inReplyTo,
+          draftMessageId: params.draftMessageId,
+          files: params.files,
+        } as SendEmailMutationVariables['input'];
 
         const result = await sendEmailMutation({
-          variables: {
-            input: {
-              connectedAccountId: params.connectedAccountId,
-              to: params.to,
-              cc: params.cc,
-              bcc: params.bcc,
-              subject: params.subject,
-              body: bodyWithSignature,
-              inReplyTo: params.inReplyTo,
-              draftMessageId: params.draftMessageId,
-              files: params.files,
-            },
-          },
+          variables: { input },
         });
 
         if (result.data?.sendEmail.success) {

@@ -168,6 +168,7 @@ export class MessagingMessageService {
               subject: message.subject,
               receivedAt: message.receivedAt,
               text: message.text,
+              bodyHtml: message.bodyHtml ?? null,
               messageThreadId,
               isDraft: message.isDraft,
             };

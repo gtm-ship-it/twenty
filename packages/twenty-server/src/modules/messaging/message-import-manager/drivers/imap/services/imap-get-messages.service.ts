@@ -12,6 +12,7 @@ import { parseMessageId } from 'src/modules/messaging/message-import-manager/dri
 import { type MessageWithParticipants } from 'src/modules/messaging/message-import-manager/types/message';
 import { extractAddressesFromParsedEmail } from 'src/modules/messaging/message-import-manager/utils/extract-addresses-from-parsed-email.util';
 import { extractMessageBodyText } from 'src/modules/messaging/message-import-manager/utils/extract-message-body-text.util';
+import { sanitizeMessageBodyHtml } from 'src/modules/messaging/message-import-manager/utils/sanitize-message-body-html.util';
 import { extractParticipantsFromParsedEmail } from 'src/modules/messaging/message-import-manager/utils/extract-participants-from-parsed-email.util';
 import { extractThreadIdFromParsedEmail } from 'src/modules/messaging/message-import-manager/utils/extract-thread-id-from-parsed-email.util';
 import { sanitizeString } from 'src/modules/messaging/message-import-manager/utils/sanitize-string.util';
@@ -179,6 +180,9 @@ export class ImapGetMessagesService {
       headerMessageId: parsed.messageId || String(uid),
       subject: sanitizeString(parsed.subject || ''),
       text,
+      bodyHtml: sanitizeMessageBodyHtml(
+        typeof parsed.html === 'string' ? parsed.html : null,
+      ),
       receivedAt: parsed.date ? new Date(parsed.date) : null,
       direction: computeMessageDirection(senderAddress, connectedAccount),
       attachments: (parsed.attachments || []).map((attachment) => ({

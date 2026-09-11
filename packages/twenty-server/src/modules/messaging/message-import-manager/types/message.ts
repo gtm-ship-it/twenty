@@ -16,7 +16,11 @@ export type Message = Omit<
   | 'messageCampaign'
   | 'messageCampaignId'
   | 'deliveryStatus'
+  // Opcional: los drivers que no manejan HTML (correo entrante por webhook)
+  // y los mocks no tienen por que declararlo.
+  | 'bodyHtml'
 > & {
+  bodyHtml?: string | null;
   attachments: {
     filename: string;
   }[];
