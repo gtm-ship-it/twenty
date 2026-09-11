@@ -76,6 +76,11 @@ const StyledCard = styled.div`
   cursor: grab;
   position: relative;
 
+  &[data-selected='true'] {
+    border-color: ${themeCssVariables.color.blue};
+    box-shadow: 0 0 0 1px ${themeCssVariables.color.blue};
+  }
+
   &:hover .inbox-card-menu-trigger {
     opacity: 1;
     pointer-events: auto;
@@ -153,8 +158,64 @@ const parseColumnDroppableId = (droppableId: string): number | null => {
   return match ? Number(match[1]) : null;
 };
 
+const StyledSelectionBar = styled.div`
+  align-items: center;
+  background: ${themeCssVariables.accent.quaternary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${themeCssVariables.spacing[2]};
+  padding: ${themeCssVariables.spacing[2]};
+`;
+
+const StyledSelectionCount = styled.span`
+  color: ${themeCssVariables.font.color.primary};
+  font-size: ${themeCssVariables.font.size.sm};
+  font-weight: ${themeCssVariables.font.weight.medium};
+`;
+
+const StyledSelectionLabel = styled.span`
+  color: ${themeCssVariables.font.color.tertiary};
+  font-size: ${themeCssVariables.font.size.sm};
+`;
+
+const StyledSelectionAction = styled.button`
+  background: ${themeCssVariables.background.primary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.secondary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
+
+  &:hover {
+    background: ${themeCssVariables.background.tertiary};
+  }
+`;
+
+const StyledCardCheckbox = styled.input`
+  cursor: pointer;
+  left: ${themeCssVariables.spacing[1]};
+  position: absolute;
+  top: ${themeCssVariables.spacing[1]};
+  z-index: 2;
+`;
+
+const StyledColumnSelectAll = styled.button`
+  background: none;
+  border: none;
+  color: ${themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  font-size: ${themeCssVariables.font.size.xs};
+  padding: 0;
+  text-decoration: underline;
+`;
+
 type PipelineCardProps = {
   thread: TimelineThread;
+  isSelected: boolean;
+  onToggleSelected: (event: React.MouseEvent) => void;
   isMenuOpen: boolean;
   onToggleMenu: () => void;
   onExcludeRule: (rule: string, threadId: string) => void;
@@ -164,6 +225,8 @@ type PipelineCardProps = {
 
 const PipelineCard = ({
   thread,
+  isSelected,
+  onToggleSelected,
   isMenuOpen,
   onToggleMenu,
   onExcludeRule,
@@ -181,7 +244,17 @@ const PipelineCard = ({
     : '';
 
   return (
-    <StyledCard ref={ref}>
+    <StyledCard ref={ref} data-selected={isSelected ? 'true' : undefined}>
+      <StyledCardCheckbox
+        type="checkbox"
+        checked={isSelected}
+        title={t`Select — shift-click to select a range`}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleSelected(event);
+        }}
+        onChange={() => {}}
+      />
       <EmailThreadPreview thread={thread} />
       <StyledCardMenuTrigger
         className="inbox-card-menu-trigger"
@@ -243,6 +316,9 @@ type PipelineColumnProps = {
   column: InboxPipelineColumn;
   columnIndex: number;
   threads: TimelineThread[];
+  selectedIds: Set<string>;
+  onToggleSelected: (threadId: string, event: React.MouseEvent) => void;
+  onSelectColumn: (threadIds: string[], shouldSelect: boolean) => void;
   menuThreadId: string | null;
   onToggleMenu: (threadId: string) => void;
   onExcludeRule: (rule: string, threadId: string) => void;
@@ -254,6 +330,9 @@ const PipelineColumn = ({
   column,
   columnIndex,
   threads,
+  selectedIds,
+  onToggleSelected,
+  onSelectColumn,
   menuThreadId,
   onToggleMenu,
   onExcludeRule,
@@ -269,11 +348,28 @@ const PipelineColumn = ({
       <StyledColumnTitle>
         <Tag color={column.color as TagColor} text={column.name} />
         <StyledColumnCount>· {threads.length}</StyledColumnCount>
+        {threads.length > 0 && (
+          <StyledColumnSelectAll
+            type="button"
+            onClick={() =>
+              onSelectColumn(
+                threads.map((thread) => thread.id),
+                !threads.every((thread) => selectedIds.has(thread.id)),
+              )
+            }
+          >
+            {threads.every((thread) => selectedIds.has(thread.id))
+              ? t`none`
+              : t`all`}
+          </StyledColumnSelectAll>
+        )}
       </StyledColumnTitle>
       {threads.map((thread) => (
         <PipelineCard
           key={thread.id}
           thread={thread}
+          isSelected={selectedIds.has(thread.id)}
+          onToggleSelected={(event) => onToggleSelected(thread.id, event)}
           isMenuOpen={menuThreadId === thread.id}
           onToggleMenu={() => onToggleMenu(thread.id)}
           onExcludeRule={onExcludeRule}
@@ -289,17 +385,17 @@ type InboxPipelineBoardProps = {
   accountIds: string[];
   searchTerm: string;
   pipeline: InboxPipeline;
-  onMoveCard: (threadId: string, columnIndex: number) => void;
+  onMoveCards: (threadIds: string[], columnIndex: number) => void;
   onExcludeRule: (rule: string, threadId: string) => void;
   onOnlyRule: (rule: string) => void;
-  onRemoveFromPipeline: (threadId: string) => void;
+  onRemoveFromPipeline: (threadIds: string[]) => void;
 };
 
 export const InboxPipelineBoard = ({
   accountIds,
   searchTerm,
   pipeline,
-  onMoveCard,
+  onMoveCards,
   onExcludeRule,
   onOnlyRule,
   onRemoveFromPipeline,
@@ -313,6 +409,9 @@ export const InboxPipelineBoard = ({
   } = useInboxThreads(accountIds, PIPELINE_BOARD_PAGE_SIZE, searchTerm);
 
   const [menuThreadId, setMenuThreadId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // Ancla del shift-click: ultimo id marcado a mano.
+  const [lastSelectedId, setLastSelectedId] = useState<string | null>(null);
 
   if (firstQueryLoading) {
     return <SkeletonLoader />;
@@ -360,11 +459,117 @@ export const InboxPipelineBoard = ({
 
   const hasMoreThreads = (threads?.length ?? 0) < totalNumberOfThreads;
 
+  // Orden visual de la baraja completa: es lo que hace que shift-click
+  // seleccione "de aqui hasta alli" y no un rango arbitrario.
+  const orderedIds = threadsByColumn.flatMap((columnThreads) =>
+    columnThreads.map((thread) => thread.id),
+  );
+
+  const setSelection = (ids: Iterable<string>) => setSelectedIds(new Set(ids));
+
+  const toggleSelected = (threadId: string, event: React.MouseEvent) => {
+    if (event.shiftKey && isDefined(lastSelectedId)) {
+      const from = orderedIds.indexOf(lastSelectedId);
+      const to = orderedIds.indexOf(threadId);
+
+      if (from !== -1 && to !== -1) {
+        const range = orderedIds.slice(
+          Math.min(from, to),
+          Math.max(from, to) + 1,
+        );
+
+        setSelection([...selectedIds, ...range]);
+        setLastSelectedId(threadId);
+
+        return;
+      }
+    }
+
+    const next = new Set(selectedIds);
+
+    if (next.has(threadId)) {
+      next.delete(threadId);
+    } else {
+      next.add(threadId);
+    }
+
+    setSelectedIds(next);
+    setLastSelectedId(threadId);
+  };
+
+  const selectMany = (threadIds: string[], shouldSelect: boolean) => {
+    const next = new Set(selectedIds);
+
+    for (const threadId of threadIds) {
+      if (shouldSelect) {
+        next.add(threadId);
+      } else {
+        next.delete(threadId);
+      }
+    }
+
+    setSelectedIds(next);
+  };
+
+  const selectedCount = selectedIds.size;
+
+  const moveSelection = (columnIndex: number) => {
+    onMoveCards([...selectedIds], columnIndex);
+    setSelectedIds(new Set());
+  };
+
   return (
     <StyledBoardWrapper>
       <StyledCountBar>
         {t`${pipelineThreads.length} in this pipeline · ${(threads ?? []).length} of ${totalNumberOfThreads} conversations loaded`}
+        {selectedCount === 0 && orderedIds.length > 0 && (
+          <StyledColumnSelectAll
+            type="button"
+            onClick={() => setSelection(orderedIds)}
+          >
+            {t`Select all`}
+          </StyledColumnSelectAll>
+        )}
       </StyledCountBar>
+
+      {selectedCount > 0 && (
+        <StyledSelectionBar>
+          <StyledSelectionCount>
+            {t`${selectedCount} selected`}
+          </StyledSelectionCount>
+          <StyledSelectionLabel>{t`Move to:`}</StyledSelectionLabel>
+          {pipeline.columns.map((column, columnIndex) => (
+            <StyledSelectionAction
+              key={columnIndex}
+              type="button"
+              onClick={() => moveSelection(columnIndex)}
+            >
+              {column.name}
+            </StyledSelectionAction>
+          ))}
+          <StyledSelectionAction
+            type="button"
+            onClick={() => {
+              onRemoveFromPipeline([...selectedIds]);
+              setSelectedIds(new Set());
+            }}
+          >
+            {t`Remove from pipeline`}
+          </StyledSelectionAction>
+          <StyledSelectionAction
+            type="button"
+            onClick={() => setSelection(orderedIds)}
+          >
+            {t`Select all`}
+          </StyledSelectionAction>
+          <StyledSelectionAction
+            type="button"
+            onClick={() => setSelectedIds(new Set())}
+          >
+            {t`Clear`}
+          </StyledSelectionAction>
+        </StyledSelectionBar>
+      )}
       <DragDropProvider
       onDragEnd={(event) => {
         const { source, target } = event.operation;
@@ -379,7 +584,17 @@ export const InboxPipelineBoard = ({
           return;
         }
 
-        onMoveCard(String(source.id), columnIndex);
+        const draggedId = String(source.id);
+
+        // Arrastrar una tarjeta que esta seleccionada mueve toda la seleccion;
+        // arrastrar una que no lo esta mueve solo esa y no toca la seleccion.
+        if (selectedIds.has(draggedId)) {
+          moveSelection(columnIndex);
+
+          return;
+        }
+
+        onMoveCards([draggedId], columnIndex);
       }}
     >
       <StyledBoard>
@@ -389,6 +604,9 @@ export const InboxPipelineBoard = ({
             column={column}
             columnIndex={columnIndex}
             threads={threadsByColumn[columnIndex]}
+            selectedIds={selectedIds}
+            onToggleSelected={toggleSelected}
+            onSelectColumn={selectMany}
             menuThreadId={menuThreadId}
             onToggleMenu={(threadId) =>
               setMenuThreadId(menuThreadId === threadId ? null : threadId)
@@ -403,7 +621,7 @@ export const InboxPipelineBoard = ({
             }}
             onRemoveFromPipeline={(threadId) => {
               setMenuThreadId(null);
-              onRemoveFromPipeline(threadId);
+              onRemoveFromPipeline([threadId]);
             }}
           />
         ))}

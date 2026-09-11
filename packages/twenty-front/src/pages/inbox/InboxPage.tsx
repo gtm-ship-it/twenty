@@ -183,20 +183,23 @@ export const InboxPage = () => {
     }
   };
 
-  const handleMoveCard = async (threadId: string, columnIndex: number) => {
-    if (!selectedPipeline) {
+  // Recibe una lista, no un id: mover una seleccion tiene que ser UN guardado.
+  // Encadenar uno por tarjeta serian N escrituras y estados intermedios raros.
+  const handleMoveCards = async (threadIds: string[], columnIndex: number) => {
+    if (!selectedPipeline || threadIds.length === 0) {
       return;
     }
+
+    const moved = Object.fromEntries(
+      threadIds.map((threadId) => [threadId, columnIndex]),
+    );
 
     await savePipelines(
       pipelines.map((pipeline) =>
         pipeline.id === selectedPipeline.id
           ? {
               ...pipeline,
-              cardColumns: {
-                ...pipeline.cardColumns,
-                [threadId]: columnIndex,
-              },
+              cardColumns: { ...pipeline.cardColumns, ...moved },
             }
           : pipeline,
       ),
@@ -258,10 +261,12 @@ export const InboxPage = () => {
     );
   };
 
-  const handleRemoveFromPipeline = async (threadId: string) => {
-    if (!selectedPipeline) {
+  const handleRemoveFromPipeline = async (threadIds: string[]) => {
+    if (!selectedPipeline || threadIds.length === 0) {
       return;
     }
+
+    const removed = new Set(threadIds);
 
     await savePipelines(
       pipelines.map((pipeline) => {
@@ -269,8 +274,11 @@ export const InboxPage = () => {
           return pipeline;
         }
 
-        const { [threadId]: _removed, ...remainingCardColumns } =
-          pipeline.cardColumns;
+        const remainingCardColumns = Object.fromEntries(
+          Object.entries(pipeline.cardColumns).filter(
+            ([threadId]) => !removed.has(threadId),
+          ),
+        );
 
         return { ...pipeline, cardColumns: remainingCardColumns };
       }),
@@ -378,7 +386,7 @@ export const InboxPage = () => {
           }
           searchTerm={searchTerm}
           pipeline={selectedPipeline}
-          onMoveCard={handleMoveCard}
+          onMoveCards={handleMoveCards}
           onExcludeRule={handleExcludeRule}
           onOnlyRule={handleOnlyRule}
           onRemoveFromPipeline={handleRemoveFromPipeline}
