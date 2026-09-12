@@ -26,7 +26,12 @@ import { isThrottled } from 'src/modules/connected-account/utils/is-throttled';
 import { MessageChannelEntity } from 'src/engine/metadata-modules/message-channel/entities/message-channel.entity';
 import { toIsoStringOrNull } from 'src/utils/date/toIsoStringOrNull';
 
-export const MESSAGING_MESSAGE_LIST_FETCH_CRON_PATTERN = '2-59/5 * * * *';
+// Upstream pregunta a Gmail cada 5 min; aqui cada 2. Es el techo del retraso
+// con que un correo aparece en el CRM, y 5 min se quedaba corto para lo que
+// mas se consulta en caliente (codigos de verificacion).
+// El coste es despreciable: un sondeo es un history.list por carpeta (2
+// unidades), muy lejos del limite de 6.000/min por usuario de Gmail.
+export const MESSAGING_MESSAGE_LIST_FETCH_CRON_PATTERN = '1-59/2 * * * *';
 
 @Processor(MessageQueue.cronQueue)
 export class MessagingMessageListFetchCronJob {
