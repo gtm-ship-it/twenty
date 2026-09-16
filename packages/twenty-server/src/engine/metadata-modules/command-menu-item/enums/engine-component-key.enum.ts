@@ -55,6 +55,9 @@ export enum EngineComponentKey {
   SEND_MESSAGE_CAMPAIGN_TEST = 'SEND_MESSAGE_CAMPAIGN_TEST',
   EMAIL_BLOCK_SETTINGS = 'EMAIL_BLOCK_SETTINGS',
 
+  // PTS AI CRM: manda los registros seleccionados a una campaña de llamadas de Atlas
+  CALL_WITH_ATLAS = 'CALL_WITH_ATLAS',
+
   // TODO: Remove deprecated keys once upgrade:1-21:refactor-navigation-commands has run on all workspaces
   // Deprecated: replaced by NAVIGATION engine key with payload
   GO_TO_PEOPLE = 'GO_TO_PEOPLE',

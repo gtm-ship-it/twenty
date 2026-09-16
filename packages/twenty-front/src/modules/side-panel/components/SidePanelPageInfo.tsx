@@ -8,6 +8,7 @@ import { useNavigationMenuItemEditSectionItems } from '@/navigation-menu-item/ed
 import { SidePanelAskAiInfo } from '@/side-panel/components/SidePanelAskAiInfo';
 import { SidePanelFolderInfo } from '@/side-panel/components/SidePanelFolderInfo';
 import { SidePanelLinkInfo } from '@/side-panel/components/SidePanelLinkInfo';
+import { SidePanelAtlasCallInfo } from '@/side-panel/components/SidePanelAtlasCallInfo';
 import { SidePanelMultipleRecordsInfo } from '@/side-panel/components/SidePanelMultipleRecordsInfo';
 import { SidePanelObjectViewRecordInfo } from '@/side-panel/components/SidePanelObjectViewRecordInfo';
 import { SidePanelPageInfoLayout } from '@/side-panel/components/SidePanelPageInfoLayout';
@@ -109,6 +110,15 @@ export const SidePanelPageInfo = ({ pageChip }: SidePanelPageInfoProps) => {
       <SidePanelMultipleRecordsInfo
         sidePanelPageInstanceId={pageChip.page.pageId}
       />
+    );
+  }
+
+  if (
+    pageChip.page?.page === SidePanelPages.AtlasCall &&
+    isDefined(pageChip.page?.pageId)
+  ) {
+    return (
+      <SidePanelAtlasCallInfo sidePanelPageInstanceId={pageChip.page.pageId} />
     );
   }
 

@@ -1,3 +1,4 @@
+import { useAnyFieldSearchGqlFilter } from '@/object-record/record-index/hooks/useAnyFieldSearchGqlFilter';
 import { useNumberFormat } from '@/localization/hooks/useNumberFormat';
 import { flattenedFieldMetadataItemsSelector } from '@/object-metadata/states/flattenedFieldMetadataItemsSelector';
 import { useAggregateRecords } from '@/object-record/hooks/useAggregateRecords';
@@ -27,7 +28,6 @@ import {
   findById,
   isDefined,
   isFieldMetadataDateKind,
-  turnAnyFieldFilterIntoRecordGqlFilter,
 } from 'twenty-shared/utils';
 import { dateLocaleState } from '~/localization/states/dateLocaleState';
 
@@ -108,11 +108,10 @@ export const useAggregateRecordsForRecordTableColumnFooter = (
     anyFieldFilterValueComponentState,
   );
 
-  const { recordGqlOperationFilter: anyFieldFilter } =
-    turnAnyFieldFilterIntoRecordGqlFilter({
-      fields: objectMetadataItem.fields,
-      filterValue: anyFieldFilterValue,
-    });
+  const anyFieldFilter = useAnyFieldSearchGqlFilter({
+    objectMetadataItem,
+    anyFieldFilterValue,
+  });
 
   const { data, loading } = useAggregateRecords({
     objectNameSingular: objectMetadataItem.nameSingular,

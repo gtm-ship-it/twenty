@@ -145,6 +145,7 @@ msgstr "(名前なし)"
 
 #. js-lingui-id: mo7HDj
 #: src/modules/inbox/components/InboxCalendarView.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "(No title)"
 msgstr ""
 
@@ -219,6 +220,27 @@ msgstr "{0, plural, one {# 件のワークスペースが失敗または遅れ�
 #: src/modules/page-layout/widgets/components/PageLayoutWidgetForbiddenDisplay.tsx
 msgid "{0, plural, one {You do not have permission to access the {fieldsList} field} other {You do not have permission to access the {fieldsList} fields}}"
 msgstr "{0, plural, other {フィールド {fieldsList} にアクセスする権限がありません}}"
+
+#. js-lingui-id: nLEivG
+#. placeholder {0}: result.scheduledCount
+#. placeholder {1}: result.campaignName
+#. placeholder {2}: result.tenantLabel
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) sent to \"{1}\" ({2}), {scheduledLabel}."
+msgstr ""
+
+#. js-lingui-id: 9k2L3H
+#. placeholder {0}: scheduleResult.scheduledCount
+#. placeholder {1}: scheduleResult.campaignName
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) sent to Atlas · {1}"
+msgstr ""
+
+#. js-lingui-id: uFsNNP
+#. placeholder {0}: result.failedCount
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) were rejected by Atlas:"
+msgstr ""
 
 #. js-lingui-id: dNIJYp
 #. placeholder {0}: formatNumber(nextCreditsByPeriod, { decimals: 2, })
@@ -305,6 +327,7 @@ msgstr "{0} 件がこのトピックの受信をオプトアウト済み"
 #. placeholder {0}: formatNumber(contextStoreNumberOfSelectedRecords)
 #. placeholder {0}: formatNumber(totalCount ?? 0)
 #: src/modules/object-record/record-index/components/RecordIndexPageHeader.tsx
+#: src/modules/side-panel/components/SidePanelAtlasCallInfo.tsx
 #: src/modules/side-panel/components/SidePanelMultipleRecordsInfo.tsx
 msgid "{0} selected"
 msgstr "{0} 件を選択"
@@ -616,6 +639,11 @@ msgstr "{selectedCount, plural, other {ジョブを削除 ({selectedCount} 件)}
 msgid "{selectedCount, plural, one {Retry {selectedCount} Job} other {Retry {selectedCount} Jobs}}"
 msgstr "{selectedCount, plural, other {ジョブを再試行 ({selectedCount} 件)}}"
 
+#. js-lingui-id: saqVE2
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "{selectedCount} selected"
+msgstr ""
+
 #. js-lingui-id: e5lBpY
 #: src/modules/object-record/object-filter-dropdown/components/ObjectFilterDropdownSourceSelect.tsx
 msgid "{selectedCount} source types"
@@ -625,6 +653,11 @@ msgstr "{selectedCount} 種類のソース"
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminJsonDataIndicatorHealthStatus.tsx
 msgid "{serviceLabel} service is unreachable"
 msgstr "{serviceLabel} サービスに到達できません"
+
+#. js-lingui-id: L8nf9m
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{skippedCount} record(s) have no phone number and will be skipped."
+msgstr ""
 
 #. js-lingui-id: 8vJ+2V
 #: src/modules/ai/components/ThinkingStepsDisplay.tsx
@@ -940,6 +973,11 @@ msgstr "下書きはすでに存在します"
 #: src/modules/command-menu-item/engine-command/record/single-record/workflow-versions/components/UseAsDraftWorkflowVersionSingleRecordCommand.tsx
 msgid "A draft already exists for this workflow. Are you sure you want to erase it?"
 msgstr "この作業フローにはすでに下書きが存在します。それを削除してもよろしいですか？"
+
+#. js-lingui-id: 3Q0QrF
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "A note was added to each record that was sent. Call outcomes live in the Atlas dashboard."
+msgstr ""
 
 #. js-lingui-id: C6xZqR
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
@@ -1966,6 +2004,11 @@ msgstr "アラート"
 msgid "Alignment"
 msgstr "配置"
 
+#. js-lingui-id: z7GAMJ
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "all"
+msgstr ""
+
 #. js-lingui-id: N40H+G
 #: src/modules/activities/timeline-activities/components/TimelineCard.tsx
 #: src/modules/ai/constants/AgentChatThreadFilterStatusLabels.ts
@@ -2706,6 +2749,11 @@ msgstr "本当によろしいですか？現在の情報は保存されません
 msgid "As it will be displayed in the workspace"
 msgstr "ワークスペースに表示される名前です"
 
+#. js-lingui-id: cwYOaj
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "as soon as possible"
+msgstr ""
+
 #. js-lingui-id: 54PdN4
 #: src/modules/side-panel/pages/page-layout/utils/getSortLabelSuffixForFieldType.ts
 #: src/modules/side-panel/pages/page-layout/utils/getSortLabelSuffixForFieldType.ts
@@ -2873,6 +2921,26 @@ msgstr "分 {remainingValues} と {0}"
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getMinutesDescription.ts
 msgid "at the top of the hour"
 msgstr "ちょうどの時刻に"
+
+#. js-lingui-id: OjRWML
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas account"
+msgstr ""
+
+#. js-lingui-id: xitOps
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas calling is not enabled for this workspace. Ask the server admin to set the Atlas keys and allow this workspace."
+msgstr ""
+
+#. js-lingui-id: C41ioR
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas campaign"
+msgstr ""
+
+#. js-lingui-id: TkX5Fh
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas did not return a result"
+msgstr ""
 
 #. js-lingui-id: N7m8E+
 #: src/modules/activities/emails/components/EmailComposerFields.tsx
@@ -3547,6 +3615,11 @@ msgstr ""
 msgid "Calendars"
 msgstr "カレンダー"
 
+#. js-lingui-id: 23BOuU
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Call as soon as possible"
+msgstr ""
+
 #. js-lingui-id: cHma9m
 #: src/modules/activities/calendar/components/CalendarEventCallRecorderAvatar.tsx
 #: src/modules/onboarding/constants/OnboardingInstallableApps.ts
@@ -3563,6 +3636,12 @@ msgstr "このワークスペースでは通話録音を利用できません。
 msgid "Call Recording Unavailable"
 msgstr "通話録音を利用できません"
 
+#. js-lingui-id: bBz1Rn
+#: src/modules/side-panel/components/SidePanelAtlasCallInfo.tsx
+#: src/modules/side-panel/hooks/useOpenAtlasCallPageInSidePanel.tsx
+msgid "Call with Atlas"
+msgstr ""
+
 #. js-lingui-id: +Kx1Id
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Call-to-action button"
@@ -3578,6 +3657,23 @@ msgstr "国番号"
 msgid "Calls"
 msgstr "通話"
 
+#. js-lingui-id: /m7KzB
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Calls were sent to Atlas, but the notes could not be created in the CRM."
+msgstr ""
+
+#. js-lingui-id: D02dD9
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign"
+msgstr ""
+
+#. js-lingui-id: oDK6KF
+#. placeholder {0}: selectedCampaign?.name ?? ''
+#. placeholder {1}: tenants.find((tenant) => tenant.key === tenantKey)?.label ?? ''
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign \"{0}\" ({1}), {scheduledLabel}. Atlas will dial these numbers with the campaign's AI agent."
+msgstr ""
+
 #. js-lingui-id: 06mPlO
 #: src/modules/activities/emails/hooks/useSendMessageCampaign.ts
 msgid "Campaign queued to {queuedCount} recipient(s)"
@@ -3587,6 +3683,12 @@ msgstr "キャンペーンを {queuedCount} 件の受信者にキューしまし
 #: src/modules/activities/emails/hooks/useSendMessageCampaign.ts
 msgid "Campaign queued to {queuedCount} recipient(s), {skippedCount} skipped"
 msgstr "キャンペーンを {queuedCount} 件の受信者にキューし、{skippedCount} 件をスキップしました"
+
+#. js-lingui-id: VpV3NU
+#. placeholder {0}: selectedCampaign.timezone
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign timezone: {0}. Atlas only dials inside the campaign's time windows."
+msgstr ""
 
 #. js-lingui-id: msssZq
 #: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectAboutForm.tsx
@@ -3600,6 +3702,7 @@ msgstr "スキャンできませんか？ コピーしてください"
 
 #. js-lingui-id: dEgA5A
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/inbox/components/SignatureEditorModal.tsx
@@ -4038,6 +4141,7 @@ msgid "Claude install links require an HTTPS MCP URL."
 msgstr "Claude のインストールリンクには HTTPS の MCP URL が必要です。"
 
 #. js-lingui-id: xCJdfg
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
 #: src/modules/ui/input/components/internal/date/components/DatePicker.tsx
 #: src/modules/ui/input/components/internal/date/components/DateTimePicker.tsx
 msgid "Clear"
@@ -4053,6 +4157,11 @@ msgstr "フィルターをクリア"
 #: src/modules/settings/unsubscribers/components/filter-dropdown/SettingsUnsubscribersFilterMenuContent.tsx
 msgid "Clear filters"
 msgstr "フィルターをクリア"
+
+#. js-lingui-id: V8yTm6
+#: src/modules/views/components/ViewBarSearchInput.tsx
+msgid "Clear search"
+msgstr ""
 
 #. js-lingui-id: wu0RfR
 #: src/modules/settings/admin-panel/config-variables/components/ConfigVariableHelpText.tsx
@@ -4171,6 +4280,7 @@ msgstr "クリップボードの使用にはセキュアな接続 (HTTPS) が必
 
 #. js-lingui-id: yz7wBu
 #: src/modules/ai/components/AiChatCloseButton.tsx
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 msgid "Close"
 msgstr "閉じる"
@@ -5143,6 +5253,11 @@ msgstr "有効性トークンを更新できませんでした。サポートに
 #: src/pages/settings/applications/components/SettingsClaimApplicationSection.tsx
 msgid "Could not run the lookup"
 msgstr "検索を実行できませんでした。"
+
+#. js-lingui-id: EQIs9t
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Could not send the calls to Atlas."
+msgstr ""
 
 #. js-lingui-id: p75IO8
 #: src/pages/settings/applications/components/SettingsClaimApplicationSection.tsx
@@ -6936,6 +7051,11 @@ msgstr "ファイルをダウンロード"
 msgid "Download sample"
 msgstr "サンプルファイルをダウンロード"
 
+#. js-lingui-id: eHnlVy
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "draft"
+msgstr ""
+
 #. js-lingui-id: eneWvv
 #: src/modules/activities/emails/components/EmailThreadPreview.tsx
 msgid "Draft"
@@ -7337,6 +7457,11 @@ msgstr "メールアドレスは空にできません"
 #: src/modules/settings/unsubscribe-topics/components/SettingsWorkspaceUnsubscribeTopicSection.tsx
 msgid "Email categories recipients can opt out of"
 msgstr "受信者がオプトアウトできるメールカテゴリ"
+
+#. js-lingui-id: O4ku2t
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Email content"
+msgstr ""
 
 #. js-lingui-id: UZQ5eW
 #: src/modules/activities/emails/recipients/components/EmailRecipientChipMenuContent.tsx
@@ -10992,6 +11117,7 @@ msgstr "john.doe@example.com"
 
 #. js-lingui-id: 0wdd7X
 #: src/modules/inbox/components/InboxCalendarView.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "Join"
 msgstr ""
 
@@ -11625,6 +11751,7 @@ msgid "list"
 msgstr "list"
 
 #. js-lingui-id: 2BBAbc
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/views/types/ViewType.ts
 msgid "List"
@@ -11701,6 +11828,11 @@ msgstr "アプリケーションを読み込み中..."
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
 msgid "Loading apps..."
 msgstr "アプリを読み込み中…"
+
+#. js-lingui-id: 6hq12Q
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Loading campaigns…"
+msgstr ""
 
 #. js-lingui-id: UDL15Z
 #: src/modules/settings/admin-panel/chats/components/SettingsAdminChatsContent.tsx
@@ -12417,6 +12549,7 @@ msgid "month"
 msgstr "月"
 
 #. js-lingui-id: HajiZl
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
@@ -12542,6 +12675,11 @@ msgstr "別のタブに移動"
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
 msgid "Move to folder"
 msgstr "フォルダーに移動"
+
+#. js-lingui-id: 6hWAnU
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Move to:"
+msgstr ""
 
 #. js-lingui-id: QyioBP
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
@@ -13557,6 +13695,11 @@ msgstr "このアプリケーションには権限が設定されていません
 msgid "No permissions have been set for individual objects."
 msgstr "個々のオブジェクトに対して権限が設定されていません。"
 
+#. js-lingui-id: XBH251
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "No phone number"
+msgstr ""
+
 #. js-lingui-id: pRxlf6
 #: src/pages/settings/applications/utils/getClaimErrorContent.ts
 msgid "No provenance attestation was found for this package. Publish it from GitHub Actions with npm trusted publishing, then try claiming again."
@@ -13595,6 +13738,11 @@ msgstr "レコードが見つかりません"
 #: src/modules/object-record/record-table/empty-state/components/RecordTableEmptyStateNoRecordFoundForFilter.tsx
 msgid "No records matching the filter criteria were found."
 msgstr "フィルター条件に一致するレコードは見つかりませんでした。"
+
+#. js-lingui-id: z0jAkd
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "No records selected."
+msgstr ""
 
 #. js-lingui-id: gvIkAA
 #: src/modules/workflow/workflow-steps/workflow-actions/pick-record-action/components/WorkflowEditActionPickRecord.tsx
@@ -13852,6 +14000,11 @@ msgstr "検索条件に一致するワークスペースが見つかりません
 #: src/modules/side-panel/pages/workflow/step/view-run/components/SidePanelWorkflowRunViewStepContent.tsx
 msgid "Node"
 msgstr "ノード"
+
+#. js-lingui-id: r/FDxa
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "none"
+msgstr ""
 
 #. js-lingui-id: EdQY6l
 #: src/modules/ai/constants/AgentChatThreadGroupByLabels.ts
@@ -14345,6 +14498,11 @@ msgstr "{firstDay} と {secondDay} のみ"
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getDayOfWeekDescription.ts
 msgid "only on {remainingDays} and {0}"
 msgstr "{remainingDays} と {0} のみ"
+
+#. js-lingui-id: h/+BHh
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Only the first {ATLAS_MAX_TARGET_RECORDS} records of the selection are included."
+msgstr ""
 
 #. js-lingui-id: saaSLd
 #: src/modules/activities/emails/components/EmailThreadNotShared.tsx
@@ -14895,6 +15053,18 @@ msgstr "送信したメールおよび受信したメールの相手。"
 msgid "People I’ve sent emails to."
 msgstr "送信したメールの相手。"
 
+#. js-lingui-id: qtYC9E
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "People to call"
+msgstr ""
+
+#. js-lingui-id: JCAMYt
+#. placeholder {0}: selectedTargets.length
+#. placeholder {1}: callableTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "People to call · {0} of {1} selected"
+msgstr ""
+
 #. js-lingui-id: qMTN0w
 #: src/pages/settings/ai/SettingsAiUsageUserDetail.tsx
 msgid "Per-day AI consumption."
@@ -15016,6 +15186,11 @@ msgstr ""
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Pick a connected account or set a workspace member as variable"
 msgstr "接続済みアカウントを選択するか、ワークスペースメンバーを変数として設定します"
+
+#. js-lingui-id: /YTzWV
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Pick a date and time in the future."
+msgstr ""
 
 #. js-lingui-id: JqqNlC
 #: src/modules/side-panel/utils/getSidePanelSubPageTitle.ts
@@ -15981,6 +16156,11 @@ msgstr "再読み込み中..."
 msgid "Remote"
 msgstr "リモート"
 
+#. js-lingui-id: mx/xgN
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Remote images are blocked to protect your privacy."
+msgstr ""
+
 #. js-lingui-id: t/YqKh
 #: src/modules/activities/emails/recipients/components/EmailRecipientChipMenuContent.tsx
 #: src/modules/object-record/record-group/components/RecordGroupReorderConfirmationModal.tsx
@@ -16050,6 +16230,7 @@ msgid "Remove filter"
 msgstr "フィルターを削除"
 
 #. js-lingui-id: LH4oc+
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
 #: src/modules/inbox/components/InboxPipelineBoard.tsx
 msgid "Remove from pipeline"
 msgstr ""
@@ -16288,6 +16469,11 @@ msgstr "固定値にリセット"
 msgid "Reset variable"
 msgstr "変数をリセット"
 
+#. js-lingui-id: sMhd9w
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Resolving phone numbers…"
+msgstr ""
+
 #. js-lingui-id: N0vrR6
 #: src/modules/settings/billing/components/internal/ResourceCreditPriceSelector.tsx
 msgid "Resource credits updated."
@@ -16352,6 +16538,7 @@ msgid "Restrict available models to a curated list"
 msgstr "利用可能なモデルを選定済みのリストに制限する"
 
 #. js-lingui-id: RD6AE9
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/code-action/components/WorkflowEditActionCode.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/logic-function-action/components/WorkflowEditActionLogicFunction.tsx
 msgid "Result"
@@ -16687,6 +16874,11 @@ msgstr "スケジュール"
 msgid "Schedule a maintenance window and notify all users"
 msgstr "メンテナンスウィンドウをスケジュールし、すべてのユーザーに通知します"
 
+#. js-lingui-id: 2bcnDB
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Schedule for a date and time"
+msgstr ""
+
 #. js-lingui-id: 4ba0NE
 #: src/modules/activities/calendar/components/CalendarEventCallRecorderAvatar.tsx
 #: src/modules/settings/billing/hooks/useBillingPlanActions.ts
@@ -16697,6 +16889,12 @@ msgstr "スケジュール済み"
 #: src/modules/settings/billing/components/internal/SettingsBillingSubscriptionInfoCard.tsx
 msgid "Scheduled change"
 msgstr "スケジュールされた変更"
+
+#. js-lingui-id: MxCHhQ
+#. placeholder {0}: new Date(scheduledAtIso).toLocaleString(undefined, { timeZone: userTimezone, dateStyle: 'medium', timeStyle: 'short', })
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "scheduled for {0} ({userTimezone})"
+msgstr ""
 
 #. js-lingui-id: f5yMQc
 #: src/modules/information-banner/components/maintenance/InformationBannerMaintenance.tsx
@@ -16753,6 +16951,12 @@ msgstr "SDK"
 #: src/modules/ui/navigation/navigation-drawer/components/NavigationDrawerHeader.tsx
 msgid "Search"
 msgstr "検索"
+
+#. js-lingui-id: rFwgrR
+#. placeholder {0}: objectMetadataItem.labelPlural.toLowerCase()
+#: src/modules/views/components/ViewBarSearchInput.tsx
+msgid "Search {0}…"
+msgstr ""
 
 #. js-lingui-id: g2dQp/
 #: src/modules/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/SettingsRolePermissionsObjectLevelRecordLevelPermissionMeValueSelect.tsx
@@ -17214,6 +17418,11 @@ msgstr ""
 msgid "Select"
 msgstr "選択"
 
+#. js-lingui-id: NRn4of
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Select — shift-click to select a range"
+msgstr ""
+
 #. js-lingui-id: Mepl7c
 #: src/pages/onboarding/InstallAppsContent.tsx
 msgid "Select {labelText}"
@@ -17228,6 +17437,11 @@ msgstr "1 つの {fieldTypeLabelLowercase} フィールドを選択"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/SettingsRolePermissionsObjectLevelRecordLevelPermissionMeValueSelect.tsx
 msgid "Select 1 field"
 msgstr "1 つのフィールドを選択"
+
+#. js-lingui-id: e97NF8
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select a campaign"
+msgstr ""
 
 #. js-lingui-id: OMoA3j
 #: src/modules/workflow/workflow-steps/workflow-actions/delay-actions/components/WorkflowEditActionDelay.tsx
@@ -17298,10 +17512,26 @@ msgstr "アクションを選択"
 msgid "Select Action"
 msgstr "アクションを選択"
 
+#. js-lingui-id: wgNoIs
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Select all"
+msgstr ""
+
 #. js-lingui-id: /fhMKz
 #: src/modules/object-record/record-table/record-table-header/components/RecordTableHeaderCheckboxColumn.tsx
 msgid "Select all rows"
 msgstr "すべての行を選択"
+
+#. js-lingui-id: Xa4vRt
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select all with a phone number"
+msgstr ""
+
+#. js-lingui-id: UsODUn
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select an account"
+msgstr ""
 
 #. js-lingui-id: hVPa4O
 #: src/modules/spreadsheet-import/steps/components/MatchColumnsStep/components/UnmatchColumn.tsx
@@ -17449,10 +17679,27 @@ msgstr "言語を選択し、インターフェースのサイズを調整しま
 msgid "Send"
 msgstr "送信"
 
+#. js-lingui-id: ya4dbC
+#. placeholder {0}: selectedTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send {0} call(s) to Atlas"
+msgstr ""
+
+#. js-lingui-id: j+UDEB
+#. placeholder {0}: selectedTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send {0} call(s) to Atlas?"
+msgstr ""
+
 #. js-lingui-id: mjK8F3
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersInviteTab.tsx
 msgid "Send an invite email to your team"
 msgstr "チームに招待メールを送信"
+
+#. js-lingui-id: OdyqJp
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send calls"
+msgstr ""
 
 #. js-lingui-id: 65dxv8
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
@@ -17484,6 +17731,11 @@ msgstr "テストメールを送信"
 #: src/modules/side-panel/hooks/useOpenSendCampaignTestInSidePanel.ts
 msgid "Send Test Email"
 msgstr "テストメールを送信"
+
+#. js-lingui-id: zogOvK
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send to Atlas"
+msgstr ""
 
 #. js-lingui-id: LFupHB
 #: src/pages/settings/communications/SettingsWorkspaceCommunicationGroupChannelDetail.tsx
@@ -17790,6 +18042,11 @@ msgstr "隠されたグループを表示"
 #: src/modules/side-panel/components/SidePanelObjectFilterDropdownContent.tsx
 msgid "Show hidden objects"
 msgstr "隠されたオブジェクトを表示"
+
+#. js-lingui-id: CQJfxf
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Show images"
+msgstr ""
 
 #. js-lingui-id: fMPkxb
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
@@ -19567,6 +19824,11 @@ msgstr "タイムライン活動の種類"
 msgid "Timeout"
 msgstr "タイムアウト"
 
+#. js-lingui-id: 43jx+G
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Times are in your timezone ({userTimezone})."
+msgstr ""
+
 #. js-lingui-id: 8TMaZI
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminQueueJobsTable.tsx
 #: src/modules/settings/event-logs/utils/getColumnsForEventLogTable.tsx
@@ -19618,6 +19880,7 @@ msgstr ""
 
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 #: src/modules/object-record/record-calendar/components/RecordCalendarTopBar.tsx
@@ -20251,6 +20514,7 @@ msgid "Unknown device"
 msgstr "不明なデバイス"
 
 #. js-lingui-id: 29VNqC
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/workflow/workflow-trigger/components/CronExpressionHelper.tsx
 #: src/modules/workflow/workflow-trigger/components/WorkflowEditTriggerCronForm.tsx
 msgid "Unknown error"
@@ -21564,6 +21828,7 @@ msgid "Website"
 msgstr "ウェブサイト"
 
 #. js-lingui-id: zx4BuL
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
@@ -21631,6 +21896,11 @@ msgstr "ワークスペースにインストールされ、使用されている
 #: src/pages/settings/communications/SettingsWorkspaceCommunications.tsx
 msgid "Whatsapp"
 msgstr "WhatsApp"
+
+#. js-lingui-id: 1ZF9KQ
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "When"
+msgstr ""
 
 #. js-lingui-id: m7GziZ
 #: src/modules/ai/components/suggested-prompts/default-suggested-prompts.ts

@@ -1,3 +1,4 @@
+import { useAnyFieldSearchGqlFilter } from '@/object-record/record-index/hooks/useAnyFieldSearchGqlFilter';
 import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
 import { flattenedFieldMetadataItemsSelector } from '@/object-metadata/states/flattenedFieldMetadataItemsSelector';
 import { turnSortsIntoOrderBy } from '@/object-record/object-sort-dropdown/utils/turnSortsIntoOrderBy';
@@ -17,7 +18,6 @@ import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomState
 import {
   combineFilters,
   computeRecordGqlOperationFilter,
-  turnAnyFieldFilterIntoRecordGqlFilter,
 } from 'twenty-shared/utils';
 
 export const useRecordIndexGroupCommonQueryVariables = () => {
@@ -53,11 +53,10 @@ export const useRecordIndexGroupCommonQueryVariables = () => {
     anyFieldFilterValueComponentState,
   );
 
-  const { recordGqlOperationFilter: anyFieldFilter } =
-    turnAnyFieldFilterIntoRecordGqlFilter({
-      fields: objectMetadataItem.fields,
-      filterValue: anyFieldFilterValue,
-    });
+  const anyFieldFilter = useAnyFieldSearchGqlFilter({
+    objectMetadataItem,
+    anyFieldFilterValue,
+  });
 
   const orderBy = turnSortsIntoOrderBy(
     objectMetadataItem,

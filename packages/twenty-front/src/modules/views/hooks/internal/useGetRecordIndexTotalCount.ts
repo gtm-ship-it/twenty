@@ -1,3 +1,4 @@
+import { useAnyFieldSearchGqlFilter } from '@/object-record/record-index/hooks/useAnyFieldSearchGqlFilter';
 import { useContextStoreObjectMetadataItemOrThrow } from '@/context-store/hooks/useContextStoreObjectMetadataItemOrThrow';
 import { flattenedFieldMetadataItemsSelector } from '@/object-metadata/states/flattenedFieldMetadataItemsSelector';
 import { useAggregateRecords } from '@/object-record/hooks/useAggregateRecords';
@@ -12,7 +13,6 @@ import { useGetRecordGroupVisibilityFilters } from '@/views/hooks/useGetRecordGr
 import {
   computeRecordGqlOperationFilter,
   isDefined,
-  turnAnyFieldFilterIntoRecordGqlFilter,
 } from 'twenty-shared/utils';
 
 export const useGetRecordIndexTotalCount = () => {
@@ -50,11 +50,10 @@ export const useGetRecordIndexTotalCount = () => {
     anyFieldFilterValueComponentState,
   );
 
-  const { recordGqlOperationFilter: anyFieldFilter } =
-    turnAnyFieldFilterIntoRecordGqlFilter({
-      fields: objectMetadataItem.fields,
-      filterValue: anyFieldFilterValue,
-    });
+  const anyFieldFilter = useAnyFieldSearchGqlFilter({
+    objectMetadataItem,
+    anyFieldFilterValue,
+  });
 
   const { data, loading } = useAggregateRecords<{
     id: { COUNT: number };

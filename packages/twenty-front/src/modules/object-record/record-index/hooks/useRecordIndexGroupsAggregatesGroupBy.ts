@@ -1,3 +1,4 @@
+import { useAnyFieldSearchGqlFilter } from '@/object-record/record-index/hooks/useAnyFieldSearchGqlFilter';
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
 import { flattenedFieldMetadataItemsSelector } from '@/object-metadata/states/flattenedFieldMetadataItemsSelector';
 import { type EnrichedObjectMetadataItem } from '@/object-metadata/types/EnrichedObjectMetadataItem';
@@ -24,7 +25,6 @@ import {
   combineFilters,
   computeRecordGqlOperationFilter,
   isDefined,
-  turnAnyFieldFilterIntoRecordGqlFilter,
 } from 'twenty-shared/utils';
 
 export const useRecordIndexGroupsAggregatesGroupBy = ({
@@ -86,11 +86,10 @@ export const useRecordIndexGroupsAggregatesGroupBy = ({
     anyFieldFilterValueComponentState,
   );
 
-  const { recordGqlOperationFilter: anyFieldFilter } =
-    turnAnyFieldFilterIntoRecordGqlFilter({
-      fields: objectMetadataItem.fields,
-      filterValue: anyFieldFilterValue,
-    });
+  const anyFieldFilter = useAnyFieldSearchGqlFilter({
+    objectMetadataItem,
+    anyFieldFilterValue,
+  });
 
   const objectPermissions = useObjectPermissionsForObject(
     objectMetadataItem.id,

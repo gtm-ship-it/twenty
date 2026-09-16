@@ -2087,6 +2087,45 @@ export class ConfigVariables {
   @IsOptional()
   PEOPLE_DATA_LABS_API_KEY?: string;
 
+  // --- PTS AI CRM: "Call with Atlas" (integración propia del fork) ---
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'Atlas API base URL for the "Call with Atlas" action (default https://api.youratlas.com/v1/api).',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  ATLAS_API_BASE_URL?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    isSensitive: true,
+    description:
+      'Atlas API key of the PTS white label tenant. When unset, that tenant is hidden from "Call with Atlas".',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  ATLAS_TENANT_PTS_API_KEY?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    isSensitive: true,
+    description:
+      'Atlas API key of the Sunset Finance tenant. When unset, that tenant is hidden from "Call with Atlas".',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  ATLAS_TENANT_SUNSET_API_KEY?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'Comma-separated workspace ids allowed to use "Call with Atlas". Empty disables the feature everywhere.',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  ATLAS_ALLOWED_WORKSPACE_IDS?: string;
+
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,
     description:

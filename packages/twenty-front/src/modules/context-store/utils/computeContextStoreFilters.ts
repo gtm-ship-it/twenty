@@ -2,6 +2,7 @@ import { type ContextStoreTargetedRecordsRule } from '@/context-store/states/con
 import { type EnrichedObjectMetadataItem } from '@/object-metadata/types/EnrichedObjectMetadataItem';
 import { type RecordFilterGroup } from '@/object-record/record-filter-group/types/RecordFilterGroup';
 import { type RecordFilter } from '@/object-record/record-filter/types/RecordFilter';
+import { turnAnyFieldSearchIntoRecordGqlFilter } from '@/object-record/record-filter/utils/buildRelationLabelSearchGqlFilters';
 import { makeAndFilterVariables } from '@/object-record/utils/makeAndFilterVariables';
 import {
   type RecordFilterValueDependencies,
@@ -34,10 +35,20 @@ export const computeContextStoreFilters = ({
 }: ComputeContextStoreFiltersProps) => {
   let queryFilter: RecordGqlOperationFilter | undefined;
 
-  const { recordGqlOperationFilter: recordGqlFilterForAnyFieldFilter } =
+  const { recordGqlOperationFilter: nativeAnyFieldFilter } =
     turnAnyFieldFilterIntoRecordGqlFilter({
       filterValue: contextStoreAnyFieldFilterValue,
       fields: objectMetadataItem.fields,
+    });
+
+  // Misma búsqueda que la barra de la vista (incluye nombre de relaciones), para
+  // que "seleccionar todo" apunte exactamente a las filas que se ven.
+  const recordGqlFilterForAnyFieldFilter =
+    turnAnyFieldSearchIntoRecordGqlFilter({
+      objectMetadataItem,
+      fieldMetadataItems,
+      filterValue: contextStoreAnyFieldFilterValue,
+      anyFieldFilter: nativeAnyFieldFilter,
     });
 
   if (contextStoreTargetedRecordsRule.mode === 'exclusion') {

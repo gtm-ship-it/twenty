@@ -13,6 +13,7 @@ import { DestroyRecordsCommand } from '@/command-menu-item/engine-command/record
 import { ExportRecordsCommand } from '@/command-menu-item/engine-command/record/components/ExportRecordsCommand';
 import { RestoreRecordsCommand } from '@/command-menu-item/engine-command/record/components/RestoreRecordsCommand';
 import { TriggerWorkflowVersionEngineCommand } from '@/command-menu-item/engine-command/record/components/TriggerWorkflowVersionEngineCommand';
+import { CallWithAtlasCommand } from '@/command-menu-item/engine-command/record/multiple-records/components/CallWithAtlasCommand';
 import { MergeMultipleRecordsCommand } from '@/command-menu-item/engine-command/record/multiple-records/components/MergeMultipleRecordsCommand';
 import { UpdateMultipleRecordsCommand } from '@/command-menu-item/engine-command/record/multiple-records/components/UpdateMultipleRecordsCommand';
 import { CreateNewIndexRecordNoSelectionRecordCommand } from '@/command-menu-item/engine-command/record/no-selection/components/CreateNewIndexRecordNoSelectionRecordCommand';
@@ -70,6 +71,7 @@ export const ENGINE_COMPONENT_KEY_COMPONENT_MAP: Record<
     <RemoveFromFavoritesSingleRecordCommand />
   ),
   [EngineComponentKey.MERGE_MULTIPLE_RECORDS]: <MergeMultipleRecordsCommand />,
+  [EngineComponentKey.CALL_WITH_ATLAS]: <CallWithAtlasCommand />,
   [EngineComponentKey.DUPLICATE_DASHBOARD]: (
     <DuplicateDashboardSingleRecordCommand />
   ),

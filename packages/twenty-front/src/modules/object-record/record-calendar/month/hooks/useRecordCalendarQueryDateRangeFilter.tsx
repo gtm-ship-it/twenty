@@ -1,3 +1,4 @@
+import { useAnyFieldSearchGqlFilter } from '@/object-record/record-index/hooks/useAnyFieldSearchGqlFilter';
 import { flattenedFieldMetadataItemsSelector } from '@/object-metadata/states/flattenedFieldMetadataItemsSelector';
 import { useRecordCalendarContextOrThrow } from '@/object-record/record-calendar/contexts/RecordCalendarContext';
 import { useRecordCalendarMonthDaysRange } from '@/object-record/record-calendar/month/hooks/useRecordCalendarMonthDaysRange';
@@ -19,7 +20,6 @@ import {
   combineFilters,
   computeRecordGqlOperationFilter,
   isDefined,
-  turnAnyFieldFilterIntoRecordGqlFilter,
   turnPlainDateIntoUserTimeZoneInstantString,
 } from 'twenty-shared/utils';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
@@ -143,11 +143,10 @@ export const useRecordCalendarQueryDateRangeFilter = (
     fieldMetadataItems: flattenedFieldMetadataItems,
   });
 
-  const { recordGqlOperationFilter: anyFieldFilter } =
-    turnAnyFieldFilterIntoRecordGqlFilter({
-      fields: objectMetadataItem.fields,
-      filterValue: anyFieldFilterValue,
-    });
+  const anyFieldFilter = useAnyFieldSearchGqlFilter({
+    objectMetadataItem,
+    anyFieldFilterValue,
+  });
 
   const combinedFilter = combineFilters([
     dateRangeFilter,

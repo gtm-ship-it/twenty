@@ -68,3 +68,5 @@ docker build -f packages/twenty-docker/twenty/Dockerfile --target twenty -t twen
 | Create lead desde un correo | `modules/inbox/components/CreateLeadModal.tsx` |
 | Only see (lista blanca visual) | resolver de messaging (user vars) + `useInboxOnlySee` |
 | Privacidad por defecto | `SettingsAccountsMessageVisibilityCard` / `...CalendarVisibilitySettingsCard` |
+| **Call with Atlas** (registros seleccionados → campaña Atlas PTS/Sunset) | server: `engine/core-modules/atlas-calls/` (+ `EngineComponentKey.CALL_WITH_ATLAS`, config vars `ATLAS_*`) · front: `modules/atlas-calls/`, `CallWithAtlasCommand`, `SidePanelPages.AtlasCall` (twenty-shared). El botón es una fila de `core."commandMenuItem"` por workspace: `~/work/ptsai-crm/vps/atlas/enable-call-with-atlas-ptsai.sql` |
+| Barra de búsqueda en las vistas (+ nombre de relaciones many-to-one) | `views/components/ViewBarSearchInput.tsx`, `object-record/record-index/hooks/useAnyFieldSearchGqlFilter.ts`, `record-filter/utils/buildRelationLabelSearchGqlFilters.ts` |

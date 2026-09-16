@@ -30,4 +30,6 @@ export enum SidePanelPages {
   SendCampaignTest = 'send-campaign-test',
   EmailBlockSettings = 'email-block-settings',
   SettingsMetadataTranslations = 'settings-metadata-translations',
+  // PTS AI CRM: formulario "Call with Atlas" sobre los registros seleccionados
+  AtlasCall = 'atlas-call',
 }

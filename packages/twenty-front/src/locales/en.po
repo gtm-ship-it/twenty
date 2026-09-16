@@ -140,6 +140,7 @@ msgstr "(No name)"
 
 #. js-lingui-id: mo7HDj
 #: src/modules/inbox/components/InboxCalendarView.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "(No title)"
 msgstr "(No title)"
 
@@ -214,6 +215,27 @@ msgstr "{0, plural, one {# workspace failed or behind} other {# workspaces faile
 #: src/modules/page-layout/widgets/components/PageLayoutWidgetForbiddenDisplay.tsx
 msgid "{0, plural, one {You do not have permission to access the {fieldsList} field} other {You do not have permission to access the {fieldsList} fields}}"
 msgstr "{0, plural, one {You do not have permission to access the {fieldsList} field} other {You do not have permission to access the {fieldsList} fields}}"
+
+#. js-lingui-id: nLEivG
+#. placeholder {0}: result.scheduledCount
+#. placeholder {1}: result.campaignName
+#. placeholder {2}: result.tenantLabel
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) sent to \"{1}\" ({2}), {scheduledLabel}."
+msgstr "{0} call(s) sent to \"{1}\" ({2}), {scheduledLabel}."
+
+#. js-lingui-id: 9k2L3H
+#. placeholder {0}: scheduleResult.scheduledCount
+#. placeholder {1}: scheduleResult.campaignName
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) sent to Atlas · {1}"
+msgstr "{0} call(s) sent to Atlas · {1}"
+
+#. js-lingui-id: uFsNNP
+#. placeholder {0}: result.failedCount
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{0} call(s) were rejected by Atlas:"
+msgstr "{0} call(s) were rejected by Atlas:"
 
 #. js-lingui-id: dNIJYp
 #. placeholder {0}: formatNumber(nextCreditsByPeriod, { decimals: 2, })
@@ -300,6 +322,7 @@ msgstr "{0} opted out of this topic"
 #. placeholder {0}: formatNumber(contextStoreNumberOfSelectedRecords)
 #. placeholder {0}: formatNumber(totalCount ?? 0)
 #: src/modules/object-record/record-index/components/RecordIndexPageHeader.tsx
+#: src/modules/side-panel/components/SidePanelAtlasCallInfo.tsx
 #: src/modules/side-panel/components/SidePanelMultipleRecordsInfo.tsx
 msgid "{0} selected"
 msgstr "{0} selected"
@@ -611,6 +634,11 @@ msgstr "{selectedCount, plural, one {Delete {selectedCount} Job} other {Delete {
 msgid "{selectedCount, plural, one {Retry {selectedCount} Job} other {Retry {selectedCount} Jobs}}"
 msgstr "{selectedCount, plural, one {Retry {selectedCount} Job} other {Retry {selectedCount} Jobs}}"
 
+#. js-lingui-id: saqVE2
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "{selectedCount} selected"
+msgstr "{selectedCount} selected"
+
 #. js-lingui-id: e5lBpY
 #: src/modules/object-record/object-filter-dropdown/components/ObjectFilterDropdownSourceSelect.tsx
 msgid "{selectedCount} source types"
@@ -620,6 +648,11 @@ msgstr "{selectedCount} source types"
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminJsonDataIndicatorHealthStatus.tsx
 msgid "{serviceLabel} service is unreachable"
 msgstr "{serviceLabel} service is unreachable"
+
+#. js-lingui-id: L8nf9m
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "{skippedCount} record(s) have no phone number and will be skipped."
+msgstr "{skippedCount} record(s) have no phone number and will be skipped."
 
 #. js-lingui-id: 8vJ+2V
 #: src/modules/ai/components/ThinkingStepsDisplay.tsx
@@ -935,6 +968,11 @@ msgstr "A draft already exists"
 #: src/modules/command-menu-item/engine-command/record/single-record/workflow-versions/components/UseAsDraftWorkflowVersionSingleRecordCommand.tsx
 msgid "A draft already exists for this workflow. Are you sure you want to erase it?"
 msgstr "A draft already exists for this workflow. Are you sure you want to erase it?"
+
+#. js-lingui-id: 3Q0QrF
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "A note was added to each record that was sent. Call outcomes live in the Atlas dashboard."
+msgstr "A note was added to each record that was sent. Call outcomes live in the Atlas dashboard."
 
 #. js-lingui-id: C6xZqR
 #: src/pages/settings/developers/api-keys/SettingsDevelopersApiKeyDetail.tsx
@@ -1961,6 +1999,11 @@ msgstr "Alert"
 msgid "Alignment"
 msgstr "Alignment"
 
+#. js-lingui-id: z7GAMJ
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "all"
+msgstr "all"
+
 #. js-lingui-id: N40H+G
 #: src/modules/activities/timeline-activities/components/TimelineCard.tsx
 #: src/modules/ai/constants/AgentChatThreadFilterStatusLabels.ts
@@ -2701,6 +2744,11 @@ msgstr "Are you sure? Your current information will not be saved."
 msgid "As it will be displayed in the workspace"
 msgstr "As it will be displayed in the workspace"
 
+#. js-lingui-id: cwYOaj
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "as soon as possible"
+msgstr "as soon as possible"
+
 #. js-lingui-id: 54PdN4
 #: src/modules/side-panel/pages/page-layout/utils/getSortLabelSuffixForFieldType.ts
 #: src/modules/side-panel/pages/page-layout/utils/getSortLabelSuffixForFieldType.ts
@@ -2868,6 +2916,26 @@ msgstr "at minutes {remainingValues} and {0}"
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getMinutesDescription.ts
 msgid "at the top of the hour"
 msgstr "at the top of the hour"
+
+#. js-lingui-id: OjRWML
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas account"
+msgstr "Atlas account"
+
+#. js-lingui-id: xitOps
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas calling is not enabled for this workspace. Ask the server admin to set the Atlas keys and allow this workspace."
+msgstr "Atlas calling is not enabled for this workspace. Ask the server admin to set the Atlas keys and allow this workspace."
+
+#. js-lingui-id: C41ioR
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas campaign"
+msgstr "Atlas campaign"
+
+#. js-lingui-id: TkX5Fh
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Atlas did not return a result"
+msgstr "Atlas did not return a result"
 
 #. js-lingui-id: N7m8E+
 #: src/modules/activities/emails/components/EmailComposerFields.tsx
@@ -3542,6 +3610,11 @@ msgstr "Calendar: Google stopped accepting App Passwords for calendars in March 
 msgid "Calendars"
 msgstr "Calendars"
 
+#. js-lingui-id: 23BOuU
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Call as soon as possible"
+msgstr "Call as soon as possible"
+
 #. js-lingui-id: cHma9m
 #: src/modules/activities/calendar/components/CalendarEventCallRecorderAvatar.tsx
 #: src/modules/onboarding/constants/OnboardingInstallableApps.ts
@@ -3558,6 +3631,12 @@ msgstr "Call recording is not available in this workspace."
 msgid "Call Recording Unavailable"
 msgstr "Call Recording Unavailable"
 
+#. js-lingui-id: bBz1Rn
+#: src/modules/side-panel/components/SidePanelAtlasCallInfo.tsx
+#: src/modules/side-panel/hooks/useOpenAtlasCallPageInSidePanel.tsx
+msgid "Call with Atlas"
+msgstr "Call with Atlas"
+
 #. js-lingui-id: +Kx1Id
 #: src/modules/advanced-text-editor/constants/AdvancedTextEditorBlockCatalog.ts
 msgid "Call-to-action button"
@@ -3573,6 +3652,23 @@ msgstr "Calling Code"
 msgid "Calls"
 msgstr "Calls"
 
+#. js-lingui-id: /m7KzB
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Calls were sent to Atlas, but the notes could not be created in the CRM."
+msgstr "Calls were sent to Atlas, but the notes could not be created in the CRM."
+
+#. js-lingui-id: D02dD9
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign"
+msgstr "Campaign"
+
+#. js-lingui-id: oDK6KF
+#. placeholder {0}: selectedCampaign?.name ?? ''
+#. placeholder {1}: tenants.find((tenant) => tenant.key === tenantKey)?.label ?? ''
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign \"{0}\" ({1}), {scheduledLabel}. Atlas will dial these numbers with the campaign's AI agent."
+msgstr "Campaign \"{0}\" ({1}), {scheduledLabel}. Atlas will dial these numbers with the campaign's AI agent."
+
 #. js-lingui-id: 06mPlO
 #: src/modules/activities/emails/hooks/useSendMessageCampaign.ts
 msgid "Campaign queued to {queuedCount} recipient(s)"
@@ -3582,6 +3678,12 @@ msgstr "Campaign queued to {queuedCount} recipient(s)"
 #: src/modules/activities/emails/hooks/useSendMessageCampaign.ts
 msgid "Campaign queued to {queuedCount} recipient(s), {skippedCount} skipped"
 msgstr "Campaign queued to {queuedCount} recipient(s), {skippedCount} skipped"
+
+#. js-lingui-id: VpV3NU
+#. placeholder {0}: selectedCampaign.timezone
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Campaign timezone: {0}. Atlas only dials inside the campaign's time windows."
+msgstr "Campaign timezone: {0}. Atlas only dials inside the campaign's time windows."
 
 #. js-lingui-id: msssZq
 #: src/modules/settings/data-model/objects/forms/components/SettingsDataModelObjectAboutForm.tsx
@@ -3595,6 +3697,7 @@ msgstr "Can't scan? Copy the"
 
 #. js-lingui-id: dEgA5A
 #: src/modules/applications/components/AuthorizeActionButtons.tsx
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/inbox/components/CreateLeadModal.tsx
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/inbox/components/SignatureEditorModal.tsx
@@ -4033,6 +4136,7 @@ msgid "Claude install links require an HTTPS MCP URL."
 msgstr "Claude install links require an HTTPS MCP URL."
 
 #. js-lingui-id: xCJdfg
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
 #: src/modules/ui/input/components/internal/date/components/DatePicker.tsx
 #: src/modules/ui/input/components/internal/date/components/DateTimePicker.tsx
 msgid "Clear"
@@ -4048,6 +4152,11 @@ msgstr "Clear filter"
 #: src/modules/settings/unsubscribers/components/filter-dropdown/SettingsUnsubscribersFilterMenuContent.tsx
 msgid "Clear filters"
 msgstr "Clear filters"
+
+#. js-lingui-id: V8yTm6
+#: src/modules/views/components/ViewBarSearchInput.tsx
+msgid "Clear search"
+msgstr "Clear search"
 
 #. js-lingui-id: wu0RfR
 #: src/modules/settings/admin-panel/config-variables/components/ConfigVariableHelpText.tsx
@@ -4166,6 +4275,7 @@ msgstr "Clipboard requires a secure connection (HTTPS). Please access this app o
 
 #. js-lingui-id: yz7wBu
 #: src/modules/ai/components/AiChatCloseButton.tsx
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 msgid "Close"
 msgstr "Close"
@@ -5138,6 +5248,11 @@ msgstr "Could not refresh validity token. Please contact support."
 #: src/pages/settings/applications/components/SettingsClaimApplicationSection.tsx
 msgid "Could not run the lookup"
 msgstr "Could not run the lookup"
+
+#. js-lingui-id: EQIs9t
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Could not send the calls to Atlas."
+msgstr "Could not send the calls to Atlas."
 
 #. js-lingui-id: p75IO8
 #: src/pages/settings/applications/components/SettingsClaimApplicationSection.tsx
@@ -6931,6 +7046,11 @@ msgstr "Download Files"
 msgid "Download sample"
 msgstr "Download sample"
 
+#. js-lingui-id: eHnlVy
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "draft"
+msgstr "draft"
+
 #. js-lingui-id: eneWvv
 #: src/modules/activities/emails/components/EmailThreadPreview.tsx
 msgid "Draft"
@@ -7332,6 +7452,11 @@ msgstr "Email cannot be empty"
 #: src/modules/settings/unsubscribe-topics/components/SettingsWorkspaceUnsubscribeTopicSection.tsx
 msgid "Email categories recipients can opt out of"
 msgstr "Email categories recipients can opt out of"
+
+#. js-lingui-id: O4ku2t
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Email content"
+msgstr "Email content"
 
 #. js-lingui-id: UZQ5eW
 #: src/modules/activities/emails/recipients/components/EmailRecipientChipMenuContent.tsx
@@ -10987,6 +11112,7 @@ msgstr "john.doe@example.com"
 
 #. js-lingui-id: 0wdd7X
 #: src/modules/inbox/components/InboxCalendarView.tsx
+#: src/modules/inbox/components/InboxCalendarView.tsx
 msgid "Join"
 msgstr "Join"
 
@@ -11620,6 +11746,7 @@ msgid "list"
 msgstr "list"
 
 #. js-lingui-id: 2BBAbc
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/views/types/ViewType.ts
 msgid "List"
@@ -11696,6 +11823,11 @@ msgstr "Loading applications..."
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
 msgid "Loading apps..."
 msgstr "Loading apps..."
+
+#. js-lingui-id: 6hq12Q
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Loading campaigns…"
+msgstr "Loading campaigns…"
 
 #. js-lingui-id: UDL15Z
 #: src/modules/settings/admin-panel/chats/components/SettingsAdminChatsContent.tsx
@@ -12412,6 +12544,7 @@ msgid "month"
 msgstr "month"
 
 #. js-lingui-id: HajiZl
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
@@ -12537,6 +12670,11 @@ msgstr "Move to another tab"
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
 msgid "Move to folder"
 msgstr "Move to folder"
+
+#. js-lingui-id: 6hWAnU
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Move to:"
+msgstr "Move to:"
 
 #. js-lingui-id: QyioBP
 #: src/modules/navigation-menu-item/edit/side-panel/components/SidePanelEditOrganizeActions.tsx
@@ -13552,6 +13690,11 @@ msgstr "No permissions configured for this application."
 msgid "No permissions have been set for individual objects."
 msgstr "No permissions have been set for individual objects."
 
+#. js-lingui-id: XBH251
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "No phone number"
+msgstr "No phone number"
+
 #. js-lingui-id: pRxlf6
 #: src/pages/settings/applications/utils/getClaimErrorContent.ts
 msgid "No provenance attestation was found for this package. Publish it from GitHub Actions with npm trusted publishing, then try claiming again."
@@ -13590,6 +13733,11 @@ msgstr "No records found"
 #: src/modules/object-record/record-table/empty-state/components/RecordTableEmptyStateNoRecordFoundForFilter.tsx
 msgid "No records matching the filter criteria were found."
 msgstr "No records matching the filter criteria were found."
+
+#. js-lingui-id: z0jAkd
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "No records selected."
+msgstr "No records selected."
 
 #. js-lingui-id: gvIkAA
 #: src/modules/workflow/workflow-steps/workflow-actions/pick-record-action/components/WorkflowEditActionPickRecord.tsx
@@ -13847,6 +13995,11 @@ msgstr "No workspaces found matching your search criteria."
 #: src/modules/side-panel/pages/workflow/step/view-run/components/SidePanelWorkflowRunViewStepContent.tsx
 msgid "Node"
 msgstr "Node"
+
+#. js-lingui-id: r/FDxa
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "none"
+msgstr "none"
 
 #. js-lingui-id: EdQY6l
 #: src/modules/ai/constants/AgentChatThreadGroupByLabels.ts
@@ -14340,6 +14493,11 @@ msgstr "only on {firstDay} and {secondDay}"
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getDayOfWeekDescription.ts
 msgid "only on {remainingDays} and {0}"
 msgstr "only on {remainingDays} and {0}"
+
+#. js-lingui-id: h/+BHh
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Only the first {ATLAS_MAX_TARGET_RECORDS} records of the selection are included."
+msgstr "Only the first {ATLAS_MAX_TARGET_RECORDS} records of the selection are included."
 
 #. js-lingui-id: saaSLd
 #: src/modules/activities/emails/components/EmailThreadNotShared.tsx
@@ -14890,6 +15048,18 @@ msgstr "People I’ve sent emails to and received emails from."
 msgid "People I’ve sent emails to."
 msgstr "People I’ve sent emails to."
 
+#. js-lingui-id: qtYC9E
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "People to call"
+msgstr "People to call"
+
+#. js-lingui-id: JCAMYt
+#. placeholder {0}: selectedTargets.length
+#. placeholder {1}: callableTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "People to call · {0} of {1} selected"
+msgstr "People to call · {0} of {1} selected"
+
 #. js-lingui-id: qMTN0w
 #: src/pages/settings/ai/SettingsAiUsageUserDetail.tsx
 msgid "Per-day AI consumption."
@@ -15011,6 +15181,11 @@ msgstr "Pick a color — changes apply live"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Pick a connected account or set a workspace member as variable"
 msgstr "Pick a connected account or set a workspace member as variable"
+
+#. js-lingui-id: /YTzWV
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Pick a date and time in the future."
+msgstr "Pick a date and time in the future."
 
 #. js-lingui-id: JqqNlC
 #: src/modules/side-panel/utils/getSidePanelSubPageTitle.ts
@@ -15976,6 +16151,11 @@ msgstr "Reloading..."
 msgid "Remote"
 msgstr "Remote"
 
+#. js-lingui-id: mx/xgN
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Remote images are blocked to protect your privacy."
+msgstr "Remote images are blocked to protect your privacy."
+
 #. js-lingui-id: t/YqKh
 #: src/modules/activities/emails/recipients/components/EmailRecipientChipMenuContent.tsx
 #: src/modules/object-record/record-group/components/RecordGroupReorderConfirmationModal.tsx
@@ -16045,6 +16225,7 @@ msgid "Remove filter"
 msgstr "Remove filter"
 
 #. js-lingui-id: LH4oc+
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
 #: src/modules/inbox/components/InboxPipelineBoard.tsx
 msgid "Remove from pipeline"
 msgstr "Remove from pipeline"
@@ -16283,6 +16464,11 @@ msgstr "Reset to static value"
 msgid "Reset variable"
 msgstr "Reset variable"
 
+#. js-lingui-id: sMhd9w
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Resolving phone numbers…"
+msgstr "Resolving phone numbers…"
+
 #. js-lingui-id: N0vrR6
 #: src/modules/settings/billing/components/internal/ResourceCreditPriceSelector.tsx
 msgid "Resource credits updated."
@@ -16347,6 +16533,7 @@ msgid "Restrict available models to a curated list"
 msgstr "Restrict available models to a curated list"
 
 #. js-lingui-id: RD6AE9
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/code-action/components/WorkflowEditActionCode.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/logic-function-action/components/WorkflowEditActionLogicFunction.tsx
 msgid "Result"
@@ -16682,6 +16869,11 @@ msgstr "Schedule"
 msgid "Schedule a maintenance window and notify all users"
 msgstr "Schedule a maintenance window and notify all users"
 
+#. js-lingui-id: 2bcnDB
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Schedule for a date and time"
+msgstr "Schedule for a date and time"
+
 #. js-lingui-id: 4ba0NE
 #: src/modules/activities/calendar/components/CalendarEventCallRecorderAvatar.tsx
 #: src/modules/settings/billing/hooks/useBillingPlanActions.ts
@@ -16692,6 +16884,12 @@ msgstr "Scheduled"
 #: src/modules/settings/billing/components/internal/SettingsBillingSubscriptionInfoCard.tsx
 msgid "Scheduled change"
 msgstr "Scheduled change"
+
+#. js-lingui-id: MxCHhQ
+#. placeholder {0}: new Date(scheduledAtIso).toLocaleString(undefined, { timeZone: userTimezone, dateStyle: 'medium', timeStyle: 'short', })
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "scheduled for {0} ({userTimezone})"
+msgstr "scheduled for {0} ({userTimezone})"
 
 #. js-lingui-id: f5yMQc
 #: src/modules/information-banner/components/maintenance/InformationBannerMaintenance.tsx
@@ -16748,6 +16946,12 @@ msgstr "SDK"
 #: src/modules/ui/navigation/navigation-drawer/components/NavigationDrawerHeader.tsx
 msgid "Search"
 msgstr "Search"
+
+#. js-lingui-id: rFwgrR
+#. placeholder {0}: objectMetadataItem.labelPlural.toLowerCase()
+#: src/modules/views/components/ViewBarSearchInput.tsx
+msgid "Search {0}…"
+msgstr "Search {0}…"
 
 #. js-lingui-id: g2dQp/
 #: src/modules/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/SettingsRolePermissionsObjectLevelRecordLevelPermissionMeValueSelect.tsx
@@ -17209,6 +17413,11 @@ msgstr "Seeing \"The setting you are looking for is not available for your accou
 msgid "Select"
 msgstr "Select"
 
+#. js-lingui-id: NRn4of
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Select — shift-click to select a range"
+msgstr "Select — shift-click to select a range"
+
 #. js-lingui-id: Mepl7c
 #: src/pages/onboarding/InstallAppsContent.tsx
 msgid "Select {labelText}"
@@ -17223,6 +17432,11 @@ msgstr "Select 1 {fieldTypeLabelLowercase} field"
 #: src/modules/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/SettingsRolePermissionsObjectLevelRecordLevelPermissionMeValueSelect.tsx
 msgid "Select 1 field"
 msgstr "Select 1 field"
+
+#. js-lingui-id: e97NF8
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select a campaign"
+msgstr "Select a campaign"
 
 #. js-lingui-id: OMoA3j
 #: src/modules/workflow/workflow-steps/workflow-actions/delay-actions/components/WorkflowEditActionDelay.tsx
@@ -17293,10 +17507,26 @@ msgstr "Select action"
 msgid "Select Action"
 msgstr "Select Action"
 
+#. js-lingui-id: wgNoIs
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+#: src/modules/inbox/components/InboxPipelineBoard.tsx
+msgid "Select all"
+msgstr "Select all"
+
 #. js-lingui-id: /fhMKz
 #: src/modules/object-record/record-table/record-table-header/components/RecordTableHeaderCheckboxColumn.tsx
 msgid "Select all rows"
 msgstr "Select all rows"
+
+#. js-lingui-id: Xa4vRt
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select all with a phone number"
+msgstr "Select all with a phone number"
+
+#. js-lingui-id: UsODUn
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Select an account"
+msgstr "Select an account"
 
 #. js-lingui-id: hVPa4O
 #: src/modules/spreadsheet-import/steps/components/MatchColumnsStep/components/UnmatchColumn.tsx
@@ -17444,10 +17674,27 @@ msgstr "Select your language and adjust the size of the interface"
 msgid "Send"
 msgstr "Send"
 
+#. js-lingui-id: ya4dbC
+#. placeholder {0}: selectedTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send {0} call(s) to Atlas"
+msgstr "Send {0} call(s) to Atlas"
+
+#. js-lingui-id: j+UDEB
+#. placeholder {0}: selectedTargets.length
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send {0} call(s) to Atlas?"
+msgstr "Send {0} call(s) to Atlas?"
+
 #. js-lingui-id: mjK8F3
 #: src/pages/settings/members/tabs/SettingsWorkspaceMembersInviteTab.tsx
 msgid "Send an invite email to your team"
 msgstr "Send an invite email to your team"
+
+#. js-lingui-id: OdyqJp
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send calls"
+msgstr "Send calls"
 
 #. js-lingui-id: 65dxv8
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
@@ -17479,6 +17726,11 @@ msgstr "Send test email"
 #: src/modules/side-panel/hooks/useOpenSendCampaignTestInSidePanel.ts
 msgid "Send Test Email"
 msgstr "Send Test Email"
+
+#. js-lingui-id: zogOvK
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Send to Atlas"
+msgstr "Send to Atlas"
 
 #. js-lingui-id: LFupHB
 #: src/pages/settings/communications/SettingsWorkspaceCommunicationGroupChannelDetail.tsx
@@ -17785,6 +18037,11 @@ msgstr "Show hidden groups"
 #: src/modules/side-panel/components/SidePanelObjectFilterDropdownContent.tsx
 msgid "Show hidden objects"
 msgstr "Show hidden objects"
+
+#. js-lingui-id: CQJfxf
+#: src/modules/activities/emails/components/EmailThreadMessageHtmlBody.tsx
+msgid "Show images"
+msgstr "Show images"
 
 #. js-lingui-id: fMPkxb
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
@@ -19594,6 +19851,11 @@ msgstr "timeline activity type"
 msgid "Timeout"
 msgstr "Timeout"
 
+#. js-lingui-id: 43jx+G
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "Times are in your timezone ({userTimezone})."
+msgstr "Times are in your timezone ({userTimezone})."
+
 #. js-lingui-id: 8TMaZI
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminQueueJobsTable.tsx
 #: src/modules/settings/event-logs/utils/getColumnsForEventLogTable.tsx
@@ -19645,6 +19907,7 @@ msgstr "To pipeline"
 
 #. js-lingui-id: ecUA8p
 #: src/modules/ai/utils/groupThreadsByDate.ts
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/localization/utils/formatDateISOStringToRelativeDate.ts
 #: src/modules/object-record/record-calendar/components/RecordCalendarTopBar.tsx
@@ -20278,6 +20541,7 @@ msgid "Unknown device"
 msgstr "Unknown device"
 
 #. js-lingui-id: 29VNqC
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
 #: src/modules/workflow/workflow-trigger/components/CronExpressionHelper.tsx
 #: src/modules/workflow/workflow-trigger/components/WorkflowEditTriggerCronForm.tsx
 msgid "Unknown error"
@@ -21591,6 +21855,7 @@ msgid "Website"
 msgstr "Website"
 
 #. js-lingui-id: zx4BuL
+#: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCustomView.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownLayoutContent.tsx
@@ -21658,6 +21923,11 @@ msgstr "What's installed and being used in your workspace"
 #: src/pages/settings/communications/SettingsWorkspaceCommunications.tsx
 msgid "Whatsapp"
 msgstr "Whatsapp"
+
+#. js-lingui-id: 1ZF9KQ
+#: src/modules/atlas-calls/components/AtlasCallContainer.tsx
+msgid "When"
+msgstr "When"
 
 #. js-lingui-id: m7GziZ
 #: src/modules/ai/components/suggested-prompts/default-suggested-prompts.ts

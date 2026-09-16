@@ -20,6 +20,7 @@ import { SidePanelMergeRecordPage } from '@/side-panel/pages/record-page/compone
 import { SidePanelRecordsPage } from '@/side-panel/pages/records-page/components/SidePanelRecordsPage';
 import { SidePanelRecordPage } from '@/side-panel/pages/record-page/components/SidePanelRecordPage';
 import { SidePanelUpdateMultipleRecords } from '@/side-panel/pages/record-page/components/SidePanelUpdateMultipleRecords';
+import { SidePanelAtlasCallPage } from '@/side-panel/pages/atlas-call/components/SidePanelAtlasCallPage';
 import { SidePanelEditRichTextPage } from '@/side-panel/pages/rich-text-page/components/SidePanelEditRichTextPage';
 import { SidePanelSearchRecordsPage } from '@/side-panel/pages/search/components/SidePanelSearchRecordsPage';
 import { SidePanelWorkflowCreateStep } from '@/side-panel/pages/workflow/step/create/components/SidePanelWorkflowCreateStep';
@@ -40,6 +41,7 @@ export const SIDE_PANEL_PAGES_CONFIG = new Map<SidePanelPages, React.ReactNode>(
     [SidePanelPages.ViewRecords, <SidePanelRecordsPage />],
     [SidePanelPages.MergeRecords, <SidePanelMergeRecordPage />],
     [SidePanelPages.UpdateRecords, <SidePanelUpdateMultipleRecords />],
+    [SidePanelPages.AtlasCall, <SidePanelAtlasCallPage />],
     [SidePanelPages.EditRichText, <SidePanelEditRichTextPage />],
     [
       SidePanelPages.WorkflowTriggerSelectType,
