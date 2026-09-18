@@ -5,12 +5,15 @@ export const ATLAS_SCHEDULE_SPACING_MS = 200;
 export const ATLAS_MAX_TARGETS_PER_REQUEST = 300;
 export const ATLAS_MAX_RECORDS_TO_RESOLVE = 500;
 
-export type AtlasTenantKey = 'pts' | 'sunset';
+export type AtlasTenantKey = 'pts' | 'sunset' | 'ptsai';
 
 export const ATLAS_TENANTS: {
   key: AtlasTenantKey;
   label: string;
-  configKey: 'ATLAS_TENANT_PTS_API_KEY' | 'ATLAS_TENANT_SUNSET_API_KEY';
+  configKey:
+    | 'ATLAS_TENANT_PTS_API_KEY'
+    | 'ATLAS_TENANT_SUNSET_API_KEY'
+    | 'ATLAS_TENANT_PTSAI_API_KEY';
 }[] = [
   {
     key: 'pts',
@@ -21,5 +24,10 @@ export const ATLAS_TENANTS: {
     key: 'sunset',
     label: 'Sunset Finance',
     configKey: 'ATLAS_TENANT_SUNSET_API_KEY',
+  },
+  {
+    key: 'ptsai',
+    label: 'PTS AI',
+    configKey: 'ATLAS_TENANT_PTSAI_API_KEY',
   },
 ];

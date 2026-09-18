@@ -2119,6 +2119,16 @@ export class ConfigVariables {
 
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    isSensitive: true,
+    description:
+      'Atlas API key of the PTS AI white label tenant. When unset, that tenant is hidden from "Call with Atlas".',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  ATLAS_TENANT_PTSAI_API_KEY?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
     description:
       'Comma-separated workspace ids allowed to use "Call with Atlas". Empty disables the feature everywhere.',
     type: ConfigVariableType.STRING,
