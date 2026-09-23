@@ -1240,6 +1240,12 @@ msgstr "추가"
 msgid "Add \"{trimmedName}\" to options"
 msgstr "\"{trimmedName}\"을 옵션에 추가하기"
 
+#. js-lingui-id: 3nLdaX
+#. placeholder {0}: account.handle
+#: src/pages/inbox/InboxPage.tsx
+msgid "Add {0}"
+msgstr ""
+
 #. js-lingui-id: 9CHcSG
 #: src/modules/object-record/record-table/empty-state/components/RecordTableEmptyStateNoRecordFoundForFilter.tsx
 msgid "Add a {objectLabelSingular}"
@@ -11154,6 +11160,11 @@ msgstr ""
 msgid "Just for me"
 msgstr "오직 나만"
 
+#. js-lingui-id: Ce92iz
+#: src/pages/inbox/InboxPage.tsx
+msgid "Just remove it"
+msgstr ""
+
 #. js-lingui-id: OGXtL8
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/views/types/ViewType.ts
@@ -19626,6 +19637,17 @@ msgstr "이 모델은 공급자에서 제거됩니다. 나중에 다시 추가�
 #: src/modules/page-layout/widgets/components/StandaloneWidgetPlaceholder.tsx
 msgid "This page has no content"
 msgstr "이 페이지에는 내용이 없습니다"
+
+#. js-lingui-id: EJxUr/
+#. placeholder {0}: resolvedPipelineAccounts.staleAccountIds.length
+#: src/pages/inbox/InboxPage.tsx
+msgid "This pipeline points to {0} mailboxes that no longer exist (they were probably reconnected)."
+msgstr ""
+
+#. js-lingui-id: zwKhwn
+#: src/pages/inbox/InboxPage.tsx
+msgid "This pipeline points to a mailbox that no longer exists (it was probably reconnected)."
+msgstr ""
 
 #. js-lingui-id: R/PuIn
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx

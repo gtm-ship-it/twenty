@@ -13,6 +13,7 @@ import { SignatureEditorModal } from '@/inbox/components/SignatureEditorModal';
 import { useInboxPipelines } from '@/inbox/hooks/useInboxPipelines';
 import { useInboxSignature } from '@/inbox/hooks/useInboxSignature';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
+import { resolvePipelineAccountIds } from '@/inbox/utils/resolvePipelineAccountIds';
 import { GET_MY_CONNECTED_ACCOUNTS } from '@/settings/accounts/graphql/queries/getMyConnectedAccounts';
 import { Select } from '@/ui/input/components/Select';
 
@@ -102,6 +103,33 @@ const StyledEditTabContainer = styled.div`
   margin-left: auto;
 `;
 
+const StyledStaleAccountsBanner = styled.div`
+  align-items: center;
+  background: ${themeCssVariables.background.transparent.orange};
+  border-bottom: 1px solid ${themeCssVariables.border.color.light};
+  color: ${themeCssVariables.font.color.primary};
+  display: flex;
+  flex-wrap: wrap;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[2]};
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[4]};
+`;
+
+const StyledBannerButton = styled.button`
+  background: ${themeCssVariables.background.primary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.primary};
+  cursor: pointer;
+  font-family: inherit;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: ${themeCssVariables.spacing[1]} ${themeCssVariables.spacing[2]};
+
+  &:hover {
+    background: ${themeCssVariables.background.transparent.light};
+  }
+`;
+
 const StyledEmptyState = styled.div`
   align-items: center;
   color: ${themeCssVariables.font.color.tertiary};
@@ -152,12 +180,39 @@ export const InboxPage = () => {
   const [selectedPipelineId, setSelectedPipelineId] = useState<string | null>(
     null,
   );
-  const [pipelineEditorState, setPipelineEditorState] = useState<
-    { pipeline: InboxPipeline | null } | null
-  >(null);
+  const [pipelineEditorState, setPipelineEditorState] = useState<{
+    pipeline: InboxPipeline | null;
+  } | null>(null);
 
   const selectedPipeline =
     pipelines.find((pipeline) => pipeline.id === selectedPipelineId) ?? null;
+
+  const resolvedPipelineAccounts = selectedPipeline
+    ? resolvePipelineAccountIds(selectedPipeline, accounts)
+    : null;
+
+  // Reemplaza los ids viejos del pipeline por los vivos (+ los que se agreguen).
+  const handleRepairPipelineAccounts = async (addAccountIds: string[]) => {
+    if (!selectedPipeline || !resolvedPipelineAccounts) {
+      return;
+    }
+
+    const nextAccountIds = [
+      ...resolvedPipelineAccounts.effectiveAccountIds,
+      ...addAccountIds.filter(
+        (accountId) =>
+          !resolvedPipelineAccounts.effectiveAccountIds.includes(accountId),
+      ),
+    ];
+
+    await savePipelines(
+      pipelines.map((pipeline) =>
+        pipeline.id === selectedPipeline.id
+          ? { ...pipeline, accountIds: nextAccountIds }
+          : pipeline,
+      ),
+    );
+  };
 
   const handleSavePipeline = async (pipeline: InboxPipeline) => {
     const exists = pipelines.some((existing) => existing.id === pipeline.id);
@@ -206,8 +261,11 @@ export const InboxPage = () => {
     );
   };
 
-  const { signature, saveSignature, isSaving: isSavingSignature } =
-    useInboxSignature();
+  const {
+    signature,
+    saveSignature,
+    isSaving: isSavingSignature,
+  } = useInboxSignature();
   const [isSignatureEditorOpen, setIsSignatureEditorOpen] = useState(false);
 
   const handleExcludeRule = async (rule: string, threadId: string) => {
@@ -325,7 +383,7 @@ export const InboxPage = () => {
           </StyledAccountTabs>
         )}
       </StyledHeader>
-            {!loading && accounts.length === 0 && (
+      {!loading && accounts.length === 0 && (
         <StyledEmptyState>
           {t`Connect an email account in Settings → Accounts to see your inbox here.`}
         </StyledEmptyState>
@@ -376,14 +434,37 @@ export const InboxPage = () => {
           )}
         </StyledViewTabs>
       )}
-      {activeAccountId && selectedPipeline && (
+      {activeAccountId &&
+        selectedPipeline &&
+        resolvedPipelineAccounts &&
+        resolvedPipelineAccounts.staleAccountIds.length > 0 && (
+          <StyledStaleAccountsBanner>
+            <span>
+              {resolvedPipelineAccounts.staleAccountIds.length === 1
+                ? t`This pipeline points to a mailbox that no longer exists (it was probably reconnected).`
+                : t`This pipeline points to ${resolvedPipelineAccounts.staleAccountIds.length} mailboxes that no longer exist (they were probably reconnected).`}
+            </span>
+            {resolvedPipelineAccounts.suggestedAccounts.map((account) => (
+              <StyledBannerButton
+                key={account.id}
+                type="button"
+                onClick={() => handleRepairPipelineAccounts([account.id])}
+              >
+                {t`Add ${account.handle}`}
+              </StyledBannerButton>
+            ))}
+            <StyledBannerButton
+              type="button"
+              onClick={() => handleRepairPipelineAccounts([])}
+            >
+              {t`Just remove it`}
+            </StyledBannerButton>
+          </StyledStaleAccountsBanner>
+        )}
+      {activeAccountId && selectedPipeline && resolvedPipelineAccounts && (
         <InboxPipelineBoard
           key={selectedPipeline.id}
-          accountIds={
-            selectedPipeline.accountIds.length > 0
-              ? selectedPipeline.accountIds
-              : accounts.map((account) => account.id)
-          }
+          accountIds={resolvedPipelineAccounts.effectiveAccountIds}
           searchTerm={searchTerm}
           pipeline={selectedPipeline}
           onMoveCards={handleMoveCards}

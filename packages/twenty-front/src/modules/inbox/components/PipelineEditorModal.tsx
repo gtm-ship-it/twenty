@@ -234,8 +234,12 @@ export const PipelineEditorModal = ({
   );
   const [onlyInput, setOnlyInput] = useState('');
   const [excludeInput, setExcludeInput] = useState('');
-  const [accountIds, setAccountIds] = useState<string[]>(
-    pipeline?.accountIds ?? [],
+  // Se descartan los ids de cuentas que ya no existen (buzón reconectado):
+  // guardar el pipeline los limpia en vez de arrastrarlos para siempre.
+  const [accountIds, setAccountIds] = useState<string[]>(() =>
+    (pipeline?.accountIds ?? []).filter((accountId) =>
+      accounts.some((account) => account.id === accountId),
+    ),
   );
 
   const addRule = (
@@ -276,9 +280,7 @@ export const PipelineEditorModal = ({
     );
   };
 
-  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(
-    null,
-  );
+  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
 
   const moveColumn = (index: number, direction: -1 | 1) => {
     setColumns((previous) => {

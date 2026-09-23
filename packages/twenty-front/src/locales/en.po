@@ -1235,6 +1235,12 @@ msgstr "Add"
 msgid "Add \"{trimmedName}\" to options"
 msgstr "Add \"{trimmedName}\" to options"
 
+#. js-lingui-id: 3nLdaX
+#. placeholder {0}: account.handle
+#: src/pages/inbox/InboxPage.tsx
+msgid "Add {0}"
+msgstr "Add {0}"
+
 #. js-lingui-id: 9CHcSG
 #: src/modules/object-record/record-table/empty-state/components/RecordTableEmptyStateNoRecordFoundForFilter.tsx
 msgid "Add a {objectLabelSingular}"
@@ -11149,6 +11155,11 @@ msgstr "JSON"
 msgid "Just for me"
 msgstr "Just for me"
 
+#. js-lingui-id: Ce92iz
+#: src/pages/inbox/InboxPage.tsx
+msgid "Just remove it"
+msgstr "Just remove it"
+
 #. js-lingui-id: OGXtL8
 #: src/modules/page-layout/widgets/record-table/types/RecordTableWidgetLayoutViewType.ts
 #: src/modules/views/types/ViewType.ts
@@ -19653,6 +19664,17 @@ msgstr "This model will be removed from the provider. You can re-add it later."
 #: src/modules/page-layout/widgets/components/StandaloneWidgetPlaceholder.tsx
 msgid "This page has no content"
 msgstr "This page has no content"
+
+#. js-lingui-id: EJxUr/
+#. placeholder {0}: resolvedPipelineAccounts.staleAccountIds.length
+#: src/pages/inbox/InboxPage.tsx
+msgid "This pipeline points to {0} mailboxes that no longer exist (they were probably reconnected)."
+msgstr "This pipeline points to {0} mailboxes that no longer exist (they were probably reconnected)."
+
+#. js-lingui-id: zwKhwn
+#: src/pages/inbox/InboxPage.tsx
+msgid "This pipeline points to a mailbox that no longer exists (it was probably reconnected)."
+msgstr "This pipeline points to a mailbox that no longer exists (it was probably reconnected)."
 
 #. js-lingui-id: R/PuIn
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
