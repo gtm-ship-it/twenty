@@ -26,6 +26,8 @@ export enum AppPath {
 
   InboxPage = '/inbox',
   CalendarPage = '/calendar',
+  TaskPipelinesPage = '/tasks',
+  MeetingsPage = '/meetings',
 
   RecordIndexPage = '/objects/:objectNamePlural',
   RecordShowPage = '/object/:objectNameSingular/:objectRecordId',

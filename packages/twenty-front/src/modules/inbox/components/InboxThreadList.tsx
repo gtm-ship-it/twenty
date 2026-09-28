@@ -16,6 +16,7 @@ import {
   type CreateLeadDefaultValues,
 } from '@/inbox/components/CreateLeadModal';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
+import { CreateTaskFromEmailModal } from '@/task-pipelines/components/CreateTaskFromEmailModal';
 import { type InboxPipeline } from '@/inbox/types/InboxPipeline';
 import { type TimelineThread } from '~/generated/graphql';
 
@@ -173,6 +174,9 @@ export const InboxThreadList = ({
     string | null
   >(null);
 
+  const [createTaskThread, setCreateTaskThread] =
+    useState<TimelineThread | null>(null);
+
   if (firstQueryLoading) {
     return <SkeletonLoader />;
   }
@@ -219,6 +223,12 @@ export const InboxThreadList = ({
                   />
                 )}
                 <Button
+                  title={t`Create task`}
+                  size="small"
+                  variant="secondary"
+                  onClick={() => setCreateTaskThread(thread)}
+                />
+                <Button
                   title={t`Create lead`}
                   size="small"
                   variant="secondary"
@@ -256,6 +266,13 @@ export const InboxThreadList = ({
           onLastRowVisible={handleLastRowVisible}
         />
       </Section>
+      {createTaskThread && (
+        <CreateTaskFromEmailModal
+          thread={createTaskThread}
+          ownHandle={connectedAccountHandle}
+          onClose={() => setCreateTaskThread(null)}
+        />
+      )}
       {createLeadDefaultValues && (
         <CreateLeadModal
           defaultValues={createLeadDefaultValues}

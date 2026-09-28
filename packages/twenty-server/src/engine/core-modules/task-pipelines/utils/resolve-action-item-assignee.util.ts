@@ -190,7 +190,19 @@ export const resolveActionItemAssignee = ({
     return { workspaceMemberId: byMention.workspaceMemberId, resolution: 'MENTION' };
   }
 
-  // Quien hablaba en ese segundo de la grabación (normalmente quien se comprometió).
+  // Fathom nombró a alguien concreto que NO está en el tablero (p. ej. el
+  // cliente): no se adivina por quién hablaba; queda por asignar, salvo en un
+  // tablero de una sola persona, donde todo es de su dueño.
+  const fathomNamedSomeone =
+    normalizePersonName(assignee?.name).length > 0 || normalizeEmail(assignee?.email).length > 0;
+
+  if (fathomNamedSomeone) {
+    return members.length === 1
+      ? { workspaceMemberId: members[0].workspaceMemberId, resolution: 'SOLE_MEMBER' }
+      : { workspaceMemberId: null, resolution: 'NONE' };
+  }
+
+  // Sin asignado en Fathom: quien hablaba en ese segundo (normalmente quien se comprometió).
   const actionSeconds = timestampToSeconds(recordingTimestamp);
 
   if (actionSeconds !== null && transcript.length > 0) {

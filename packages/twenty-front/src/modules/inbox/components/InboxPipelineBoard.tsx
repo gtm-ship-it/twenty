@@ -9,6 +9,7 @@ import { CustomResolverFetchMoreLoader } from '@/activities/components/CustomRes
 import { SkeletonLoader } from '@/activities/components/SkeletonLoader';
 import { EmailThreadPreview } from '@/activities/emails/components/EmailThreadPreview';
 import { useInboxThreads } from '@/inbox/hooks/useInboxThreads';
+import { CreateTaskFromEmailModal } from '@/task-pipelines/components/CreateTaskFromEmailModal';
 import {
   threadBelongsToPipeline,
   type InboxPipeline,
@@ -221,6 +222,7 @@ type PipelineCardProps = {
   onExcludeRule: (rule: string, threadId: string) => void;
   onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadId: string) => void;
+  onCreateTask: (thread: TimelineThread) => void;
 };
 
 const PipelineCard = ({
@@ -232,6 +234,7 @@ const PipelineCard = ({
   onExcludeRule,
   onOnlyRule,
   onRemoveFromPipeline,
+  onCreateTask,
 }: PipelineCardProps) => {
   const { ref } = useDraggable({
     id: thread.id,
@@ -300,6 +303,9 @@ const PipelineCard = ({
               {t`Only this domain`} ({senderDomain})
             </StyledCardMenuItem>
           )}
+          <StyledCardMenuItem type="button" onClick={() => onCreateTask(thread)}>
+            {t`Create task`}
+          </StyledCardMenuItem>
           <StyledCardMenuItem
             type="button"
             onClick={() => onRemoveFromPipeline(thread.id)}
@@ -324,6 +330,7 @@ type PipelineColumnProps = {
   onExcludeRule: (rule: string, threadId: string) => void;
   onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadId: string) => void;
+  onCreateTask: (thread: TimelineThread) => void;
 };
 
 const PipelineColumn = ({
@@ -338,6 +345,7 @@ const PipelineColumn = ({
   onExcludeRule,
   onOnlyRule,
   onRemoveFromPipeline,
+  onCreateTask,
 }: PipelineColumnProps) => {
   const { ref } = useDroppable({
     id: getColumnDroppableId(columnIndex),
@@ -375,6 +383,7 @@ const PipelineColumn = ({
           onExcludeRule={onExcludeRule}
           onOnlyRule={onOnlyRule}
           onRemoveFromPipeline={onRemoveFromPipeline}
+          onCreateTask={onCreateTask}
         />
       ))}
     </StyledColumn>
@@ -389,6 +398,7 @@ type InboxPipelineBoardProps = {
   onExcludeRule: (rule: string, threadId: string) => void;
   onOnlyRule: (rule: string) => void;
   onRemoveFromPipeline: (threadIds: string[]) => void;
+  ownHandle?: string;
 };
 
 export const InboxPipelineBoard = ({
@@ -399,6 +409,7 @@ export const InboxPipelineBoard = ({
   onExcludeRule,
   onOnlyRule,
   onRemoveFromPipeline,
+  ownHandle = '',
 }: InboxPipelineBoardProps) => {
   const {
     threads,
@@ -409,6 +420,8 @@ export const InboxPipelineBoard = ({
   } = useInboxThreads(accountIds, PIPELINE_BOARD_PAGE_SIZE, searchTerm);
 
   const [menuThreadId, setMenuThreadId] = useState<string | null>(null);
+  const [createTaskThread, setCreateTaskThread] =
+    useState<TimelineThread | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   // Ancla del shift-click: ultimo id marcado a mano.
   const [lastSelectedId, setLastSelectedId] = useState<string | null>(null);
@@ -623,6 +636,10 @@ export const InboxPipelineBoard = ({
               setMenuThreadId(null);
               onRemoveFromPipeline([threadId]);
             }}
+            onCreateTask={(thread) => {
+              setMenuThreadId(null);
+              setCreateTaskThread(thread);
+            }}
           />
         ))}
         <CustomResolverFetchMoreLoader
@@ -635,6 +652,13 @@ export const InboxPipelineBoard = ({
         />
       </StyledBoard>
       </DragDropProvider>
+      {createTaskThread && (
+        <CreateTaskFromEmailModal
+          thread={createTaskThread}
+          ownHandle={ownHandle}
+          onClose={() => setCreateTaskThread(null)}
+        />
+      )}
     </StyledBoardWrapper>
   );
 };

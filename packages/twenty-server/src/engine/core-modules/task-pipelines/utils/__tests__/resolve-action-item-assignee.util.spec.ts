@@ -112,6 +112,17 @@ describe('resolveActionItemAssignee', () => {
     ).toEqual({ workspaceMemberId: 'yeison', resolution: 'SOLE_MEMBER' });
   });
 
+  it('does not guess by speaker when Fathom named an outsider', () => {
+    expect(
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'Pilar Rodriguez', email: 'pilar@client.com' },
+        recordingTimestamp: '00:10:05',
+        transcript: [{ speakerName: 'Mauro Sparza', speakerEmail: null, timestamp: '00:09:00' }],
+      }),
+    ).toEqual({ workspaceMemberId: null, resolution: 'NONE' });
+  });
+
   it('returns NONE for an outsider', () => {
     expect(
       resolveActionItemAssignee({ ...base, assignee: { name: 'Pilar Rodriguez', email: 'pilar@x.com' } }),

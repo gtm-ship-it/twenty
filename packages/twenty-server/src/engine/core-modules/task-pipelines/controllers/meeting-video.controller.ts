@@ -10,6 +10,7 @@ import {
 
 import { type Response } from 'express';
 import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 import { isNonEmptyString } from '@sniptt/guards';
 import { isDefined } from 'twenty-shared/utils';
 
@@ -125,11 +126,21 @@ export class MeetingVideoController {
       return;
     }
 
+    // El límite de tiempo cubre solo la conexión (hasta recibir cabeceras). El
+    // cuerpo se corta si el navegador se va. Un error del stream NUNCA puede
+    // quedar sin manejar: tumbaría el proceso entero del servidor.
+    const controller = new AbortController();
+    const connectTimeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+
+    response.on('close', () => controller.abort());
+
     try {
       const upstream = await fetch(
         `https://fathom.video/share/${shareToken}/video_chunk?key=${encodeURIComponent(key)}`,
-        { signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS), redirect: 'follow' },
+        { signal: controller.signal, redirect: 'follow' },
       );
+
+      clearTimeout(connectTimeout);
 
       if (!upstream.ok || !upstream.body) {
         response.status(502).end();
@@ -147,12 +158,21 @@ export class MeetingVideoController {
         response.setHeader('Content-Length', length);
       }
 
-      Readable.fromWeb(upstream.body as Parameters<typeof Readable.fromWeb>[0]).pipe(response);
+      await pipeline(
+        Readable.fromWeb(upstream.body as Parameters<typeof Readable.fromWeb>[0]),
+        response,
+      );
     } catch (error) {
-      this.logger.warn(`Meeting video chunk failed: ${(error as Error).message}`);
+      clearTimeout(connectTimeout);
+
+      if ((error as Error).name !== 'AbortError') {
+        this.logger.warn(`Meeting video chunk failed: ${(error as Error).message}`);
+      }
 
       if (!response.headersSent) {
         response.status(502).end();
+      } else if (!response.writableEnded) {
+        response.destroy();
       }
     }
   }

@@ -8,7 +8,12 @@ import { t } from '@lingui/core/macro';
 import { lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
-import { IconCalendar, IconInbox } from 'twenty-ui/icon';
+import {
+  IconCalendar,
+  IconInbox,
+  IconLayoutKanban,
+  IconVideo,
+} from 'twenty-ui/icon';
 
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
@@ -51,6 +56,18 @@ export const MainNavigationDrawerScrollableItems = () => {
           to={AppPath.CalendarPage}
           Icon={IconCalendar}
           active={pathname === AppPath.CalendarPage}
+        />
+        <NavigationDrawerItem
+          label="Tasks"
+          to={AppPath.TaskPipelinesPage}
+          Icon={IconLayoutKanban}
+          active={pathname === AppPath.TaskPipelinesPage}
+        />
+        <NavigationDrawerItem
+          label="Meetings"
+          to={AppPath.MeetingsPage}
+          Icon={IconVideo}
+          active={pathname === AppPath.MeetingsPage}
         />
       </NavigationDrawerSection>
       <NavigationDrawerOpenedSection />

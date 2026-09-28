@@ -471,6 +471,10 @@ export const InboxPage = () => {
           onExcludeRule={handleExcludeRule}
           onOnlyRule={handleOnlyRule}
           onRemoveFromPipeline={handleRemoveFromPipeline}
+          ownHandle={
+            accounts.find((account) => account.id === activeAccountId)
+              ?.handle ?? ''
+          }
         />
       )}
       {activeAccountId && !selectedPipeline && (

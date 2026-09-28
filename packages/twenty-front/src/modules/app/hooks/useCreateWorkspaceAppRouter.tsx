@@ -46,6 +46,18 @@ const InboxPage = lazy(() =>
   })),
 );
 
+const TasksPage = lazy(() =>
+  import('~/pages/tasks/TasksPage').then((module) => ({
+    default: module.TasksPage,
+  })),
+);
+
+const MeetingsPage = lazy(() =>
+  import('~/pages/meetings/MeetingsPage').then((module) => ({
+    default: module.MeetingsPage,
+  })),
+);
+
 const CalendarPage = lazy(() =>
   import('~/pages/calendar/CalendarPage').then((module) => ({
     default: module.CalendarPage,
@@ -239,6 +251,22 @@ const createWorkspaceAppRouter = ({
                 element={
                   <LazyRoute>
                     <CalendarPage />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path={AppPath.TaskPipelinesPage}
+                element={
+                  <LazyRoute>
+                    <TasksPage />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path={AppPath.MeetingsPage}
+                element={
+                  <LazyRoute>
+                    <MeetingsPage />
                   </LazyRoute>
                 }
               />
