@@ -25,7 +25,10 @@ export const filterPipelineTasks = (
   const needle = normalize(search.trim());
 
   return tasks.filter((task) => {
-    if (assignee === 'me' && task.assigneeWorkspaceMemberId !== currentWorkspaceMemberId) {
+    if (
+      assignee === 'me' &&
+      task.assigneeWorkspaceMemberId !== currentWorkspaceMemberId
+    ) {
       return false;
     }
 

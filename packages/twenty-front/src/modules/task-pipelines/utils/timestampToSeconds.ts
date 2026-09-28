@@ -1,4 +1,6 @@
-export const timestampToSeconds = (value: string | null | undefined): number => {
+export const timestampToSeconds = (
+  value: string | null | undefined,
+): number => {
   if (!value) {
     return 0;
   }

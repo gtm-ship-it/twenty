@@ -12,15 +12,18 @@ export type TaskMemberInfo = {
 };
 
 export const useWorkspaceMembersById = () => {
-  const members = useAtomStateValue(currentWorkspaceMembersState);
+  const currentWorkspaceMembers = useAtomStateValue(
+    currentWorkspaceMembersState,
+  );
 
   return useMemo(() => {
     const map = new Map<string, TaskMemberInfo>();
 
-    for (const member of members) {
+    for (const member of currentWorkspaceMembers) {
       const firstName = member.name?.firstName ?? '';
       const lastName = member.name?.lastName ?? '';
-      const fullName = `${firstName} ${lastName}`.trim() || member.userEmail || '—';
+      const fullName =
+        `${firstName} ${lastName}`.trim() || member.userEmail || '—';
 
       map.set(member.id, {
         id: member.id,
@@ -32,5 +35,5 @@ export const useWorkspaceMembersById = () => {
     }
 
     return map;
-  }, [members]);
+  }, [currentWorkspaceMembers]);
 };

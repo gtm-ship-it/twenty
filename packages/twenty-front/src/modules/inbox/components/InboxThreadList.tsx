@@ -128,8 +128,7 @@ const getCreateLeadDefaultValues = (
 
   return {
     firstName: contact?.firstName || displayNameParts[0] || '',
-    lastName:
-      contact?.lastName || displayNameParts.slice(1).join(' ') || '',
+    lastName: contact?.lastName || displayNameParts.slice(1).join(' ') || '',
     email,
     companyName:
       !isFreeMailDomain && domain

@@ -74,7 +74,10 @@ export class MeetingsService {
     });
   }
 
-  async listMeetings(actor: Actor, pipelineId?: string | null): Promise<MeetingListItemDTO[]> {
+  async listMeetings(
+    actor: Actor,
+    pipelineId?: string | null,
+  ): Promise<MeetingListItemDTO[]> {
     const pipelines = await this.myPipelines(actor);
     const visibleIds = pipelines
       .map((pipeline) => pipeline.id)
@@ -84,8 +87,9 @@ export class MeetingsService {
       return [];
     }
 
-    const rows: (MeetingEntity & { actionItemCount: number })[] = await this.coreDataSource.query(
-      `SELECT m."id", m."title", m."startedAt", m."endedAt", m."participants", m."recordedBy", m."pipelineIds",
+    const rows: (MeetingEntity & { actionItemCount: number })[] =
+      await this.coreDataSource.query(
+        `SELECT m."id", m."title", m."startedAt", m."endedAt", m."participants", m."recordedBy", m."pipelineIds",
               (SELECT COUNT(*)::int FROM "core"."meetingActionItem" a
                 WHERE a."meetingId" = m."id" AND a."pipelineId" = ANY($2::uuid[])) AS "actionItemCount"
          FROM "core"."meeting" m
@@ -93,10 +97,12 @@ export class MeetingsService {
           AND m."pipelineIds" ?| $3::text[]
         ORDER BY m."startedAt" DESC NULLS LAST, m."createdAt" DESC
         LIMIT ${MAX_MEETINGS}`,
-      [actor.workspaceId, visibleIds, visibleIds],
-    );
+        [actor.workspaceId, visibleIds, visibleIds],
+      );
 
-    const nameById = new Map(pipelines.map((pipeline) => [pipeline.id, pipeline.name]));
+    const nameById = new Map(
+      pipelines.map((pipeline) => [pipeline.id, pipeline.name]),
+    );
 
     return rows.map((row) => ({
       id: row.id,
@@ -121,34 +127,52 @@ export class MeetingsService {
       where: { id: meetingId },
     });
 
-    if (!isDefined(meeting) || !meeting.pipelineIds.some((id) => visibleIds.includes(id))) {
+    if (
+      !isDefined(meeting) ||
+      !meeting.pipelineIds.some((id) => visibleIds.includes(id))
+    ) {
       throw new NotFoundError('Meeting not found');
     }
 
-    const actionItems = await this.actionItemRepository.find(actor.workspaceId, {
-      where: { meetingId, pipelineId: In(visibleIds) },
-      order: { recordingTimestamp: 'ASC', createdAt: 'ASC' },
-    });
+    const actionItems = await this.actionItemRepository.find(
+      actor.workspaceId,
+      {
+        where: { meetingId, pipelineId: In(visibleIds) },
+        order: { recordingTimestamp: 'ASC', createdAt: 'ASC' },
+      },
+    );
 
     const taskIds = actionItems.map((item) => item.taskId).filter(isDefined);
     const tasks =
       taskIds.length > 0
-        ? await this.taskRepository.find(actor.workspaceId, { where: { id: In(taskIds) } })
+        ? await this.taskRepository.find(actor.workspaceId, {
+            where: { id: In(taskIds) },
+          })
         : [];
     const stageIds = [...new Set(tasks.map((task) => task.stageId))];
     const stages =
       stageIds.length > 0
-        ? await this.stageRepository.find(actor.workspaceId, { where: { id: In(stageIds) } })
+        ? await this.stageRepository.find(actor.workspaceId, {
+            where: { id: In(stageIds) },
+          })
         : [];
 
     const taskById = new Map(tasks.map((task) => [task.id, task]));
     const stageById = new Map(stages.map((stage) => [stage.id, stage]));
-    const nameById = new Map(pipelines.map((pipeline) => [pipeline.id, pipeline.name]));
+    const nameById = new Map(
+      pipelines.map((pipeline) => [pipeline.id, pipeline.name]),
+    );
 
-    const serverUrl = String(this.twentyConfigService.get('SERVER_URL')).replace(/\/$/, '');
+    const serverUrl = String(
+      this.twentyConfigService.get('SERVER_URL'),
+    ).replace(/\/$/, '');
     const videoUrl = isNonEmptyString(meeting.shareUrl)
       ? `${serverUrl}/task-pipelines/meetings/${meeting.id}/video/playlist.m3u8?token=${encodeURIComponent(
-          this.videoTokenService.createToken(actor.workspaceId, meeting.id),
+          this.videoTokenService.createToken(
+            actor.workspaceId,
+            meeting.id,
+            actor.workspaceMemberId as string,
+          ),
         )}`
       : null;
 
@@ -168,7 +192,9 @@ export class MeetingsService {
       summaryMarkdownEs: meeting.summaryMarkdownEs,
       transcript: meeting.transcript ?? [],
       actionItems: actionItems.map((item) => {
-        const task = isDefined(item.taskId) ? taskById.get(item.taskId) : undefined;
+        const task = isDefined(item.taskId)
+          ? taskById.get(item.taskId)
+          : undefined;
         const stage = isDefined(task) ? stageById.get(task.stageId) : undefined;
 
         return {
@@ -195,7 +221,10 @@ export class MeetingsService {
   }
 
   // Un accionable sin tarea (porque la borraron) vuelve a tener tarea a mano.
-  async createTaskFromActionItem(actor: Actor, actionItemId: string): Promise<TaskPipelineTaskDTO> {
+  async createTaskFromActionItem(
+    actor: Actor,
+    actionItemId: string,
+  ): Promise<TaskPipelineTaskDTO> {
     const item = await this.actionItemRepository.findOne(actor.workspaceId, {
       where: { id: actionItemId },
     });
@@ -204,7 +233,10 @@ export class MeetingsService {
       throw new NotFoundError('Action item not found');
     }
 
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId: item.pipelineId });
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId: item.pipelineId,
+    });
 
     if (isDefined(item.taskId)) {
       const existing = await this.taskRepository.findOne(actor.workspaceId, {
@@ -216,15 +248,30 @@ export class MeetingsService {
       }
     }
 
-    const meeting = await this.meetingRepository.findOneOrFail(actor.workspaceId, {
-      where: { id: item.meetingId },
-    });
+    const meeting = await this.meetingRepository.findOneOrFail(
+      actor.workspaceId,
+      {
+        where: { id: item.meetingId },
+      },
+    );
+
+    // Si quien estaba resuelto ya no es miembro del tablero, la tarea nace sin asignar.
+    const stillMember = isDefined(item.resolvedWorkspaceMemberId)
+      ? (
+          await this.accessService.listMemberships(
+            actor.workspaceId,
+            item.resolvedWorkspaceMemberId,
+          )
+        ).some((membership) => membership.pipelineId === item.pipelineId)
+      : false;
 
     const task = await this.taskPipelinesService.createTask(actor, {
       pipelineId: item.pipelineId,
       title: (item.textEs ?? item.textEn).slice(0, 500),
       body: `**Reunión:** ${meeting.title}\n\n> ${item.textEn}`,
-      assigneeWorkspaceMemberId: item.resolvedWorkspaceMemberId,
+      assigneeWorkspaceMemberId: stillMember
+        ? item.resolvedWorkspaceMemberId
+        : null,
       sourceLink: item.playbackUrl ?? meeting.shareUrl,
     });
 
@@ -233,7 +280,11 @@ export class MeetingsService {
       { id: task.id },
       { source: 'FATHOM', meetingId: meeting.id, originalText: item.textEn },
     );
-    await this.actionItemRepository.update(actor.workspaceId, { id: item.id }, { taskId: task.id });
+    await this.actionItemRepository.update(
+      actor.workspaceId,
+      { id: item.id },
+      { taskId: task.id },
+    );
 
     return this.taskPipelinesService.getTask(actor, task.id);
   }

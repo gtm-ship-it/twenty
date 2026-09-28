@@ -1,3 +1,4 @@
+import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
 import { computeInsertPosition } from '@/task-pipelines/utils/computeInsertPosition';
 import { filterPipelineTasks } from '@/task-pipelines/utils/filterPipelineTasks';
 import {
@@ -29,14 +30,24 @@ describe('getTaskDueStatus', () => {
   const now = new Date(2026, 8, 28, 12, 0, 0);
 
   it('classifies due dates', () => {
-    expect(getTaskDueStatus(new Date(2026, 8, 27, 17).toISOString(), false, now)).toBe('overdue');
-    expect(getTaskDueStatus(new Date(2026, 8, 28, 9).toISOString(), false, now)).toBe('today');
-    expect(getTaskDueStatus(new Date(2026, 8, 30, 9).toISOString(), false, now)).toBe('soon');
-    expect(getTaskDueStatus(new Date(2026, 9, 10, 9).toISOString(), false, now)).toBe('later');
+    expect(
+      getTaskDueStatus(new Date(2026, 8, 27, 17).toISOString(), false, now),
+    ).toBe('overdue');
+    expect(
+      getTaskDueStatus(new Date(2026, 8, 28, 9).toISOString(), false, now),
+    ).toBe('today');
+    expect(
+      getTaskDueStatus(new Date(2026, 8, 30, 9).toISOString(), false, now),
+    ).toBe('soon');
+    expect(
+      getTaskDueStatus(new Date(2026, 9, 10, 9).toISOString(), false, now),
+    ).toBe('later');
   });
 
   it('ignores done tasks and missing dates', () => {
-    expect(getTaskDueStatus(new Date(2026, 8, 1).toISOString(), true, now)).toBe('none');
+    expect(
+      getTaskDueStatus(new Date(2026, 8, 1).toISOString(), true, now),
+    ).toBe('none');
     expect(getTaskDueStatus(null, false, now)).toBe('none');
   });
 
@@ -56,19 +67,56 @@ describe('timestampToSeconds', () => {
 
 describe('filterPipelineTasks', () => {
   const base: PipelineTask = {
-    id: '1', pipelineId: 'p', pipelineName: 'P', stageId: 's', position: 0, title: 'Enviar leads a Pilar',
-    body: '', assigneeWorkspaceMemberId: 'me', dueAt: null, priority: null, labels: ['PTS Tax'], checklist: [],
-    relatedRecords: [], source: 'MANUAL', sourceLink: null, meeting: null, originalText: 'Send leads',
-    needsAssignment: false, createdByWorkspaceMemberId: null, completedAt: null, archivedAt: null,
-    commentCount: 0, createdAt: '', updatedAt: '',
+    id: '1',
+    pipelineId: 'p',
+    pipelineName: 'P',
+    stageId: 's',
+    position: 0,
+    title: 'Enviar leads a Pilar',
+    body: '',
+    assigneeWorkspaceMemberId: 'me',
+    dueAt: null,
+    priority: null,
+    labels: ['PTS Tax'],
+    checklist: [],
+    relatedRecords: [],
+    source: 'MANUAL',
+    sourceLink: null,
+    meeting: null,
+    originalText: 'Send leads',
+    needsAssignment: false,
+    createdByWorkspaceMemberId: null,
+    completedAt: null,
+    archivedAt: null,
+    commentCount: 0,
+    createdAt: '',
+    updatedAt: '',
   };
   const tasks: PipelineTask[] = [
     base,
-    { ...base, id: '2', title: 'Revisión del logo', assigneeWorkspaceMemberId: null, labels: [] },
-    { ...base, id: '3', title: 'Otro', assigneeWorkspaceMemberId: 'other', labels: ['Sunset'] },
+    {
+      ...base,
+      id: '2',
+      title: 'Revisión del logo',
+      assigneeWorkspaceMemberId: null,
+      labels: [],
+    },
+    {
+      ...base,
+      id: '3',
+      title: 'Otro',
+      assigneeWorkspaceMemberId: 'other',
+      labels: ['Sunset'],
+    },
   ];
   const run = (overrides: Partial<Parameters<typeof filterPipelineTasks>[1]>) =>
-    filterPipelineTasks(tasks, { search: '', assignee: 'all', label: null, currentWorkspaceMemberId: 'me', ...overrides }).map((task) => task.id);
+    filterPipelineTasks(tasks, {
+      search: '',
+      assignee: 'all',
+      label: null,
+      currentWorkspaceMemberId: 'me',
+      ...overrides,
+    }).map((task) => task.id);
 
   it('filters by assignee', () => {
     expect(run({ assignee: 'me' })).toEqual(['1']);
@@ -80,5 +128,17 @@ describe('filterPipelineTasks', () => {
     expect(run({ label: 'Sunset' })).toEqual(['3']);
     expect(run({ search: 'revision' })).toEqual(['2']);
     expect(run({ search: 'send' })).toEqual(['1', '2', '3']);
+  });
+});
+
+describe('safeHttpUrl', () => {
+  it('keeps http(s) and drops other schemes', () => {
+    expect(safeHttpUrl('https://fathom.video/share/x?timestamp=3')).toBe(
+      'https://fathom.video/share/x?timestamp=3',
+    );
+    expect(safeHttpUrl(['javascript', 'alert(1)'].join(':'))).toBeUndefined();
+    expect(safeHttpUrl('data:text/html,hi')).toBeUndefined();
+    expect(safeHttpUrl('not a url')).toBeUndefined();
+    expect(safeHttpUrl(null)).toBeUndefined();
   });
 });

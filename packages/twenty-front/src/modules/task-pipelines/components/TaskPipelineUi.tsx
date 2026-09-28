@@ -1,6 +1,6 @@
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { Avatar } from 'twenty-ui/data-display';
 import { IconX } from 'twenty-ui/icon';
 import { IconButton } from 'twenty-ui/input';
@@ -83,9 +83,24 @@ export const TaskModal = ({
   children: ReactNode;
   footer?: ReactNode;
 }) => {
+  const titleId = useId();
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Foco dentro del modal al abrir; se devuelve a donde estaba al cerrar.
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const firstField = cardRef.current?.querySelector<HTMLElement>(
+      'input, textarea, select',
+    );
+
+    (firstField ?? cardRef.current)?.focus();
+
+    return () => previous?.focus?.();
+  }, []);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !event.defaultPrevented) {
         onClose();
       }
     };
@@ -98,17 +113,28 @@ export const TaskModal = ({
   return (
     <StyledOverlay onMouseDown={onClose}>
       <StyledCard
+        ref={cardRef}
+        tabIndex={-1}
         width={width}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <StyledCardHeader>
-          <StyledCardTitle>{title}</StyledCardTitle>
-          <IconButton Icon={IconX} size="small" variant="tertiary" onClick={onClose} ariaLabel={t`Close`} />
+          <StyledCardTitle id={titleId}>{title}</StyledCardTitle>
+          <IconButton
+            Icon={IconX}
+            size="small"
+            variant="tertiary"
+            onClick={onClose}
+            ariaLabel={t`Close`}
+          />
         </StyledCardHeader>
         <StyledCardBody>{children}</StyledCardBody>
-        {footer && <StyledCardFooter>{footer}</StyledCardFooter>}
+        {footer !== undefined && footer !== null && (
+          <StyledCardFooter>{footer}</StyledCardFooter>
+        )}
       </StyledCard>
     </StyledOverlay>
   );
@@ -220,7 +246,9 @@ export const StyledSegment = styled.button<{ isActive: boolean }>`
   box-shadow: ${({ isActive }) =>
     isActive ? themeCssVariables.boxShadow.light : 'none'};
   color: ${({ isActive }) =>
-    isActive ? themeCssVariables.font.color.primary : themeCssVariables.font.color.tertiary};
+    isActive
+      ? themeCssVariables.font.color.primary
+      : themeCssVariables.font.color.tertiary};
   cursor: pointer;
   display: inline-flex;
   font-family: inherit;
@@ -272,7 +300,9 @@ const StyledMemberMenu = styled.div`
 const StyledMemberOption = styled.button<{ isSelected: boolean }>`
   align-items: center;
   background: ${({ isSelected }) =>
-    isSelected ? themeCssVariables.background.transparent.medium : 'transparent'};
+    isSelected
+      ? themeCssVariables.background.transparent.medium
+      : 'transparent'};
   border: none;
   border-radius: ${themeCssVariables.border.radius.sm};
   color: ${themeCssVariables.font.color.primary};
@@ -342,13 +372,34 @@ export const MemberPicker = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const selected = members.find((member) => member.id === value) ?? null;
 
+  // Esc cierra solo el menú, no el panel/modal que lo contiene.
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown, true);
+
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
     const onClick = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -359,12 +410,19 @@ export const MemberPicker = ({
   }, [isOpen]);
 
   const filtered = members.filter((member) =>
-    `${member.fullName} ${member.email ?? ''}`.toLowerCase().includes(search.toLowerCase()),
+    `${member.fullName} ${member.email ?? ''}`
+      .toLowerCase()
+      .includes(search.toLowerCase()),
   );
 
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
-      <StyledMemberButton type="button" onClick={() => setIsOpen(!isOpen)}>
+      <StyledMemberButton
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {selected ? (
           <>
             <MemberAvatar member={selected} size="xs" />
@@ -379,6 +437,7 @@ export const MemberPicker = ({
           {members.length > 6 && (
             <StyledMemberSearch
               autoFocus
+              aria-label={t`Search people`}
               placeholder={t`Search people`}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -414,14 +473,19 @@ export const MemberPicker = ({
               </span>
             </StyledMemberOption>
           ))}
-          {filtered.length === 0 && <StyledMuted style={{ padding: 8 }}>{t`No matches`}</StyledMuted>}
+          {filtered.length === 0 && (
+            <StyledMuted style={{ padding: 8 }}>{t`No matches`}</StyledMuted>
+          )}
         </StyledMemberMenu>
       )}
     </div>
   );
 };
 
-export const PRIORITY_META: Record<string, { label: () => string; color: string }> = {
+export const PRIORITY_META: Record<
+  string,
+  { label: () => string; color: string }
+> = {
   URGENT: { label: () => t`Urgent`, color: 'red' },
   HIGH: { label: () => t`High`, color: 'orange' },
   MEDIUM: { label: () => t`Medium`, color: 'yellow' },

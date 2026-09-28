@@ -12,6 +12,7 @@ import {
 import { Button, IconButton } from 'twenty-ui/input';
 import { MAIN_COLOR_NAMES } from 'twenty-ui/theme';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
+import { v4 } from 'uuid';
 
 import { PipelineColorSwatches } from '@/task-pipelines/components/CreateTaskPipelineModal';
 import {
@@ -26,7 +27,10 @@ import {
   StyledTextInput,
   TaskModal,
 } from '@/task-pipelines/components/TaskPipelineUi';
-import { type StageDraft, type useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
+import {
+  type StageDraft,
+  type useTaskPipelines,
+} from '@/task-pipelines/hooks/useTaskPipelines';
 import { type TaskMemberInfo } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
   type TaskPipeline,
@@ -171,7 +175,14 @@ const StyledDanger = styled.div`
 `;
 
 const formatWhen = (value: string | null) =>
-  value ? new Date(value).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : t`never`;
+  value
+    ? new Date(value).toLocaleString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : t`never`;
 
 type PipelinesApi = ReturnType<typeof useTaskPipelines>;
 
@@ -207,15 +218,23 @@ export const TaskPipelineSettingsModal = ({
   const [confirmDelete, setConfirmDelete] = useState('');
 
   // Stages
-  const [stages, setStages] = useState<StageDraft[]>(
-    pipeline.stages.map((stage) => ({ id: stage.id, name: stage.name, color: stage.color, isDone: stage.isDone })),
+  // clientKey = clave estable de React también para etapas nuevas (sin id aún).
+  const [stages, setStages] = useState<(StageDraft & { clientKey: string })[]>(
+    pipeline.stages.map((stage) => ({
+      id: stage.id,
+      clientKey: stage.id,
+      name: stage.name,
+      color: stage.color,
+      isDone: stage.isDone,
+    })),
   );
   const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null);
   const [fallbackStageId, setFallbackStageId] = useState<string | null>(null);
 
   // Members
   const [newMemberId, setNewMemberId] = useState<string | null>(null);
-  const [newMemberRole, setNewMemberRole] = useState<TaskPipelineRole>('MEMBER');
+  const [newMemberRole, setNewMemberRole] =
+    useState<TaskPipelineRole>('MEMBER');
   const [aliasDrafts, setAliasDrafts] = useState<Record<string, string>>({});
 
   // Fathom
@@ -235,7 +254,10 @@ export const TaskPipelineSettingsModal = ({
 
       return true;
     } catch (error) {
-      enqueueErrorSnackBar({ message: error instanceof Error ? error.message : t`Something went wrong` });
+      enqueueErrorSnackBar({
+        message:
+          error instanceof Error ? error.message : t`Something went wrong`,
+      });
 
       return false;
     } finally {
@@ -249,7 +271,13 @@ export const TaskPipelineSettingsModal = ({
   const keptExistingStages = stages.filter((stage) => stage.id);
 
   const nonMembers = useMemo(
-    () => allMembers.filter((member) => !pipeline.members.some((entry) => entry.workspaceMemberId === member.id)),
+    () =>
+      allMembers.filter(
+        (member) =>
+          !pipeline.members.some(
+            (entry) => entry.workspaceMemberId === member.id,
+          ),
+      ),
     [allMembers, pipeline.members],
   );
 
@@ -278,10 +306,19 @@ export const TaskPipelineSettingsModal = ({
     });
 
   return (
-    <TaskModal title={t`${pipeline.name} · settings`} width={620} onClose={onClose}>
+    <TaskModal
+      title={t`${pipeline.name} · settings`}
+      width={620}
+      onClose={onClose}
+    >
       <StyledSegmented>
         {tabs.map((entry) => (
-          <StyledSegment key={entry.key} type="button" isActive={tab === entry.key} onClick={() => setTab(entry.key)}>
+          <StyledSegment
+            key={entry.key}
+            type="button"
+            isActive={tab === entry.key}
+            onClick={() => setTab(entry.key)}
+          >
             {entry.label}
           </StyledSegment>
         ))}
@@ -291,7 +328,10 @@ export const TaskPipelineSettingsModal = ({
         <>
           <div>
             <StyledFieldLabel>{t`Name`}</StyledFieldLabel>
-            <StyledTextInput value={name} onChange={(event) => setName(event.target.value)} />
+            <StyledTextInput
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
           </div>
           <div>
             <StyledFieldLabel>{t`Color`}</StyledFieldLabel>
@@ -307,14 +347,34 @@ export const TaskPipelineSettingsModal = ({
                     title={t`Change color`}
                     onClick={() => {
                       const nextColor =
-                        MAIN_COLOR_NAMES[(MAIN_COLOR_NAMES.indexOf(label.color as (typeof MAIN_COLOR_NAMES)[number]) + 1) % MAIN_COLOR_NAMES.length];
+                        MAIN_COLOR_NAMES[
+                          (MAIN_COLOR_NAMES.indexOf(
+                            label.color as (typeof MAIN_COLOR_NAMES)[number],
+                          ) +
+                            1) %
+                            MAIN_COLOR_NAMES.length
+                        ];
 
-                      setLabels(labels.map((entry, position) => (position === index ? { ...entry, color: nextColor } : entry)));
+                      setLabels(
+                        labels.map((entry, position) =>
+                          position === index
+                            ? { ...entry, color: nextColor }
+                            : entry,
+                        ),
+                      );
                     }}
                   >
                     <Tag color={label.color as TagColor} text={label.name} />
                   </StyledColorButton>
-                  <StyledChipRemove type="button" aria-label={t`Remove`} onClick={() => setLabels(labels.filter((_, position) => position !== index))}>
+                  <StyledChipRemove
+                    type="button"
+                    aria-label={t`Remove`}
+                    onClick={() =>
+                      setLabels(
+                        labels.filter((_, position) => position !== index),
+                      )
+                    }
+                  >
                     ✕
                   </StyledChipRemove>
                 </StyledChip>
@@ -327,8 +387,24 @@ export const TaskPipelineSettingsModal = ({
                 onKeyDown={(event) => {
                   const value = newLabel.trim();
 
-                  if (event.key === 'Enter' && value && !labels.some((label) => label.name.toLowerCase() === value.toLowerCase())) {
-                    setLabels([...labels, { name: value, color: MAIN_COLOR_NAMES[labels.length % MAIN_COLOR_NAMES.length] }]);
+                  if (
+                    event.key === 'Enter' &&
+                    value &&
+                    !labels.some(
+                      (label) =>
+                        label.name.toLowerCase() === value.toLowerCase(),
+                    )
+                  ) {
+                    setLabels([
+                      ...labels,
+                      {
+                        name: value,
+                        color:
+                          MAIN_COLOR_NAMES[
+                            labels.length % MAIN_COLOR_NAMES.length
+                          ],
+                      },
+                    ]);
                     setNewLabel('');
                   }
                 }}
@@ -341,15 +417,31 @@ export const TaskPipelineSettingsModal = ({
               title={t`Save`}
               accent="blue"
               disabled={isBusy || name.trim().length === 0}
-              onClick={() => void run(() => api.updatePipeline(pipeline.id, { name: name.trim(), color, labels }), t`Pipeline updated`)}
+              onClick={() =>
+                void run(
+                  () =>
+                    api.updatePipeline(pipeline.id, {
+                      name: name.trim(),
+                      color,
+                      labels,
+                    }),
+                  t`Pipeline updated`,
+                )
+              }
             />
           </div>
           <StyledDanger>
-            <StyledFieldLabel style={{ marginBottom: 0 }}>{t`Delete pipeline`}</StyledFieldLabel>
+            <StyledFieldLabel
+              style={{ marginBottom: 0 }}
+            >{t`Delete pipeline`}</StyledFieldLabel>
             <StyledHint>
               {t`Deletes every task, comment and Fathom connection of this pipeline. Type the pipeline name to confirm.`}
             </StyledHint>
-            <StyledTextInput value={confirmDelete} placeholder={pipeline.name} onChange={(event) => setConfirmDelete(event.target.value)} />
+            <StyledTextInput
+              value={confirmDelete}
+              placeholder={pipeline.name}
+              onChange={(event) => setConfirmDelete(event.target.value)}
+            />
             <div>
               <Button
                 title={t`Delete forever`}
@@ -357,7 +449,10 @@ export const TaskPipelineSettingsModal = ({
                 Icon={IconTrash}
                 disabled={isBusy || confirmDelete !== pipeline.name}
                 onClick={() =>
-                  void run(() => api.deletePipeline(pipeline.id), t`Pipeline deleted`).then((ok) => {
+                  void run(
+                    () => api.deletePipeline(pipeline.id),
+                    t`Pipeline deleted`,
+                  ).then((ok) => {
                     if (ok) {
                       onDeleted();
                     }
@@ -373,27 +468,51 @@ export const TaskPipelineSettingsModal = ({
         <>
           <StyledList>
             {stages.map((stage, index) => (
-              <StyledStageRow key={stage.id ?? `new-${index}`}>
-                <StyledColorButton type="button" title={t`Change color`} onClick={() => setColorPickerIndex(colorPickerIndex === index ? null : index)}>
-                  <Tag color={stage.color as TagColor} text={stage.name || '…'} />
+              <StyledStageRow key={stage.clientKey}>
+                <StyledColorButton
+                  type="button"
+                  title={t`Change color`}
+                  onClick={() =>
+                    setColorPickerIndex(
+                      colorPickerIndex === index ? null : index,
+                    )
+                  }
+                >
+                  <Tag
+                    color={stage.color as TagColor}
+                    text={stage.name || '…'}
+                  />
                 </StyledColorButton>
                 {colorPickerIndex === index && (
                   <StyledPopup>
                     <PipelineColorSwatches
                       value={stage.color}
                       onChange={(nextColor) => {
-                        setStages(stages.map((entry, position) => (position === index ? { ...entry, color: nextColor } : entry)));
+                        setStages(
+                          stages.map((entry, position) =>
+                            position === index
+                              ? { ...entry, color: nextColor }
+                              : entry,
+                          ),
+                        );
                         setColorPickerIndex(null);
                       }}
                     />
                   </StyledPopup>
                 )}
                 <StyledTextInput
+                  aria-label={t`Stage name`}
                   style={{ flex: 1, padding: '4px 8px' }}
                   value={stage.name}
                   maxLength={60}
                   onChange={(event) =>
-                    setStages(stages.map((entry, position) => (position === index ? { ...entry, name: event.target.value } : entry)))
+                    setStages(
+                      stages.map((entry, position) =>
+                        position === index
+                          ? { ...entry, name: event.target.value }
+                          : entry,
+                      ),
+                    )
                   }
                 />
                 <StyledDoneToggle title={t`Tasks moved here count as done`}>
@@ -401,19 +520,42 @@ export const TaskPipelineSettingsModal = ({
                     type="checkbox"
                     checked={stage.isDone ?? false}
                     onChange={() =>
-                      setStages(stages.map((entry, position) => (position === index ? { ...entry, isDone: !entry.isDone } : entry)))
+                      setStages(
+                        stages.map((entry, position) =>
+                          position === index
+                            ? { ...entry, isDone: !entry.isDone }
+                            : entry,
+                        ),
+                      )
                     }
                   />
                   {t`Done`}
                 </StyledDoneToggle>
-                <IconButton Icon={IconChevronUp} size="small" variant="tertiary" disabled={index === 0} onClick={() => moveStage(index, -1)} />
-                <IconButton Icon={IconChevronDown} size="small" variant="tertiary" disabled={index === stages.length - 1} onClick={() => moveStage(index, 1)} />
+                <IconButton
+                  Icon={IconChevronUp}
+                  size="small"
+                  variant="tertiary"
+                  disabled={index === 0}
+                  onClick={() => moveStage(index, -1)}
+                />
+                <IconButton
+                  Icon={IconChevronDown}
+                  size="small"
+                  variant="tertiary"
+                  disabled={index === stages.length - 1}
+                  onClick={() => moveStage(index, 1)}
+                />
                 <IconButton
                   Icon={IconTrash}
                   size="small"
                   variant="tertiary"
                   disabled={stages.length <= 1}
-                  onClick={() => setStages(stages.filter((_, position) => position !== index))}
+                  onClick={() => {
+                    setColorPickerIndex(null);
+                    setStages(
+                      stages.filter((_, position) => position !== index),
+                    );
+                  }}
                 />
               </StyledStageRow>
             ))}
@@ -423,7 +565,18 @@ export const TaskPipelineSettingsModal = ({
               title={t`+ Add stage`}
               size="small"
               variant="secondary"
-              onClick={() => setStages([...stages, { id: null, name: '', color: 'gray', isDone: false }])}
+              onClick={() =>
+                setStages([
+                  ...stages,
+                  {
+                    id: null,
+                    clientKey: v4(),
+                    name: '',
+                    color: 'gray',
+                    isDone: false,
+                  },
+                ])
+              }
             />
           </div>
           {removedStages.length > 0 && (
@@ -431,7 +584,10 @@ export const TaskPipelineSettingsModal = ({
               <IconAlertTriangle size={16} />
               <div>
                 {t`Tasks in ${removedStages.map((stage) => stage.name).join(', ')} will move to:`}{' '}
-                <StyledSelect value={fallbackStageId ?? keptExistingStages[0]?.id ?? ''} onChange={(event) => setFallbackStageId(event.target.value)}>
+                <StyledSelect
+                  value={fallbackStageId ?? keptExistingStages[0]?.id ?? ''}
+                  onChange={(event) => setFallbackStageId(event.target.value)}
+                >
                   {keptExistingStages.map((stage) => (
                     <option key={stage.id ?? ''} value={stage.id ?? ''}>
                       {stage.name}
@@ -445,13 +601,18 @@ export const TaskPipelineSettingsModal = ({
             <Button
               title={t`Save stages`}
               accent="blue"
-              disabled={isBusy || stages.some((stage) => stage.name.trim().length === 0)}
+              disabled={
+                isBusy || stages.some((stage) => stage.name.trim().length === 0)
+              }
               onClick={() =>
                 void run(
                   () =>
                     api.saveStages(
                       pipeline.id,
-                      stages.map((stage) => ({ ...stage, name: stage.name.trim() })),
+                      stages.map(({ clientKey: _clientKey, ...stage }) => ({
+                        ...stage,
+                        name: stage.name.trim(),
+                      })),
                       fallbackStageId ?? keptExistingStages[0]?.id ?? null,
                     ),
                   t`Stages saved`,
@@ -464,58 +625,92 @@ export const TaskPipelineSettingsModal = ({
 
       {tab === 'members' && (
         <>
-          {isAdmin && pipeline.visibility === 'WORKSPACE' && nonMembers.length > 0 && (
-            <div>
-              <StyledFieldLabel>{t`Add a person`}</StyledFieldLabel>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                  <MemberPicker members={nonMembers} value={newMemberId} onChange={setNewMemberId} placeholder={t`Pick a workspace member`} />
+          {isAdmin &&
+            pipeline.visibility === 'WORKSPACE' &&
+            nonMembers.length > 0 && (
+              <div>
+                <StyledFieldLabel>{t`Add a person`}</StyledFieldLabel>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <div style={{ flex: 1 }}>
+                    <MemberPicker
+                      members={nonMembers}
+                      value={newMemberId}
+                      onChange={setNewMemberId}
+                      placeholder={t`Pick a workspace member`}
+                    />
+                  </div>
+                  <StyledSelect
+                    value={newMemberRole}
+                    onChange={(event) =>
+                      setNewMemberRole(event.target.value as TaskPipelineRole)
+                    }
+                  >
+                    <option value="MEMBER">{t`Member`}</option>
+                    <option value="ADMIN">{t`Admin`}</option>
+                  </StyledSelect>
+                  <Button
+                    title={t`Add`}
+                    accent="blue"
+                    disabled={!newMemberId || isBusy}
+                    onClick={() =>
+                      void run(
+                        async () => {
+                          await api.addMember(
+                            pipeline.id,
+                            newMemberId!,
+                            newMemberRole,
+                          );
+                          setNewMemberId(null);
+                        },
+                        t`Member added`,
+                      )
+                    }
+                  />
                 </div>
-                <StyledSelect value={newMemberRole} onChange={(event) => setNewMemberRole(event.target.value as TaskPipelineRole)}>
-                  <option value="MEMBER">{t`Member`}</option>
-                  <option value="ADMIN">{t`Admin`}</option>
-                </StyledSelect>
-                <Button
-                  title={t`Add`}
-                  accent="blue"
-                  disabled={!newMemberId || isBusy}
-                  onClick={() =>
-                    void run(async () => {
-                      await api.addMember(pipeline.id, newMemberId!, newMemberRole);
-                      setNewMemberId(null);
-                    }, t`Member added`)
-                  }
-                />
               </div>
-            </div>
-          )}
+            )}
           {isAdmin && pipeline.visibility === 'PERSONAL' && (
             <StyledHint>
               {t`This is a personal pipeline: only you see it. Invite someone only if you want them to see and work on these tasks.`}
             </StyledHint>
           )}
-          {isAdmin && pipeline.visibility === 'PERSONAL' && nonMembers.length > 0 && (
-            <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ flex: 1 }}>
-                <MemberPicker members={nonMembers} value={newMemberId} onChange={setNewMemberId} placeholder={t`Invite a workspace member`} />
+          {isAdmin &&
+            pipeline.visibility === 'PERSONAL' &&
+            nonMembers.length > 0 && (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <MemberPicker
+                    members={nonMembers}
+                    value={newMemberId}
+                    onChange={setNewMemberId}
+                    placeholder={t`Invite a workspace member`}
+                  />
+                </div>
+                <Button
+                  title={t`Invite`}
+                  variant="secondary"
+                  disabled={!newMemberId || isBusy}
+                  onClick={() =>
+                    void run(
+                      async () => {
+                        await api.addMember(
+                          pipeline.id,
+                          newMemberId!,
+                          'MEMBER',
+                        );
+                        setNewMemberId(null);
+                      },
+                      t`Member added`,
+                    )
+                  }
+                />
               </div>
-              <Button
-                title={t`Invite`}
-                variant="secondary"
-                disabled={!newMemberId || isBusy}
-                onClick={() =>
-                  void run(async () => {
-                    await api.addMember(pipeline.id, newMemberId!, 'MEMBER');
-                    setNewMemberId(null);
-                  }, t`Member added`)
-                }
-              />
-            </div>
-          )}
+            )}
           <StyledList>
             {pipeline.members.map((member) => {
               const info = membersById.get(member.workspaceMemberId);
-              const isSelf = member.workspaceMemberId === currentWorkspaceMemberId;
+              const isSelf =
+                member.workspaceMemberId === currentWorkspaceMemberId;
               const canEditAliases = isAdmin || isSelf;
               const aliasDraft = aliasDrafts[member.workspaceMemberId] ?? '';
 
@@ -524,7 +719,8 @@ export const TaskPipelineSettingsModal = ({
                   <MemberAvatar member={info} size="md" />
                   <StyledMemberMain>
                     <StyledName>
-                      {info?.fullName ?? t`Former member`} {isSelf && <StyledSub as="span">({t`you`})</StyledSub>}
+                      {info?.fullName ?? t`Former member`}{' '}
+                      {isSelf && <StyledSub as="span">({t`you`})</StyledSub>}
                     </StyledName>
                     <StyledSub>{info?.email}</StyledSub>
                     <StyledChips>
@@ -538,9 +734,15 @@ export const TaskPipelineSettingsModal = ({
                               aria-label={t`Remove alias`}
                               onClick={() =>
                                 void run(() =>
-                                  api.updateMember(pipeline.id, member.workspaceMemberId, {
-                                    aliases: member.aliases.filter((entry) => entry !== alias),
-                                  }),
+                                  api.updateMember(
+                                    pipeline.id,
+                                    member.workspaceMemberId,
+                                    {
+                                      aliases: member.aliases.filter(
+                                        (entry) => entry !== alias,
+                                      ),
+                                    },
+                                  ),
                                 )
                               }
                             >
@@ -551,19 +753,35 @@ export const TaskPipelineSettingsModal = ({
                       ))}
                       {canEditAliases && (
                         <StyledTextInput
-                          style={{ width: 170, padding: '2px 8px', fontSize: 13 }}
+                          style={{
+                            width: 170,
+                            padding: '2px 8px',
+                            fontSize: 13,
+                          }}
                           placeholder={t`name or email + Enter`}
                           value={aliasDraft}
-                          onChange={(event) => setAliasDrafts({ ...aliasDrafts, [member.workspaceMemberId]: event.target.value })}
+                          onChange={(event) =>
+                            setAliasDrafts({
+                              ...aliasDrafts,
+                              [member.workspaceMemberId]: event.target.value,
+                            })
+                          }
                           onKeyDown={(event) => {
                             const value = aliasDraft.trim();
 
                             if (event.key === 'Enter' && value) {
-                              setAliasDrafts({ ...aliasDrafts, [member.workspaceMemberId]: '' });
+                              setAliasDrafts({
+                                ...aliasDrafts,
+                                [member.workspaceMemberId]: '',
+                              });
                               void run(() =>
-                                api.updateMember(pipeline.id, member.workspaceMemberId, {
-                                  aliases: [...member.aliases, value],
-                                }),
+                                api.updateMember(
+                                  pipeline.id,
+                                  member.workspaceMemberId,
+                                  {
+                                    aliases: [...member.aliases, value],
+                                  },
+                                ),
                               );
                             }
                           }}
@@ -576,7 +794,12 @@ export const TaskPipelineSettingsModal = ({
                       value={member.role}
                       onChange={(event) =>
                         void run(
-                          () => api.updateMember(pipeline.id, member.workspaceMemberId, { role: event.target.value as TaskPipelineRole }),
+                          () =>
+                            api.updateMember(
+                              pipeline.id,
+                              member.workspaceMemberId,
+                              { role: event.target.value as TaskPipelineRole },
+                            ),
                           t`Role updated`,
                         )
                       }
@@ -585,7 +808,10 @@ export const TaskPipelineSettingsModal = ({
                       <option value="MEMBER">{t`Member`}</option>
                     </StyledSelect>
                   ) : (
-                    <Tag color={member.role === 'ADMIN' ? 'blue' : 'gray'} text={member.role === 'ADMIN' ? t`Admin` : t`Member`} />
+                    <Tag
+                      color={member.role === 'ADMIN' ? 'blue' : 'gray'}
+                      text={member.role === 'ADMIN' ? t`Admin` : t`Member`}
+                    />
                   )}
                   {(isAdmin || isSelf) && (
                     <IconButton
@@ -594,13 +820,19 @@ export const TaskPipelineSettingsModal = ({
                       variant="tertiary"
                       ariaLabel={isSelf ? t`Leave pipeline` : t`Remove member`}
                       onClick={() =>
-                        void run(async () => {
-                          await api.removeMember(pipeline.id, member.workspaceMemberId);
+                        void run(
+                          async () => {
+                            await api.removeMember(
+                              pipeline.id,
+                              member.workspaceMemberId,
+                            );
 
-                          if (isSelf) {
-                            onDeleted();
-                          }
-                        }, isSelf ? t`You left the pipeline` : t`Member removed`)
+                            if (isSelf) {
+                              onDeleted();
+                            }
+                          },
+                          isSelf ? t`You left the pipeline` : t`Member removed`,
+                        )
                       }
                     />
                   )}
@@ -623,16 +855,28 @@ export const TaskPipelineSettingsModal = ({
             <StyledConnection key={connection.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <StyledName style={{ flex: 1 }}>
-                  {connection.label} <StyledSub as="span">· {t`key`} {connection.apiKeyHint}</StyledSub>
+                  {connection.label}{' '}
+                  <StyledSub as="span">
+                    · {t`key`} {connection.apiKeyHint}
+                  </StyledSub>
                 </StyledName>
-                <Tag color={connection.status === 'ACTIVE' ? 'green' : 'red'} text={connection.status === 'ACTIVE' ? t`Active` : t`Error`} />
+                <Tag
+                  color={connection.status === 'ACTIVE' ? 'green' : 'red'}
+                  text={connection.status === 'ACTIVE' ? t`Active` : t`Error`}
+                />
               </div>
               <StyledSub>
-                {connection.fathomUserEmail && `${connection.fathomUserEmail} · `}
-                {connection.hasWebhook ? t`Live updates on` : t`Live updates off`} · {t`last sync`} {formatWhen(connection.lastSyncAt)} ·{' '}
+                {connection.fathomUserEmail &&
+                  `${connection.fathomUserEmail} · `}
+                {connection.hasWebhook
+                  ? t`Live updates on`
+                  : t`Live updates off`}{' '}
+                · {t`last sync`} {formatWhen(connection.lastSyncAt)} ·{' '}
                 {t`last meeting`} {formatWhen(connection.lastMeetingAt)}
               </StyledSub>
-              {connection.lastError && <StyledErrorText>{connection.lastError}</StyledErrorText>}
+              {connection.lastError && (
+                <StyledErrorText>{connection.lastError}</StyledErrorText>
+              )}
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button
                   title={t`Sync now`}
@@ -660,18 +904,29 @@ export const TaskPipelineSettingsModal = ({
                   variant="secondary"
                   accent="danger"
                   disabled={isBusy}
-                  onClick={() => void run(() => api.disconnectFathom(connection.id), t`Fathom disconnected`)}
+                  onClick={() =>
+                    void run(
+                      () => api.disconnectFathom(connection.id),
+                      t`Fathom disconnected`,
+                    )
+                  }
                 />
               </div>
             </StyledConnection>
           ))}
           <StyledConnection>
-            <StyledFieldLabel style={{ marginBottom: 0 }}>{t`Connect a Fathom account`}</StyledFieldLabel>
+            <StyledFieldLabel
+              style={{ marginBottom: 0 }}
+            >{t`Connect a Fathom account`}</StyledFieldLabel>
             <StyledSteps>
               <li>{t`Open Fathom → Settings → API Access (fathom.video/customize#api-access-header).`}</li>
               <li>{t`Generate an API key and paste it below. It is stored encrypted and never shown again.`}</li>
             </StyledSteps>
-            <StyledTextInput placeholder={t`Label (e.g. Mauricio's Fathom)`} value={fathomLabel} onChange={(event) => setFathomLabel(event.target.value)} />
+            <StyledTextInput
+              placeholder={t`Label (e.g. Mauricio's Fathom)`}
+              value={fathomLabel}
+              onChange={(event) => setFathomLabel(event.target.value)}
+            />
             <StyledTextInput
               type="password"
               autoComplete="off"
@@ -691,12 +946,22 @@ export const TaskPipelineSettingsModal = ({
                     setIsBusy(true);
 
                     try {
-                      await api.connectFathom(pipeline.id, fathomLabel.trim(), fathomKey.trim());
+                      await api.connectFathom(
+                        pipeline.id,
+                        fathomLabel.trim(),
+                        fathomKey.trim(),
+                      );
                       setFathomKey('');
                       setFathomLabel('');
-                      enqueueSuccessSnackBar({ message: t`Fathom connected — importing the last two weeks of meetings` });
+                      enqueueSuccessSnackBar({
+                        message: t`Fathom connected — importing the last two weeks of meetings`,
+                      });
                     } catch (error) {
-                      setFathomError(error instanceof Error ? error.message : t`Could not connect Fathom`);
+                      setFathomError(
+                        error instanceof Error
+                          ? error.message
+                          : t`Could not connect Fathom`,
+                      );
                     } finally {
                       setIsBusy(false);
                     }

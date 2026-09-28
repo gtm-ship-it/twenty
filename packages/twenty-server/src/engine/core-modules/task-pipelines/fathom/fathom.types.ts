@@ -34,7 +34,9 @@ export type FathomMeeting = {
   scheduled_start_time?: string | null;
   recording_start_time?: string | null;
   recording_end_time?: string | null;
-  calendar_invitees?: (FathomPerson & { is_external?: boolean | null })[] | null;
+  calendar_invitees?:
+    | (FathomPerson & { is_external?: boolean | null })[]
+    | null;
   recorded_by?: FathomPerson | null;
   default_summary?: {
     template_name?: string | null;

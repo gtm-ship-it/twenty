@@ -103,7 +103,10 @@ export const CREATE_TASK_PIPELINE = gql`
 
 export const UPDATE_TASK_PIPELINE = gql`
   ${TASK_PIPELINE_FIELDS}
-  mutation UpdateTaskPipeline($pipelineId: UUID!, $input: UpdateTaskPipelineInput!) {
+  mutation UpdateTaskPipeline(
+    $pipelineId: UUID!
+    $input: UpdateTaskPipelineInput!
+  ) {
     updateTaskPipeline(pipelineId: $pipelineId, input: $input) {
       ...TaskPipelineFields
     }
@@ -170,7 +173,10 @@ export const UPDATE_TASK_PIPELINE_MEMBER = gql`
 `;
 
 export const REMOVE_TASK_PIPELINE_MEMBER = gql`
-  mutation RemoveTaskPipelineMember($pipelineId: UUID!, $memberWorkspaceMemberId: UUID!) {
+  mutation RemoveTaskPipelineMember(
+    $pipelineId: UUID!
+    $memberWorkspaceMemberId: UUID!
+  ) {
     removeTaskPipelineMember(
       pipelineId: $pipelineId
       memberWorkspaceMemberId: $memberWorkspaceMemberId
@@ -181,7 +187,10 @@ export const REMOVE_TASK_PIPELINE_MEMBER = gql`
 export const GET_PIPELINE_TASKS = gql`
   ${PIPELINE_TASK_FIELDS}
   query TaskPipelineTasks($pipelineId: UUID!, $includeArchived: Boolean) {
-    taskPipelineTasks(pipelineId: $pipelineId, includeArchived: $includeArchived) {
+    taskPipelineTasks(
+      pipelineId: $pipelineId
+      includeArchived: $includeArchived
+    ) {
       ...PipelineTaskFields
     }
   }
@@ -216,7 +225,10 @@ export const CREATE_PIPELINE_TASK = gql`
 
 export const UPDATE_PIPELINE_TASK = gql`
   ${PIPELINE_TASK_FIELDS}
-  mutation UpdateTaskPipelineTask($taskId: UUID!, $input: UpdateTaskPipelineTaskInput!) {
+  mutation UpdateTaskPipelineTask(
+    $taskId: UUID!
+    $input: UpdateTaskPipelineTaskInput!
+  ) {
     updateTaskPipelineTask(taskId: $taskId, input: $input) {
       ...PipelineTaskFields
     }
@@ -284,8 +296,16 @@ export const DELETE_PIPELINE_TASK_COMMENT = gql`
 `;
 
 export const CONNECT_FATHOM = gql`
-  mutation ConnectFathomToTaskPipeline($pipelineId: UUID!, $label: String!, $apiKey: String!) {
-    connectFathomToTaskPipeline(pipelineId: $pipelineId, label: $label, apiKey: $apiKey) {
+  mutation ConnectFathomToTaskPipeline(
+    $pipelineId: UUID!
+    $label: String!
+    $apiKey: String!
+  ) {
+    connectFathomToTaskPipeline(
+      pipelineId: $pipelineId
+      label: $label
+      apiKey: $apiKey
+    ) {
       id
     }
   }

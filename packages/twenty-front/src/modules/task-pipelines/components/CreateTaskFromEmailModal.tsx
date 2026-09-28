@@ -2,6 +2,7 @@ import { t } from '@lingui/core/macro';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
+import { isDefined } from 'twenty-shared/utils';
 import { Button } from 'twenty-ui/input';
 
 import { currentWorkspaceMemberState } from '@/auth/states/currentWorkspaceMemberState';
@@ -18,7 +19,10 @@ import {
 } from '@/task-pipelines/components/TaskPipelineUi';
 import { usePipelineTasks } from '@/task-pipelines/hooks/usePipelineTasks';
 import { useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
-import { type TaskMemberInfo, useWorkspaceMembersById } from '@/task-pipelines/hooks/useWorkspaceMembersById';
+import {
+  type TaskMemberInfo,
+  useWorkspaceMembersById,
+} from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import { type TaskPriority } from '@/task-pipelines/types/TaskPipelineTypes';
 import { dueFromInputValue } from '@/task-pipelines/utils/taskDueStatus';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
@@ -27,16 +31,37 @@ import { type TimelineThread } from '~/generated/graphql';
 
 const LAST_PIPELINE_KEY = 'ptsai.tasks.lastEmailPipeline';
 
-export const buildEmailTaskBody = (thread: TimelineThread, ownHandle: string): string => {
-  const participants = [thread.firstParticipant, ...(thread.lastTwoParticipants ?? [])].filter(
-    (participant) => participant && participant.handle?.toLowerCase() !== ownHandle.toLowerCase(),
+export const buildEmailTaskBody = (
+  thread: TimelineThread,
+  ownHandle: string,
+): string => {
+  const participants = [
+    thread.firstParticipant,
+    ...(thread.lastTwoParticipants ?? []),
+  ].filter(
+    (participant) =>
+      isDefined(participant) &&
+      participant.handle?.toLowerCase() !== ownHandle.toLowerCase(),
   );
   const contact = participants[0] ?? thread.firstParticipant;
-  const who = [contact?.displayName, contact?.handle ? `<${contact.handle}>` : null].filter(Boolean).join(' ');
+  const who = [
+    contact?.displayName,
+    contact?.handle ? `<${contact.handle}>` : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const when = thread.lastMessageReceivedAt
-    ? new Date(thread.lastMessageReceivedAt).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+    ? new Date(thread.lastMessageReceivedAt).toLocaleString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
     : '';
-  const excerpt = (thread.lastMessageBody ?? '').replace(/\s+\n/g, '\n').trim().slice(0, 1500);
+  const excerpt = (thread.lastMessageBody ?? '')
+    .replace(/\s+\n/g, '\n')
+    .trim()
+    .slice(0, 1500);
 
   return [
     `**Email:** ${thread.subject || '(no subject)'}`,
@@ -60,7 +85,8 @@ export const CreateTaskFromEmailModal = ({
   const { enqueueSuccessSnackBar } = useSnackBar();
   const { pipelines, isLoading } = useTaskPipelines();
   const membersById = useWorkspaceMembersById();
-  const currentMemberId = useAtomStateValue(currentWorkspaceMemberState)?.id ?? null;
+  const currentMemberId =
+    useAtomStateValue(currentWorkspaceMemberState)?.id ?? null;
 
   const [pipelineId, setPipelineId] = useState<string>(() => {
     try {
@@ -69,9 +95,12 @@ export const CreateTaskFromEmailModal = ({
       return '';
     }
   });
-  const pipeline = pipelines.find((entry) => entry.id === pipelineId) ?? pipelines[0] ?? null;
+  const pipeline =
+    pipelines.find((entry) => entry.id === pipelineId) ?? pipelines[0] ?? null;
 
-  const [title, setTitle] = useState(thread.subject?.trim() || t`Follow up on email`);
+  const [title, setTitle] = useState(
+    thread.subject?.trim() || t`Follow up on email`,
+  );
   const [body, setBody] = useState(() => buildEmailTaskBody(thread, ownHandle));
   const [stageId, setStageId] = useState<string>('');
   const [assigneeId, setAssigneeId] = useState<string | null>(null);
@@ -92,20 +121,29 @@ export const CreateTaskFromEmailModal = ({
 
   // Al cambiar de tablero: primer stage y yo como asignado si soy miembro.
   useEffect(() => {
-    if (!pipeline) {
+    if (pipeline === null) {
       return;
     }
 
     setStageId(pipeline.stages[0]?.id ?? '');
-    setAssigneeId(members.some((member) => member.id === currentMemberId) ? currentMemberId : null);
+    setAssigneeId(
+      members.some((member) => member.id === currentMemberId)
+        ? currentMemberId
+        : null,
+    );
   }, [pipeline?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const personParticipant = [thread.firstParticipant, ...(thread.lastTwoParticipants ?? [])].find(
-    (participant) => participant?.personId && participant.handle?.toLowerCase() !== ownHandle.toLowerCase(),
+  const personParticipant = [
+    thread.firstParticipant,
+    ...(thread.lastTwoParticipants ?? []),
+  ].find(
+    (participant) =>
+      participant?.personId &&
+      participant.handle?.toLowerCase() !== ownHandle.toLowerCase(),
   );
 
   const submit = async () => {
-    if (!pipeline) {
+    if (pipeline === null) {
       return;
     }
 
@@ -133,7 +171,8 @@ export const CreateTaskFromEmailModal = ({
               {
                 objectNameSingular: 'person',
                 recordId: personParticipant.personId,
-                label: personParticipant.displayName || personParticipant.handle,
+                label:
+                  personParticipant.displayName || personParticipant.handle,
               },
             ]
           : null,
@@ -149,10 +188,16 @@ export const CreateTaskFromEmailModal = ({
       onClose();
 
       if (created) {
-        navigate(`${AppPath.TaskPipelinesPage}?pipeline=${pipeline.id}&task=${created.id}`);
+        navigate(
+          `${AppPath.TaskPipelinesPage}?pipeline=${pipeline.id}&task=${created.id}`,
+        );
       }
     } catch (creationError) {
-      setError(creationError instanceof Error ? creationError.message : t`Could not create the task`);
+      setError(
+        creationError instanceof Error
+          ? creationError.message
+          : t`Could not create the task`,
+      );
       setIsSaving(false);
     }
   };
@@ -165,7 +210,12 @@ export const CreateTaskFromEmailModal = ({
       footer={
         <>
           <Button title={t`Cancel`} variant="secondary" onClick={onClose} />
-          <Button title={t`Create task`} accent="blue" disabled={isSaving || !pipeline} onClick={() => void submit()} />
+          <Button
+            title={t`Create task`}
+            accent="blue"
+            disabled={isSaving || pipeline === null}
+            onClick={() => void submit()}
+          />
         </>
       }
     >
@@ -178,7 +228,11 @@ export const CreateTaskFromEmailModal = ({
         <>
           <div>
             <StyledFieldLabel>{t`Pipeline`}</StyledFieldLabel>
-            <StyledSelect style={{ width: '100%' }} value={pipeline?.id ?? ''} onChange={(event) => setPipelineId(event.target.value)}>
+            <StyledSelect
+              style={{ width: '100%' }}
+              value={pipeline?.id ?? ''}
+              onChange={(event) => setPipelineId(event.target.value)}
+            >
               {pipelines.map((entry) => (
                 <option key={entry.id} value={entry.id}>
                   {entry.name}
@@ -189,12 +243,22 @@ export const CreateTaskFromEmailModal = ({
           </div>
           <div>
             <StyledFieldLabel>{t`Title`}</StyledFieldLabel>
-            <StyledTextInput autoFocus value={title} onChange={(event) => setTitle(event.target.value)} />
+            <StyledTextInput
+              autoFocus
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}
+          >
             <div>
               <StyledFieldLabel>{t`Stage`}</StyledFieldLabel>
-              <StyledSelect style={{ width: '100%' }} value={stageId} onChange={(event) => setStageId(event.target.value)}>
+              <StyledSelect
+                style={{ width: '100%' }}
+                value={stageId}
+                onChange={(event) => setStageId(event.target.value)}
+              >
                 {(pipeline?.stages ?? []).map((stage) => (
                   <option key={stage.id} value={stage.id}>
                     {stage.name}
@@ -204,27 +268,47 @@ export const CreateTaskFromEmailModal = ({
             </div>
             <div>
               <StyledFieldLabel>{t`Assignee`}</StyledFieldLabel>
-              <MemberPicker members={members} value={assigneeId} onChange={setAssigneeId} />
+              <MemberPicker
+                members={members}
+                value={assigneeId}
+                onChange={setAssigneeId}
+              />
             </div>
             <div>
               <StyledFieldLabel>{t`Due date`}</StyledFieldLabel>
-              <StyledTextInput type="date" value={due} onChange={(event) => setDue(event.target.value)} />
+              <StyledTextInput
+                type="date"
+                value={due}
+                onChange={(event) => setDue(event.target.value)}
+              />
             </div>
             <div>
               <StyledFieldLabel>{t`Priority`}</StyledFieldLabel>
-              <StyledSelect style={{ width: '100%' }} value={priority} onChange={(event) => setPriority(event.target.value as TaskPriority | '')}>
+              <StyledSelect
+                style={{ width: '100%' }}
+                value={priority}
+                onChange={(event) =>
+                  setPriority(event.target.value as TaskPriority | '')
+                }
+              >
                 <option value="">{t`No priority`}</option>
-                {(['URGENT', 'HIGH', 'MEDIUM', 'LOW'] as TaskPriority[]).map((entry) => (
-                  <option key={entry} value={entry}>
-                    {PRIORITY_META[entry].label()}
-                  </option>
-                ))}
+                {(['URGENT', 'HIGH', 'MEDIUM', 'LOW'] as TaskPriority[]).map(
+                  (entry) => (
+                    <option key={entry} value={entry}>
+                      {PRIORITY_META[entry].label()}
+                    </option>
+                  ),
+                )}
               </StyledSelect>
             </div>
           </div>
           <div>
             <StyledFieldLabel>{t`Description`}</StyledFieldLabel>
-            <StyledTextArea rows={7} value={body} onChange={(event) => setBody(event.target.value)} />
+            <StyledTextArea
+              rows={7}
+              value={body}
+              onChange={(event) => setBody(event.target.value)}
+            />
           </div>
           {personParticipant && (
             <StyledHint>{t`Linked to ${personParticipant.displayName || personParticipant.handle} in the CRM.`}</StyledHint>

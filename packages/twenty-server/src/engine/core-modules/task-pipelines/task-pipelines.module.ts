@@ -51,7 +51,9 @@ const TASK_PIPELINE_ENTITIES = [
   ],
   controllers: [FathomWebhookController, MeetingVideoController],
   providers: [
-    ...TASK_PIPELINE_ENTITIES.map((entity) => provideWorkspaceScopedRepository(entity)),
+    ...TASK_PIPELINE_ENTITIES.map((entity) =>
+      provideWorkspaceScopedRepository(entity),
+    ),
     TaskPipelinesResolver,
     TaskPipelinesService,
     TaskPipelineAccessService,

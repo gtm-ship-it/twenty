@@ -59,7 +59,10 @@ export class TaskPipelineWorkspaceMembersService {
     );
   }
 
-  async exists(workspaceId: string, workspaceMemberId: string): Promise<boolean> {
+  async exists(
+    workspaceId: string,
+    workspaceMemberId: string,
+  ): Promise<boolean> {
     const members = await this.findMembers(workspaceId, [workspaceMemberId]);
 
     return members.length === 1;

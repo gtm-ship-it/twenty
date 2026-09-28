@@ -13,6 +13,8 @@ export const computeActionItemKey = ({
   description: string;
 }): string =>
   createHash('sha256')
-    .update(`${recordingId}|${recordingTimestamp ?? ''}|${normalizePersonName(description)}`)
+    .update(
+      `${recordingId}|${recordingTimestamp ?? ''}|${normalizePersonName(description)}`,
+    )
     .digest('hex')
     .slice(0, 40);

@@ -151,7 +151,8 @@ const StyledEmptyBoardHint = styled.div`
   padding: ${themeCssVariables.spacing[8]};
 `;
 
-const getColumnDroppableId = (columnIndex: number) => `inbox-col-${columnIndex}`;
+const getColumnDroppableId = (columnIndex: number) =>
+  `inbox-col-${columnIndex}`;
 
 const parseColumnDroppableId = (droppableId: string): number | null => {
   const match = droppableId.match(/^inbox-col-(\d+)$/);
@@ -303,7 +304,10 @@ const PipelineCard = ({
               {t`Only this domain`} ({senderDomain})
             </StyledCardMenuItem>
           )}
-          <StyledCardMenuItem type="button" onClick={() => onCreateTask(thread)}>
+          <StyledCardMenuItem
+            type="button"
+            onClick={() => onCreateTask(thread)}
+          >
             {t`Create task`}
           </StyledCardMenuItem>
           <StyledCardMenuItem
@@ -584,73 +588,73 @@ export const InboxPipelineBoard = ({
         </StyledSelectionBar>
       )}
       <DragDropProvider
-      onDragEnd={(event) => {
-        const { source, target } = event.operation;
+        onDragEnd={(event) => {
+          const { source, target } = event.operation;
 
-        if (event.canceled || !isDefined(source) || !isDefined(target)) {
-          return;
-        }
+          if (event.canceled || !isDefined(source) || !isDefined(target)) {
+            return;
+          }
 
-        const columnIndex = parseColumnDroppableId(String(target.id));
+          const columnIndex = parseColumnDroppableId(String(target.id));
 
-        if (columnIndex === null) {
-          return;
-        }
+          if (columnIndex === null) {
+            return;
+          }
 
-        const draggedId = String(source.id);
+          const draggedId = String(source.id);
 
-        // Arrastrar una tarjeta que esta seleccionada mueve toda la seleccion;
-        // arrastrar una que no lo esta mueve solo esa y no toca la seleccion.
-        if (selectedIds.has(draggedId)) {
-          moveSelection(columnIndex);
+          // Arrastrar una tarjeta que esta seleccionada mueve toda la seleccion;
+          // arrastrar una que no lo esta mueve solo esa y no toca la seleccion.
+          if (selectedIds.has(draggedId)) {
+            moveSelection(columnIndex);
 
-          return;
-        }
+            return;
+          }
 
-        onMoveCards([draggedId], columnIndex);
-      }}
-    >
-      <StyledBoard>
-        {pipeline.columns.map((column, columnIndex) => (
-          <PipelineColumn
-            key={columnIndex}
-            column={column}
-            columnIndex={columnIndex}
-            threads={threadsByColumn[columnIndex]}
-            selectedIds={selectedIds}
-            onToggleSelected={toggleSelected}
-            onSelectColumn={selectMany}
-            menuThreadId={menuThreadId}
-            onToggleMenu={(threadId) =>
-              setMenuThreadId(menuThreadId === threadId ? null : threadId)
-            }
-            onExcludeRule={(rule, threadId) => {
-              setMenuThreadId(null);
-              onExcludeRule(rule, threadId);
-            }}
-            onOnlyRule={(rule) => {
-              setMenuThreadId(null);
-              onOnlyRule(rule);
-            }}
-            onRemoveFromPipeline={(threadId) => {
-              setMenuThreadId(null);
-              onRemoveFromPipeline([threadId]);
-            }}
-            onCreateTask={(thread) => {
-              setMenuThreadId(null);
-              setCreateTaskThread(thread);
+          onMoveCards([draggedId], columnIndex);
+        }}
+      >
+        <StyledBoard>
+          {pipeline.columns.map((column, columnIndex) => (
+            <PipelineColumn
+              key={columnIndex}
+              column={column}
+              columnIndex={columnIndex}
+              threads={threadsByColumn[columnIndex]}
+              selectedIds={selectedIds}
+              onToggleSelected={toggleSelected}
+              onSelectColumn={selectMany}
+              menuThreadId={menuThreadId}
+              onToggleMenu={(threadId) =>
+                setMenuThreadId(menuThreadId === threadId ? null : threadId)
+              }
+              onExcludeRule={(rule, threadId) => {
+                setMenuThreadId(null);
+                onExcludeRule(rule, threadId);
+              }}
+              onOnlyRule={(rule) => {
+                setMenuThreadId(null);
+                onOnlyRule(rule);
+              }}
+              onRemoveFromPipeline={(threadId) => {
+                setMenuThreadId(null);
+                onRemoveFromPipeline([threadId]);
+              }}
+              onCreateTask={(thread) => {
+                setMenuThreadId(null);
+                setCreateTaskThread(thread);
+              }}
+            />
+          ))}
+          <CustomResolverFetchMoreLoader
+            loading={isFetchingMore}
+            onLastRowVisible={async () => {
+              if (hasMoreThreads) {
+                await fetchMoreRecords();
+              }
             }}
           />
-        ))}
-        <CustomResolverFetchMoreLoader
-          loading={isFetchingMore}
-          onLastRowVisible={async () => {
-            if (hasMoreThreads) {
-              await fetchMoreRecords();
-            }
-          }}
-        />
-      </StyledBoard>
+        </StyledBoard>
       </DragDropProvider>
       {createTaskThread && (
         <CreateTaskFromEmailModal

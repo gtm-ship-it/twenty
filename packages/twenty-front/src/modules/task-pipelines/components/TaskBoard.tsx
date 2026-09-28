@@ -27,9 +27,14 @@ const StyledBoard = styled.div`
 
 const StyledColumn = styled.div<{ isOver: boolean }>`
   background: ${({ isOver }) =>
-    isOver ? themeCssVariables.background.transparent.medium : themeCssVariables.background.secondary};
+    isOver
+      ? themeCssVariables.background.transparent.medium
+      : themeCssVariables.background.secondary};
   border: 1px solid
-    ${({ isOver }) => (isOver ? themeCssVariables.color.blue : themeCssVariables.border.color.light)};
+    ${({ isOver }) =>
+      isOver
+        ? themeCssVariables.color.blue
+        : themeCssVariables.border.color.light};
   border-radius: ${themeCssVariables.border.radius.md};
   box-sizing: border-box;
   display: flex;
@@ -39,7 +44,9 @@ const StyledColumn = styled.div<{ isOver: boolean }>`
   max-height: 100%;
   min-height: 160px;
   padding: ${themeCssVariables.spacing[2]};
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
   width: 290px;
 `;
 
@@ -108,17 +115,30 @@ const StyledQuickHint = styled.div`
 
 const COLUMN_PREFIX = 'task-col:';
 
-const DraggableTask = ({ task, children }: { task: PipelineTask; children: React.ReactNode }) => {
-  const { ref, isDragSource } = useDraggable({ id: task.id, feedback: 'clone' });
+const DraggableTask = ({
+  task,
+  children,
+}: {
+  task: PipelineTask;
+  children: React.ReactNode;
+}) => {
+  const { ref, isDragSource } = useDraggable({
+    id: task.id,
+    feedback: 'clone',
+  });
 
   return (
-    <StyledDraggable ref={ref} isDragSource={isDragSource} data-task-card={task.id}>
+    <StyledDraggable
+      ref={ref}
+      isDragSource={isDragSource}
+      data-task-card={task.id}
+    >
       {children}
     </StyledDraggable>
   );
 };
 
-type ColumnProps = {
+type TaskColumnProps = {
   stage: TaskPipelineStage;
   tasks: PipelineTask[];
   membersById: Map<string, TaskMemberInfo>;
@@ -127,8 +147,17 @@ type ColumnProps = {
   onQuickAdd: (stageId: string, title: string) => Promise<void>;
 };
 
-const TaskColumn = ({ stage, tasks, membersById, labelColors, onOpenTask, onQuickAdd }: ColumnProps) => {
-  const { ref, isDropTarget } = useDroppable({ id: `${COLUMN_PREFIX}${stage.id}` });
+const TaskColumn = ({
+  stage,
+  tasks,
+  membersById,
+  labelColors,
+  onOpenTask,
+  onQuickAdd,
+}: TaskColumnProps) => {
+  const { ref, isDropTarget } = useDroppable({
+    id: `${COLUMN_PREFIX}${stage.id}`,
+  });
   const [isAdding, setIsAdding] = useState(false);
   const [draft, setDraft] = useState('');
 
@@ -142,7 +171,13 @@ const TaskColumn = ({ stage, tasks, membersById, labelColors, onOpenTask, onQuic
     }
 
     setDraft('');
-    await onQuickAdd(stage.id, title);
+
+    try {
+      await onQuickAdd(stage.id, title);
+    } catch {
+      // Si falla la creación, se devuelve el texto para no perderlo.
+      setDraft(title);
+    }
   };
 
   return (
@@ -157,7 +192,11 @@ const TaskColumn = ({ stage, tasks, membersById, labelColors, onOpenTask, onQuic
             <TaskCard
               task={task}
               isDone={stage.isDone}
-              assignee={task.assigneeWorkspaceMemberId ? (membersById.get(task.assigneeWorkspaceMemberId) ?? null) : null}
+              assignee={
+                task.assigneeWorkspaceMemberId
+                  ? (membersById.get(task.assigneeWorkspaceMemberId) ?? null)
+                  : null
+              }
               labelColors={labelColors}
               onOpen={() => onOpenTask(task.id)}
             />
@@ -198,7 +237,11 @@ const TaskColumn = ({ stage, tasks, membersById, labelColors, onOpenTask, onQuic
 
 // Índice de inserción según la altura del puntero respecto a las tarjetas de
 // la columna destino (sin contar la que se arrastra).
-const getDropIndex = (stageId: string, draggedId: string, pointerY: number | null): number | null => {
+const getDropIndex = (
+  stageId: string,
+  draggedId: string,
+  pointerY: number | null,
+): number | null => {
   if (pointerY === null) {
     return null;
   }
@@ -209,9 +252,9 @@ const getDropIndex = (stageId: string, draggedId: string, pointerY: number | nul
     return null;
   }
 
-  const cards = Array.from(column.querySelectorAll<HTMLElement>('[data-task-card]')).filter(
-    (element) => element.dataset.taskCard !== draggedId,
-  );
+  const cards = Array.from(
+    column.querySelectorAll<HTMLElement>('[data-task-card]'),
+  ).filter((element) => element.dataset.taskCard !== draggedId);
 
   const index = cards.findIndex((element) => {
     const rect = element.getBoundingClientRect();
@@ -224,7 +267,10 @@ const getDropIndex = (stageId: string, draggedId: string, pointerY: number | nul
 
 type TaskBoardProps = {
   stages: TaskPipelineStage[];
+  // Tareas visibles (con filtros aplicados) y todas: la posición al soltar se
+  // calcula contra la columna completa para no chocar con tarjetas ocultas.
   tasks: PipelineTask[];
+  allTasks: PipelineTask[];
   membersById: Map<string, TaskMemberInfo>;
   labelColors: Map<string, string>;
   onOpenTask: (taskId: string) => void;
@@ -235,17 +281,21 @@ type TaskBoardProps = {
 export const TaskBoard = ({
   stages,
   tasks,
+  allTasks,
   membersById,
   labelColors,
   onOpenTask,
   onMoveTask,
   onQuickAdd,
 }: TaskBoardProps) => {
-  const tasksByStage = new Map<string, PipelineTask[]>(stages.map((stage) => [stage.id, []]));
+  const tasksByStage = new Map<string, PipelineTask[]>(
+    stages.map((stage) => [stage.id, []]),
+  );
 
   for (const task of [...tasks].sort((a, b) => a.position - b.position)) {
     // Una tarea de un stage que ya no existe cae en la primera columna.
-    const bucket = tasksByStage.get(task.stageId) ?? tasksByStage.get(stages[0]?.id ?? '');
+    const bucket =
+      tasksByStage.get(task.stageId) ?? tasksByStage.get(stages[0]?.id ?? '');
 
     bucket?.push(task);
   }
@@ -267,23 +317,43 @@ export const TaskBoard = ({
 
         const stageId = targetId.slice(COLUMN_PREFIX.length);
         const taskId = String(source.id);
-        const pointer = (event.operation as { position?: { current?: { y: number } } }).position?.current;
-        const others = (tasksByStage.get(stageId) ?? []).filter((task) => task.id !== taskId);
-        const dropIndex = getDropIndex(stageId, taskId, pointer?.y ?? null) ?? others.length;
-        const moving = tasks.find((task) => task.id === taskId);
-        const currentIndex = (tasksByStage.get(stageId) ?? []).findIndex((task) => task.id === taskId);
+        const pointer = (
+          event.operation as { position?: { current?: { y: number } } }
+        ).position?.current;
+        const visibleOthers = (tasksByStage.get(stageId) ?? []).filter(
+          (task) => task.id !== taskId,
+        );
+        const dropIndex =
+          getDropIndex(stageId, taskId, pointer?.y ?? null) ??
+          visibleOthers.length;
+        const moving = allTasks.find((task) => task.id === taskId);
+        const currentIndex = (tasksByStage.get(stageId) ?? []).findIndex(
+          (task) => task.id === taskId,
+        );
 
         // Soltar en el mismo sitio no hace nada.
         if (moving?.stageId === stageId && currentIndex === dropIndex) {
           return;
         }
 
+        // Columna completa (visibles + ocultas por filtros), sin la que se mueve.
+        const fullColumn = allTasks
+          .filter((task) => task.stageId === stageId && task.id !== taskId)
+          .sort((a, b) => a.position - b.position);
+        const previousVisible = visibleOthers[dropIndex - 1];
+        const nextVisible = visibleOthers[dropIndex];
+        const fullIndex = isDefined(previousVisible)
+          ? fullColumn.findIndex((task) => task.id === previousVisible.id) + 1
+          : isDefined(nextVisible)
+            ? fullColumn.findIndex((task) => task.id === nextVisible.id)
+            : fullColumn.length;
+
         onMoveTask(
           taskId,
           stageId,
           computeInsertPosition(
-            others.map((task) => task.position),
-            dropIndex,
+            fullColumn.map((task) => task.position),
+            fullIndex,
           ),
         );
       }}

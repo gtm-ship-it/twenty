@@ -23,7 +23,10 @@ export type MeetingTranscriptLine = {
 };
 
 @Entity({ name: 'meeting', schema: 'core' })
-@Unique('IDX_MEETING_WORKSPACE_RECORDING_UNIQUE', ['workspaceId', 'recordingId'])
+@Unique('IDX_MEETING_WORKSPACE_RECORDING_UNIQUE', [
+  'workspaceId',
+  'recordingId',
+])
 export class MeetingEntity extends WorkspaceRelatedEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

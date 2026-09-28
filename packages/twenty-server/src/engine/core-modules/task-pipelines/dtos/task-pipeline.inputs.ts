@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  IsUrl,
   MaxLength,
   MinLength,
   ValidateNested,
@@ -189,7 +190,7 @@ export class CreateTaskPipelineTaskInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true })
   @MaxLength(2000)
   sourceLink?: string | null;
 
@@ -263,7 +264,7 @@ export class UpdateTaskPipelineTaskInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true })
   @MaxLength(2000)
   sourceLink?: string | null;
 }

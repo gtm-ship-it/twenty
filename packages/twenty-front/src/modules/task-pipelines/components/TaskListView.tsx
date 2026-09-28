@@ -4,13 +4,19 @@ import { Tag, type TagColor } from 'twenty-ui/data-display';
 import { IconVideo } from 'twenty-ui/icon';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
-import { MemberAvatar, PRIORITY_META } from '@/task-pipelines/components/TaskPipelineUi';
+import {
+  MemberAvatar,
+  PRIORITY_META,
+} from '@/task-pipelines/components/TaskPipelineUi';
 import { type TaskMemberInfo } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
   type PipelineTask,
   type TaskPipelineStage,
 } from '@/task-pipelines/types/TaskPipelineTypes';
-import { formatTaskDueDate, getTaskDueStatus } from '@/task-pipelines/utils/taskDueStatus';
+import {
+  formatTaskDueDate,
+  getTaskDueStatus,
+} from '@/task-pipelines/utils/taskDueStatus';
 
 const StyledWrapper = styled.div`
   flex: 1;
@@ -96,8 +102,12 @@ export const TaskListView = ({
   }
 
   const sorted = [...tasks].sort((a, b) => {
-    const aDue = a.dueAt ? new Date(a.dueAt).getTime() : Number.MAX_SAFE_INTEGER;
-    const bDue = b.dueAt ? new Date(b.dueAt).getTime() : Number.MAX_SAFE_INTEGER;
+    const aDue = a.dueAt
+      ? new Date(a.dueAt).getTime()
+      : Number.MAX_SAFE_INTEGER;
+    const bDue = b.dueAt
+      ? new Date(b.dueAt).getTime()
+      : Number.MAX_SAFE_INTEGER;
 
     return aDue - bDue || a.position - b.position;
   });
@@ -121,10 +131,23 @@ export const TaskListView = ({
             const assignee = task.assigneeWorkspaceMemberId
               ? membersById.get(task.assigneeWorkspaceMemberId)
               : undefined;
-            const dueStatus = getTaskDueStatus(task.dueAt, stage?.isDone === true || !!task.completedAt);
+            const dueStatus = getTaskDueStatus(
+              task.dueAt,
+              stage?.isDone === true || !!task.completedAt,
+            );
 
             return (
-              <tr key={task.id} onClick={() => onOpenTask(task)}>
+              <tr
+                key={task.id}
+                tabIndex={0}
+                onClick={() => onOpenTask(task)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onOpenTask(task);
+                  }
+                }}
+              >
                 <td>
                   <StyledTitleCell>
                     {task.source === 'FATHOM' && <IconVideo size={14} />}
@@ -132,7 +155,13 @@ export const TaskListView = ({
                   </StyledTitleCell>
                 </td>
                 {showPipeline && <td>{task.pipelineName}</td>}
-                <td>{stage ? <Tag color={stage.color as TagColor} text={stage.name} /> : '—'}</td>
+                <td>
+                  {stage ? (
+                    <Tag color={stage.color as TagColor} text={stage.name} />
+                  ) : (
+                    '—'
+                  )}
+                </td>
                 <td>
                   {assignee ? (
                     <StyledPerson>
@@ -146,9 +175,17 @@ export const TaskListView = ({
                   )}
                 </td>
                 <td>
-                  {task.dueAt ? <StyledDue tone={dueStatus}>{formatTaskDueDate(task.dueAt)}</StyledDue> : '—'}
+                  {task.dueAt ? (
+                    <StyledDue tone={dueStatus}>
+                      {formatTaskDueDate(task.dueAt)}
+                    </StyledDue>
+                  ) : (
+                    '—'
+                  )}
                 </td>
-                <td>{task.priority ? PRIORITY_META[task.priority].label() : '—'}</td>
+                <td>
+                  {task.priority ? PRIORITY_META[task.priority].label() : '—'}
+                </td>
               </tr>
             );
           })}

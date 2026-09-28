@@ -2089,6 +2089,7 @@ export class ConfigVariables {
 
   // --- PTS AI CRM: Tasks + Reuniones de Fathom (integración propia del fork) ---
   @ConfigVariablesMetadata({
+    isEnvOnly: true,
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,
     description:
       'LibreTranslate base URL used to translate Fathom action items and summaries to Spanish (e.g. http://libretranslate:5000). When unset, meetings keep their original language.',
@@ -2098,6 +2099,7 @@ export class ConfigVariables {
   LIBRETRANSLATE_URL?: string;
 
   @ConfigVariablesMetadata({
+    isEnvOnly: true,
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,
     description:
       'Public base URL Fathom must call for meeting webhooks. Defaults to SERVER_URL.',
@@ -2107,6 +2109,7 @@ export class ConfigVariables {
   FATHOM_WEBHOOK_BASE_URL?: string;
 
   @ConfigVariablesMetadata({
+    isEnvOnly: true,
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,
     description:
       'Fathom external API base URL (default https://api.fathom.ai/external/v1). Only change it for tests.',

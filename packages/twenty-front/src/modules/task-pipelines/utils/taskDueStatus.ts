@@ -29,7 +29,10 @@ export const getTaskDueStatus = (
 };
 
 export const formatTaskDueDate = (dueAt: string, locale?: string): string =>
-  new Date(dueAt).toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+  new Date(dueAt).toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'short',
+  });
 
 // <input type="date"> trabaja con YYYY-MM-DD local; guardamos fin del día local.
 export const dueInputValue = (dueAt: string | null): string => {

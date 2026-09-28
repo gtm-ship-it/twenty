@@ -33,7 +33,11 @@ export class TaskPipelineNotificationService {
     private readonly workspaceRepository: Repository<WorkspaceEntity>,
   ) {}
 
-  buildTaskUrl(workspace: WorkspaceEntity, pipelineId: string, taskId: string): string {
+  buildTaskUrl(
+    workspace: WorkspaceEntity,
+    pipelineId: string,
+    taskId: string,
+  ): string {
     return this.workspaceDomainsService
       .buildWorkspaceURL({
         workspace,
@@ -53,7 +57,12 @@ export class TaskPipelineNotificationService {
     workspaceId: string;
     task: Pick<
       TaskPipelineTaskEntity,
-      'id' | 'pipelineId' | 'title' | 'body' | 'dueAt' | 'assigneeWorkspaceMemberId'
+      | 'id'
+      | 'pipelineId'
+      | 'title'
+      | 'body'
+      | 'dueAt'
+      | 'assigneeWorkspaceMemberId'
     >;
     pipelineName: string;
     assignedByWorkspaceMemberId: string | null;
@@ -64,16 +73,28 @@ export class TaskPipelineNotificationService {
         return;
       }
 
-      const ids = [task.assigneeWorkspaceMemberId, assignedByWorkspaceMemberId].filter(isDefined);
-      const members = await this.workspaceMembersService.findMembers(workspaceId, ids);
-      const assignee = members.find((member) => member.id === task.assigneeWorkspaceMemberId);
-      const assigner = members.find((member) => member.id === assignedByWorkspaceMemberId);
+      const ids = [
+        task.assigneeWorkspaceMemberId,
+        assignedByWorkspaceMemberId,
+      ].filter(isDefined);
+      const members = await this.workspaceMembersService.findMembers(
+        workspaceId,
+        ids,
+      );
+      const assignee = members.find(
+        (member) => member.id === task.assigneeWorkspaceMemberId,
+      );
+      const assigner = members.find(
+        (member) => member.id === assignedByWorkspaceMemberId,
+      );
 
       if (!isDefined(assignee?.email)) {
         return;
       }
 
-      const workspace = await this.workspaceRepository.findOne({ where: { id: workspaceId } });
+      const workspace = await this.workspaceRepository.findOne({
+        where: { id: workspaceId },
+      });
 
       if (!isDefined(workspace)) {
         return;

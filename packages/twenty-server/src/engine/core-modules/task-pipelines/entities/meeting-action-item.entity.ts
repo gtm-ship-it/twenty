@@ -13,9 +13,13 @@ import { WorkspaceRelatedEntity } from 'src/engine/workspace-manager/types/works
 // puede alimentar varios tableros si está conectada a varias cuentas).
 @Entity({ name: 'meetingActionItem', schema: 'core' })
 @Index('IDX_MEETING_ACTION_ITEM_MEETING', ['meetingId'])
-@Index('IDX_MEETING_ACTION_ITEM_PIPELINE_KEY_UNIQUE', ['pipelineId', 'externalKey'], {
-  unique: true,
-})
+@Index(
+  'IDX_MEETING_ACTION_ITEM_PIPELINE_KEY_UNIQUE',
+  ['pipelineId', 'externalKey'],
+  {
+    unique: true,
+  },
+)
 export class MeetingActionItemEntity extends WorkspaceRelatedEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

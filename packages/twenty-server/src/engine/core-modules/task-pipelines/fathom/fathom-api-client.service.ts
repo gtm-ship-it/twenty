@@ -26,10 +26,9 @@ export class FathomApiClientService {
   private get baseUrl(): string {
     const configured = this.twentyConfigService.get('FATHOM_API_BASE_URL');
 
-    return (isNonEmptyString(configured) ? configured : DEFAULT_FATHOM_API_BASE_URL).replace(
-      /\/$/,
-      '',
-    );
+    return (
+      isNonEmptyString(configured) ? configured : DEFAULT_FATHOM_API_BASE_URL
+    ).replace(/\/$/, '');
   }
 
   private async request<T>(
@@ -63,7 +62,10 @@ export class FathomApiClientService {
               ? 'Fathom rate limit reached, try again in a minute'
               : `Fathom responded ${response.status}`;
 
-        throw new FathomApiError(`${reason}${text ? `: ${text.slice(0, 200)}` : ''}`, response.status);
+        throw new FathomApiError(
+          `${reason}${text ? `: ${text.slice(0, 200)}` : ''}`,
+          response.status,
+        );
       }
 
       return (text ? JSON.parse(text) : {}) as T;
@@ -112,29 +114,37 @@ export class FathomApiClientService {
       next_cursor?: string | null;
     }>(apiKey, 'GET', `/meetings?${params.toString()}`);
 
-    return { items: payload.items ?? [], nextCursor: payload.next_cursor ?? null };
+    return {
+      items: payload.items ?? [],
+      nextCursor: payload.next_cursor ?? null,
+    };
   }
 
   async createWebhook(
     apiKey: string,
     destinationUrl: string,
   ): Promise<{ id: string; secret: string }> {
-    const payload = await this.request<{ id?: string | number; secret?: string }>(
-      apiKey,
-      'POST',
-      '/webhooks',
-      {
-        destination_url: destinationUrl,
-        triggered_for: ['my_recordings', 'shared_external_recordings', 'my_shared_with_team_recordings'],
-        include_action_items: true,
-        include_summary: true,
-        include_transcript: true,
-        include_crm_matches: false,
-      },
-    );
+    const payload = await this.request<{
+      id?: string | number;
+      secret?: string;
+    }>(apiKey, 'POST', '/webhooks', {
+      destination_url: destinationUrl,
+      triggered_for: [
+        'my_recordings',
+        'shared_external_recordings',
+        'my_shared_with_team_recordings',
+      ],
+      include_action_items: true,
+      include_summary: true,
+      include_transcript: true,
+      include_crm_matches: false,
+    });
 
     if (payload.id === undefined || !isNonEmptyString(payload.secret)) {
-      throw new FathomApiError('Fathom did not return the webhook id and secret', 0);
+      throw new FathomApiError(
+        'Fathom did not return the webhook id and secret',
+        0,
+      );
     }
 
     return { id: String(payload.id), secret: payload.secret };
@@ -142,7 +152,11 @@ export class FathomApiClientService {
 
   async deleteWebhook(apiKey: string, webhookId: string): Promise<void> {
     try {
-      await this.request(apiKey, 'DELETE', `/webhooks/${encodeURIComponent(webhookId)}`);
+      await this.request(
+        apiKey,
+        'DELETE',
+        `/webhooks/${encodeURIComponent(webhookId)}`,
+      );
     } catch (error) {
       // Ya no existe en Fathom: no es un error para nosotros.
       if (error instanceof FathomApiError && error.status === 404) {

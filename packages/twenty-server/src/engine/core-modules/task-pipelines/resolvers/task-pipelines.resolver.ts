@@ -38,16 +38,24 @@ import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.ent
 import { AuthUserWorkspaceId } from 'src/engine/decorators/auth/auth-user-workspace-id.decorator';
 import { AuthWorkspaceMemberId } from 'src/engine/decorators/auth/auth-workspace-member-id.decorator';
 import { AuthWorkspace } from 'src/engine/decorators/auth/auth-workspace.decorator';
+import { CustomPermissionGuard } from 'src/engine/guards/custom-permission.guard';
 import { UserAuthGuard } from 'src/engine/guards/user-auth.guard';
 import { WorkspaceAuthGuard } from 'src/engine/guards/workspace-auth.guard';
 
 const assertText = (value: string, field: string, max: number) => {
-  if (typeof value !== 'string' || value.trim().length === 0 || value.length > max) {
-    throw new UserInputError(`${field} must be between 1 and ${max} characters`);
+  if (
+    typeof value !== 'string' ||
+    value.trim().length === 0 ||
+    value.length > max
+  ) {
+    throw new UserInputError(
+      `${field} must be between 1 and ${max} characters`,
+    );
   }
 };
 
-@UseGuards(WorkspaceAuthGuard, UserAuthGuard)
+// La autorización fina (miembro/admin de cada tablero) vive en TaskPipelineAccessService.
+@UseGuards(WorkspaceAuthGuard, UserAuthGuard, CustomPermissionGuard)
 @UsePipes(ResolverValidationPipe)
 @UseFilters(PreventNestToAutoLogGraphqlErrorsFilter)
 @CoreResolver()
@@ -66,7 +74,10 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
   ): Promise<TaskPipelineDTO[]> {
-    return this.taskPipelinesService.listPipelines({ workspaceId: workspace.id, workspaceMemberId });
+    return this.taskPipelinesService.listPipelines({
+      workspaceId: workspace.id,
+      workspaceMemberId,
+    });
   }
 
   @Query(() => Boolean)
@@ -85,7 +96,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @AuthUserWorkspaceId() userWorkspaceId: string | undefined,
-    @Args('input', { type: () => CreateTaskPipelineInput }) input: CreateTaskPipelineInput,
+    @Args('input', { type: () => CreateTaskPipelineInput })
+    input: CreateTaskPipelineInput,
   ): Promise<TaskPipelineDTO> {
     return this.taskPipelinesService.createPipeline(
       { workspaceId: workspace.id, workspaceMemberId, userWorkspaceId },
@@ -98,7 +110,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('input', { type: () => UpdateTaskPipelineInput }) input: UpdateTaskPipelineInput,
+    @Args('input', { type: () => UpdateTaskPipelineInput })
+    input: UpdateTaskPipelineInput,
   ): Promise<TaskPipelineDTO> {
     return this.taskPipelinesService.updatePipeline(
       { workspaceId: workspace.id, workspaceMemberId },
@@ -115,8 +128,15 @@ export class TaskPipelinesResolver {
   ): Promise<boolean> {
     const actor = { workspaceId: workspace.id, workspaceMemberId };
 
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
-    await this.fathomConnectionsService.disconnectAllForPipeline(workspace.id, pipelineId);
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
+    await this.fathomConnectionsService.disconnectAllForPipeline(
+      workspace.id,
+      pipelineId,
+    );
 
     return this.taskPipelinesService.deletePipeline(actor, pipelineId);
   }
@@ -126,7 +146,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('stages', { type: () => [TaskPipelineStageInput] }) stages: TaskPipelineStageInput[],
+    @Args('stages', { type: () => [TaskPipelineStageInput] })
+    stages: TaskPipelineStageInput[],
     @Args('moveTasksToStageId', { type: () => UUIDScalarType, nullable: true })
     moveTasksToStageId: string | null,
   ): Promise<TaskPipelineDTO> {
@@ -149,7 +170,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType }) memberId: string,
+    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType })
+    memberId: string,
     @Args('role', { type: () => String }) role: string,
   ): Promise<TaskPipelineDTO> {
     if (!(TASK_PIPELINE_ROLES as readonly string[]).includes(role)) {
@@ -169,15 +191,24 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType }) memberId: string,
+    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType })
+    memberId: string,
     @Args('role', { type: () => String, nullable: true }) role: string | null,
-    @Args('aliases', { type: () => [String], nullable: true }) aliases: string[] | null,
+    @Args('aliases', { type: () => [String], nullable: true }) aliases:
+      | string[]
+      | null,
   ): Promise<TaskPipelineDTO> {
-    if (isDefined(role) && !(TASK_PIPELINE_ROLES as readonly string[]).includes(role)) {
+    if (
+      isDefined(role) &&
+      !(TASK_PIPELINE_ROLES as readonly string[]).includes(role)
+    ) {
       throw new UserInputError('Unknown role');
     }
 
-    if (aliases && (aliases.length > 30 || aliases.some((alias) => alias.length > 120))) {
+    if (
+      aliases &&
+      (aliases.length > 30 || aliases.some((alias) => alias.length > 120))
+    ) {
       throw new UserInputError('Too many or too long aliases');
     }
 
@@ -185,7 +216,10 @@ export class TaskPipelinesResolver {
       { workspaceId: workspace.id, workspaceMemberId },
       pipelineId,
       memberId,
-      { role: (role ?? null) as 'ADMIN' | 'MEMBER' | null, aliases: aliases ?? null },
+      {
+        role: (role ?? null) as 'ADMIN' | 'MEMBER' | null,
+        aliases: aliases ?? null,
+      },
     );
   }
 
@@ -194,7 +228,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType }) memberId: string,
+    @Args('memberWorkspaceMemberId', { type: () => UUIDScalarType })
+    memberId: string,
   ): Promise<boolean> {
     return this.taskPipelinesService.removeMember(
       { workspaceId: workspace.id, workspaceMemberId },
@@ -210,7 +245,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
-    @Args('includeArchived', { type: () => Boolean, nullable: true }) includeArchived: boolean | null,
+    @Args('includeArchived', { type: () => Boolean, nullable: true })
+    includeArchived: boolean | null,
   ): Promise<TaskPipelineTaskDTO[]> {
     return this.taskPipelinesService.listTasks(
       { workspaceId: workspace.id, workspaceMemberId },
@@ -224,7 +260,10 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
   ): Promise<TaskPipelineTaskDTO[]> {
-    return this.taskPipelinesService.listMyTasks({ workspaceId: workspace.id, workspaceMemberId });
+    return this.taskPipelinesService.listMyTasks({
+      workspaceId: workspace.id,
+      workspaceMemberId,
+    });
   }
 
   @Query(() => TaskPipelineTaskDTO)
@@ -233,16 +272,23 @@ export class TaskPipelinesResolver {
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('taskId', { type: () => UUIDScalarType }) taskId: string,
   ): Promise<TaskPipelineTaskDTO> {
-    return this.taskPipelinesService.getTask({ workspaceId: workspace.id, workspaceMemberId }, taskId);
+    return this.taskPipelinesService.getTask(
+      { workspaceId: workspace.id, workspaceMemberId },
+      taskId,
+    );
   }
 
   @Mutation(() => TaskPipelineTaskDTO)
   async createTaskPipelineTask(
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
-    @Args('input', { type: () => CreateTaskPipelineTaskInput }) input: CreateTaskPipelineTaskInput,
+    @Args('input', { type: () => CreateTaskPipelineTaskInput })
+    input: CreateTaskPipelineTaskInput,
   ): Promise<TaskPipelineTaskDTO> {
-    return this.taskPipelinesService.createTask({ workspaceId: workspace.id, workspaceMemberId }, input);
+    return this.taskPipelinesService.createTask(
+      { workspaceId: workspace.id, workspaceMemberId },
+      input,
+    );
   }
 
   @Mutation(() => TaskPipelineTaskDTO)
@@ -250,7 +296,8 @@ export class TaskPipelinesResolver {
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('taskId', { type: () => UUIDScalarType }) taskId: string,
-    @Args('input', { type: () => UpdateTaskPipelineTaskInput }) input: UpdateTaskPipelineTaskInput,
+    @Args('input', { type: () => UpdateTaskPipelineTaskInput })
+    input: UpdateTaskPipelineTaskInput,
   ): Promise<TaskPipelineTaskDTO> {
     return this.taskPipelinesService.updateTask(
       { workspaceId: workspace.id, workspaceMemberId },
@@ -263,9 +310,13 @@ export class TaskPipelinesResolver {
   async moveTaskPipelineTask(
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
-    @Args('input', { type: () => MoveTaskPipelineTaskInput }) input: MoveTaskPipelineTaskInput,
+    @Args('input', { type: () => MoveTaskPipelineTaskInput })
+    input: MoveTaskPipelineTaskInput,
   ): Promise<TaskPipelineTaskDTO> {
-    return this.taskPipelinesService.moveTask({ workspaceId: workspace.id, workspaceMemberId }, input);
+    return this.taskPipelinesService.moveTask(
+      { workspaceId: workspace.id, workspaceMemberId },
+      input,
+    );
   }
 
   @Mutation(() => TaskPipelineTaskDTO)
@@ -288,7 +339,10 @@ export class TaskPipelinesResolver {
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('taskId', { type: () => UUIDScalarType }) taskId: string,
   ): Promise<boolean> {
-    return this.taskPipelinesService.deleteTask({ workspaceId: workspace.id, workspaceMemberId }, taskId);
+    return this.taskPipelinesService.deleteTask(
+      { workspaceId: workspace.id, workspaceMemberId },
+      taskId,
+    );
   }
 
   // -------------------------------------------------------------- comments
@@ -299,7 +353,10 @@ export class TaskPipelinesResolver {
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('taskId', { type: () => UUIDScalarType }) taskId: string,
   ): Promise<TaskPipelineTaskCommentDTO[]> {
-    return this.taskPipelinesService.listComments({ workspaceId: workspace.id, workspaceMemberId }, taskId);
+    return this.taskPipelinesService.listComments(
+      { workspaceId: workspace.id, workspaceMemberId },
+      taskId,
+    );
   }
 
   @Mutation(() => TaskPipelineTaskCommentDTO)
@@ -398,9 +455,13 @@ export class TaskPipelinesResolver {
   async taskPipelineMeetings(
     @AuthWorkspace() workspace: WorkspaceEntity,
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
-    @Args('pipelineId', { type: () => UUIDScalarType, nullable: true }) pipelineId: string | null,
+    @Args('pipelineId', { type: () => UUIDScalarType, nullable: true })
+    pipelineId: string | null,
   ): Promise<MeetingListItemDTO[]> {
-    return this.meetingsService.listMeetings({ workspaceId: workspace.id, workspaceMemberId }, pipelineId);
+    return this.meetingsService.listMeetings(
+      { workspaceId: workspace.id, workspaceMemberId },
+      pipelineId,
+    );
   }
 
   @Query(() => MeetingDetailDTO)
@@ -409,7 +470,10 @@ export class TaskPipelinesResolver {
     @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
     @Args('meetingId', { type: () => UUIDScalarType }) meetingId: string,
   ): Promise<MeetingDetailDTO> {
-    return this.meetingsService.getMeeting({ workspaceId: workspace.id, workspaceMemberId }, meetingId);
+    return this.meetingsService.getMeeting(
+      { workspaceId: workspace.id, workspaceMemberId },
+      meetingId,
+    );
   }
 
   @Mutation(() => TaskPipelineTaskDTO)

@@ -40,7 +40,10 @@ export class LibreTranslateService {
     let currentSize = 0;
 
     for (const text of texts) {
-      if (current.length > 0 && currentSize + text.length > MAX_CHARS_PER_REQUEST) {
+      if (
+        current.length > 0 &&
+        currentSize + text.length > MAX_CHARS_PER_REQUEST
+      ) {
         batches.push(current);
         current = [];
         currentSize = 0;
@@ -59,15 +62,26 @@ export class LibreTranslateService {
     try {
       for (const batch of batches) {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        const timeout = setTimeout(
+          () => controller.abort(),
+          REQUEST_TIMEOUT_MS,
+        );
 
         try {
-          const response = await fetch(`${baseUrl.replace(/\/$/, '')}/translate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: batch, source, target, format: 'text' }),
-            signal: controller.signal,
-          });
+          const response = await fetch(
+            `${baseUrl.replace(/\/$/, '')}/translate`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                q: batch,
+                source,
+                target,
+                format: 'text',
+              }),
+              signal: controller.signal,
+            },
+          );
 
           if (!response.ok) {
             throw new Error(`LibreTranslate responded ${response.status}`);
@@ -81,7 +95,9 @@ export class LibreTranslateService {
             : [payload.translatedText ?? ''];
 
           if (translated.length !== batch.length) {
-            throw new Error('LibreTranslate returned an unexpected number of texts');
+            throw new Error(
+              'LibreTranslate returned an unexpected number of texts',
+            );
           }
 
           results.push(...translated);
@@ -105,7 +121,9 @@ export class LibreTranslateService {
     const translatable: { index: number; prefix: string; text: string }[] = [];
 
     lines.forEach((line, index) => {
-      const match = line.match(/^(\s*(?:#{1,6}\s+|[-*+]\s+|\d+\.\s+|>\s+)?)(.*)$/);
+      const match = line.match(
+        /^(\s*(?:#{1,6}\s+|[-*+]\s+|\d+\.\s+|>\s+)?)(.*)$/,
+      );
       const prefix = match?.[1] ?? '';
       const text = (match?.[2] ?? line).trim();
 

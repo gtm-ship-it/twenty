@@ -23,9 +23,14 @@ const StyledOptions = styled.div`
 
 const StyledOption = styled.button<{ isActive: boolean }>`
   background: ${({ isActive }) =>
-    isActive ? themeCssVariables.accent.quaternary : themeCssVariables.background.primary};
+    isActive
+      ? themeCssVariables.accent.quaternary
+      : themeCssVariables.background.primary};
   border: 1px solid
-    ${({ isActive }) => (isActive ? themeCssVariables.color.blue : themeCssVariables.border.color.medium)};
+    ${({ isActive }) =>
+      isActive
+        ? themeCssVariables.color.blue
+        : themeCssVariables.border.color.medium};
   border-radius: ${themeCssVariables.border.radius.md};
   color: ${themeCssVariables.font.color.primary};
   cursor: pointer;
@@ -57,7 +62,9 @@ const StyledSwatches = styled.div`
 `;
 
 const StyledSwatch = styled.button<{ isActive: boolean }>`
-  border: 2px solid ${({ isActive }) => (isActive ? themeCssVariables.font.color.primary : 'transparent')};
+  border: 2px solid
+    ${({ isActive }) =>
+      isActive ? themeCssVariables.font.color.primary : 'transparent'};
   border-radius: 50%;
   cursor: pointer;
   height: 22px;
@@ -92,7 +99,11 @@ export const CreateTaskPipelineModal = ({
   onClose,
 }: {
   canCreateWorkspacePipelines: boolean;
-  onCreate: (input: { name: string; color: string; visibility: TaskPipelineVisibility }) => Promise<void>;
+  onCreate: (input: {
+    name: string;
+    color: string;
+    visibility: TaskPipelineVisibility;
+  }) => Promise<void>;
   onClose: () => void;
 }) => {
   const [name, setName] = useState('');
@@ -116,7 +127,11 @@ export const CreateTaskPipelineModal = ({
     try {
       await onCreate({ name: name.trim(), color, visibility });
     } catch (creationError) {
-      setError(creationError instanceof Error ? creationError.message : t`Could not create the pipeline`);
+      setError(
+        creationError instanceof Error
+          ? creationError.message
+          : t`Could not create the pipeline`,
+      );
       setIsSaving(false);
     }
   };
@@ -128,7 +143,12 @@ export const CreateTaskPipelineModal = ({
       footer={
         <>
           <Button title={t`Cancel`} variant="secondary" onClick={onClose} />
-          <Button title={t`Create`} accent="blue" disabled={isSaving} onClick={() => void submit()} />
+          <Button
+            title={t`Create`}
+            accent="blue"
+            disabled={isSaving}
+            onClick={() => void submit()}
+          />
         </>
       }
     >
@@ -166,7 +186,11 @@ export const CreateTaskPipelineModal = ({
                 : t`Only workspace admins can create shared pipelines.`}
             </StyledHint>
           </StyledOption>
-          <StyledOption type="button" isActive={visibility === 'PERSONAL'} onClick={() => setVisibility('PERSONAL')}>
+          <StyledOption
+            type="button"
+            isActive={visibility === 'PERSONAL'}
+            onClick={() => setVisibility('PERSONAL')}
+          >
             <StyledOptionTitle>
               <IconLock size={16} />
               {t`Personal`}

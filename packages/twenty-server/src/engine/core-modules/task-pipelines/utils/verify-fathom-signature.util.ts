@@ -26,7 +26,10 @@ export const verifyFathomSignature = ({
 
   const timestamp = Number(webhookTimestamp);
 
-  if (!Number.isFinite(timestamp) || Math.abs(nowSeconds - timestamp) > TOLERANCE_SECONDS) {
+  if (
+    !Number.isFinite(timestamp) ||
+    Math.abs(nowSeconds - timestamp) > TOLERANCE_SECONDS
+  ) {
     return false;
   }
 
@@ -43,6 +46,9 @@ export const verifyFathomSignature = ({
     .some((entry) => {
       const candidate = Buffer.from(entry.slice(3), 'base64');
 
-      return candidate.length === expected.length && timingSafeEqual(candidate, expected);
+      return (
+        candidate.length === expected.length &&
+        timingSafeEqual(candidate, expected)
+      );
     });
 };

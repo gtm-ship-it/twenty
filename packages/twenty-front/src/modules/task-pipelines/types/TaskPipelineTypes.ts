@@ -129,7 +129,11 @@ export type MeetingDetail = {
   videoUrl: string | null;
   startedAt: string | null;
   endedAt: string | null;
-  participants: { name: string | null; email: string | null; isExternal: boolean }[];
+  participants: {
+    name: string | null;
+    email: string | null;
+    isExternal: boolean;
+  }[];
   recordedByName: string | null;
   recordedByEmail: string | null;
   summaryMarkdown: string | null;

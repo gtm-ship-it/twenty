@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import remarkGfm from 'remark-gfm';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
 import { Tag } from 'twenty-ui/data-display';
 import {
@@ -24,14 +22,23 @@ import {
   MeetingVideoPlayer,
   type MeetingVideoPlayerHandle,
 } from '@/task-pipelines/components/MeetingVideoPlayer';
-import { MemberAvatar, StyledSegment, StyledSegmented } from '@/task-pipelines/components/TaskPipelineUi';
+import { SafeMarkdown } from '@/task-pipelines/components/SafeMarkdown';
+import {
+  MemberAvatar,
+  StyledSegment,
+  StyledSegmented,
+} from '@/task-pipelines/components/TaskPipelineUi';
+import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
 import {
   CREATE_TASK_FROM_ACTION_ITEM,
   GET_MEETING,
   GET_MEETINGS,
 } from '@/task-pipelines/graphql/taskPipelinesDocuments';
 import { useWorkspaceMembersById } from '@/task-pipelines/hooks/useWorkspaceMembersById';
-import { type MeetingDetail, type MeetingListItem } from '@/task-pipelines/types/TaskPipelineTypes';
+import {
+  type MeetingDetail,
+  type MeetingListItem,
+} from '@/task-pipelines/types/TaskPipelineTypes';
 import { timestampToSeconds } from '@/task-pipelines/utils/timestampToSeconds';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
@@ -69,7 +76,8 @@ const StyledListHeader = styled.div`
 `;
 
 const StyledMeetingItem = styled.button<{ isActive: boolean }>`
-  background: ${({ isActive }) => (isActive ? themeCssVariables.background.transparent.medium : 'transparent')};
+  background: ${({ isActive }) =>
+    isActive ? themeCssVariables.background.transparent.medium : 'transparent'};
   border: none;
   border-bottom: 1px solid ${themeCssVariables.border.color.light};
   color: ${themeCssVariables.font.color.primary};
@@ -209,6 +217,16 @@ const StyledLinkButton = styled.button`
   }
 `;
 
+const StyledRouterLink = styled(Link)`
+  color: ${themeCssVariables.color.blue};
+  font-size: ${themeCssVariables.font.size.sm};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const StyledTranscriptHeader = styled.div`
   border-bottom: 1px solid ${themeCssVariables.border.color.light};
   display: flex;
@@ -249,7 +267,8 @@ const StyledTranscript = styled.div`
 `;
 
 const StyledLine = styled.button<{ isCurrent: boolean }>`
-  background: ${({ isCurrent }) => (isCurrent ? themeCssVariables.accent.quaternary : 'transparent')};
+  background: ${({ isCurrent }) =>
+    isCurrent ? themeCssVariables.accent.quaternary : 'transparent'};
   border: none;
   border-radius: ${themeCssVariables.border.radius.sm};
   color: ${themeCssVariables.font.color.primary};
@@ -310,9 +329,14 @@ const formatDuration = (start: string | null, end: string | null) => {
     return '';
   }
 
-  const minutes = Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000));
+  const minutes = Math.max(
+    1,
+    Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000),
+  );
 
-  return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60} min` : `${minutes} min`;
+  return minutes >= 60
+    ? `${Math.floor(minutes / 60)} h ${minutes % 60} min`
+    : `${minutes} min`;
 };
 
 const highlight = (text: string, needle: string) => {
@@ -335,17 +359,26 @@ const highlight = (text: string, needle: string) => {
   );
 };
 
+const MemoMarkdown = memo(({ text }: { text: string }) => (
+  <SafeMarkdown>{text}</SafeMarkdown>
+));
+
+MemoMarkdown.displayName = 'MemoMarkdown';
+
 const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
   const client = useApolloCoreClient();
-  const navigate = useNavigate();
   const membersById = useWorkspaceMembersById();
   const { enqueueErrorSnackBar, enqueueSuccessSnackBar } = useSnackBar();
+  // Handle imperativo del reproductor (seekTo), no estado.
+  // oxlint-disable-next-line twenty/no-state-useref
   const playerRef = useRef<MeetingVideoPlayerHandle>(null);
   const [language, setLanguage] = useState<'es' | 'en'>('es');
   const [transcriptSearch, setTranscriptSearch] = useState('');
   const [currentSecond, setCurrentSecond] = useState(0);
 
-  const { data, loading, error, refetch } = useQuery<{ taskPipelineMeeting: MeetingDetail }>(GET_MEETING, {
+  const { data, loading, error, refetch } = useQuery<{
+    taskPipelineMeeting: MeetingDetail;
+  }>(GET_MEETING, {
     client,
     variables: { meetingId },
     fetchPolicy: 'cache-and-network',
@@ -356,24 +389,40 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
 
   const transcript = useMemo(
     () =>
-      (meeting?.transcript ?? []).map((line) => ({
+      (meeting?.transcript ?? []).map((line, index) => ({
         ...line,
+        index,
         seconds: timestampToSeconds(line.timestamp),
       })),
     [meeting?.transcript],
   );
 
+  // Búsqueda binaria de la línea que suena ahora (las líneas vienen en orden).
   const currentLineIndex = useMemo(() => {
-    let index = -1;
+    let low = 0;
+    let high = transcript.length - 1;
+    let found = -1;
 
-    transcript.forEach((line, position) => {
-      if (line.seconds <= currentSecond) {
-        index = position;
+    while (low <= high) {
+      const middle = (low + high) >> 1;
+
+      if (transcript[middle].seconds <= currentSecond) {
+        found = middle;
+        low = middle + 1;
+      } else {
+        high = middle - 1;
       }
-    });
+    }
 
-    return index;
+    return found;
   }, [transcript, currentSecond]);
+
+  // El video emite ~4 eventos por segundo: solo se re-renderiza al cambiar de segundo.
+  const handleTimeUpdate = useCallback((seconds: number) => {
+    const whole = Math.floor(seconds);
+
+    setCurrentSecond((previous) => (previous === whole ? previous : whole));
+  }, []);
 
   if (loading && !meeting) {
     return <StyledEmpty>{t`Loading meeting…`}</StyledEmpty>;
@@ -384,13 +433,22 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
   }
 
   const summary =
-    language === 'es' && meeting.summaryMarkdownEs ? meeting.summaryMarkdownEs : meeting.summaryMarkdown;
-  const hasSpanish = meeting.summaryMarkdownEs !== null || meeting.actionItems.some((item) => item.textEs);
+    language === 'es' && meeting.summaryMarkdownEs
+      ? meeting.summaryMarkdownEs
+      : meeting.summaryMarkdown;
+  const hasSpanish =
+    meeting.summaryMarkdownEs !== null ||
+    meeting.actionItems.some((item) => item.textEs);
   const filteredTranscript = transcriptSearch
-    ? transcript.filter((line) => `${line.speakerName ?? ''} ${line.text}`.toLowerCase().includes(transcriptSearch.toLowerCase()))
+    ? transcript.filter((line) =>
+        `${line.speakerName ?? ''} ${line.text}`
+          .toLowerCase()
+          .includes(transcriptSearch.toLowerCase()),
+      )
     : transcript;
 
-  const seek = (timestamp: string | null) => playerRef.current?.seekTo(timestampToSeconds(timestamp));
+  const seek = (timestamp: string | null) =>
+    playerRef.current?.seekTo(timestampToSeconds(timestamp));
 
   return (
     <StyledDetail>
@@ -399,10 +457,26 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
           <StyledH1>{meeting.title}</StyledH1>
           <StyledItemMeta style={{ marginTop: 6 }}>
             <span>{formatDate(meeting.startedAt)}</span>
-            {formatDuration(meeting.startedAt, meeting.endedAt) && <span>· {formatDuration(meeting.startedAt, meeting.endedAt)}</span>}
-            {meeting.recordedByName && <span>· {t`recorded by ${meeting.recordedByName}`}</span>}
-            {meeting.shareUrl && (
-              <a href={meeting.shareUrl} target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+            {formatDuration(meeting.startedAt, meeting.endedAt) && (
+              <span>
+                · {formatDuration(meeting.startedAt, meeting.endedAt)}
+              </span>
+            )}
+            {meeting.recordedByName && (
+              <span>· {t`recorded by ${meeting.recordedByName}`}</span>
+            )}
+            {safeHttpUrl(meeting.shareUrl) && (
+              <a
+                href={safeHttpUrl(meeting.shareUrl)}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: 'inherit',
+                  display: 'inline-flex',
+                  gap: 4,
+                  alignItems: 'center',
+                }}
+              >
                 · <IconExternalLink size={12} /> Fathom
               </a>
             )}
@@ -411,87 +485,139 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
 
         <MeetingVideoPlayer
           ref={playerRef}
+          sourceKey={meeting.id}
           src={meeting.videoUrl}
           fallbackUrl={meeting.shareUrl}
-          onTimeUpdate={setCurrentSecond}
+          onTimeUpdate={handleTimeUpdate}
         />
 
         {meeting.participants.length > 0 && (
           <StyledItemMeta>
             <IconUsers size={14} />
-            {meeting.participants.map((participant) => participant.name ?? participant.email).filter(Boolean).join(' · ')}
+            {meeting.participants
+              .map((participant) => participant.name ?? participant.email)
+              .filter(Boolean)
+              .join(' · ')}
           </StyledItemMeta>
         )}
 
         <div>
           <StyledSectionTitle>
-            <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+            <span
+              style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}
+            >
               <IconListCheck size={16} />
               {t`Action items`} ({meeting.actionItems.length})
             </span>
             {hasSpanish && (
               <StyledSegmented>
-                <StyledSegment type="button" isActive={language === 'es'} onClick={() => setLanguage('es')}>
+                <StyledSegment
+                  type="button"
+                  isActive={language === 'es'}
+                  onClick={() => setLanguage('es')}
+                >
                   <IconLanguage size={12} />
                   ES
                 </StyledSegment>
-                <StyledSegment type="button" isActive={language === 'en'} onClick={() => setLanguage('en')}>
+                <StyledSegment
+                  type="button"
+                  isActive={language === 'en'}
+                  onClick={() => setLanguage('en')}
+                >
                   EN
                 </StyledSegment>
               </StyledSegmented>
             )}
           </StyledSectionTitle>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-            {meeting.actionItems.length === 0 && <StyledItemMeta>{t`Fathom did not detect action items.`}</StyledItemMeta>}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              marginTop: 10,
+            }}
+          >
+            {meeting.actionItems.length === 0 && (
+              <StyledItemMeta>{t`Fathom did not detect action items.`}</StyledItemMeta>
+            )}
             {meeting.actionItems.map((item) => {
-              const member = item.resolvedWorkspaceMemberId ? membersById.get(item.resolvedWorkspaceMemberId) : undefined;
+              const member = item.resolvedWorkspaceMemberId
+                ? membersById.get(item.resolvedWorkspaceMemberId)
+                : undefined;
 
               return (
                 <StyledActionItem key={item.id}>
                   <StyledActionText isDone={item.taskIsDone || item.completed}>
-                    {language === 'es' ? (item.textEs ?? item.textEn) : item.textEn}
+                    {language === 'es'
+                      ? (item.textEs ?? item.textEn)
+                      : item.textEn}
                   </StyledActionText>
                   <StyledActionRow>
                     {member ? (
-                      <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          gap: 4,
+                          alignItems: 'center',
+                        }}
+                      >
                         <MemberAvatar member={member} size="xs" />
                         {member.fullName}
                       </span>
                     ) : (
                       <Tag color="orange" text={t`Needs assignee`} />
                     )}
-                    {item.assigneeName && !member && <span>· {t`Fathom said: ${item.assigneeName}`}</span>}
+                    {item.assigneeName && !member && (
+                      <span>· {t`Fathom said: ${item.assigneeName}`}</span>
+                    )}
                     <span>· {item.pipelineName}</span>
                     {item.recordingTimestamp && (
-                      <StyledLinkButton type="button" onClick={() => seek(item.recordingTimestamp)}>
+                      <StyledLinkButton
+                        type="button"
+                        onClick={() => seek(item.recordingTimestamp)}
+                      >
                         ▶ {item.recordingTimestamp}
                       </StyledLinkButton>
                     )}
                     {item.taskIsDone && (
-                      <span style={{ display: 'inline-flex', gap: 2, alignItems: 'center', color: 'inherit' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          gap: 2,
+                          alignItems: 'center',
+                          color: 'inherit',
+                        }}
+                      >
                         <IconCheck size={12} />
                         {t`Done`}
                       </span>
                     )}
                     {item.taskId ? (
-                      <StyledLinkButton
-                        type="button"
-                        onClick={() => navigate(`${AppPath.TaskPipelinesPage}?pipeline=${item.pipelineId}&task=${item.taskId}`)}
+                      <StyledRouterLink
+                        to={`${AppPath.TaskPipelinesPage}?pipeline=${item.pipelineId}&task=${item.taskId}`}
                       >
                         {t`Open task`}
-                      </StyledLinkButton>
+                      </StyledRouterLink>
                     ) : (
                       <Button
                         title={t`Create task`}
                         size="small"
                         variant="secondary"
                         onClick={() =>
-                          void createTask({ variables: { actionItemId: item.id } })
+                          void createTask({
+                            variables: { actionItemId: item.id },
+                          })
                             .then(async () => {
-                              enqueueSuccessSnackBar({ message: t`Task created` });
+                              enqueueSuccessSnackBar({
+                                message: t`Task created`,
+                              });
                               await refetch();
                             })
-                            .catch((creationError: Error) => enqueueErrorSnackBar({ message: creationError.message }))
+                            .catch((creationError: Error) =>
+                              enqueueErrorSnackBar({
+                                message: creationError.message,
+                              }),
+                            )
                         }
                       />
                     )}
@@ -506,18 +632,7 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
           <div>
             <StyledSectionTitle>{t`Summary`}</StyledSectionTitle>
             <StyledMarkdown>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  a: ({ href, children }) => (
-                    <a href={href} target="_blank" rel="noreferrer">
-                      {children}
-                    </a>
-                  ),
-                }}
-              >
-                {summary}
-              </ReactMarkdown>
+              <MemoMarkdown text={summary} />
             </StyledMarkdown>
           </div>
         )}
@@ -528,20 +643,34 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
           <StyledSectionTitle>{t`Transcript`}</StyledSectionTitle>
           <StyledTranscriptSearch>
             <IconSearch size={14} />
-            <input placeholder={t`Search the transcript`} value={transcriptSearch} onChange={(event) => setTranscriptSearch(event.target.value)} />
+            <input
+              aria-label={t`Search the transcript`}
+              placeholder={t`Search the transcript`}
+              value={transcriptSearch}
+              onChange={(event) => setTranscriptSearch(event.target.value)}
+            />
           </StyledTranscriptSearch>
         </StyledTranscriptHeader>
         <StyledTranscript>
-          {filteredTranscript.length === 0 && <StyledEmpty>{t`No transcript.`}</StyledEmpty>}
+          {filteredTranscript.length === 0 && (
+            <StyledEmpty>{t`No transcript.`}</StyledEmpty>
+          )}
           {filteredTranscript.map((line) => {
-            const index = transcript.indexOf(line);
+            const index = line.index;
 
             return (
-              <StyledLine key={`${line.timestamp}-${index}`} type="button" isCurrent={index === currentLineIndex} onClick={() => seek(line.timestamp)}>
+              <StyledLine
+                key={`${line.timestamp}-${index}`}
+                type="button"
+                isCurrent={index === currentLineIndex}
+                onClick={() => seek(line.timestamp)}
+              >
                 <StyledLineMeta>
                   {line.timestamp} · {line.speakerName ?? t`Speaker`}
                 </StyledLineMeta>
-                <StyledLineText>{highlight(line.text, transcriptSearch)}</StyledLineText>
+                <StyledLineText>
+                  {highlight(line.text, transcriptSearch)}
+                </StyledLineText>
               </StyledLine>
             );
           })}
@@ -553,23 +682,25 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
 
 export const MeetingsPage = () => {
   const client = useApolloCoreClient();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get('meeting');
 
-  const { data, loading } = useQuery<{ taskPipelineMeetings: MeetingListItem[] }>(GET_MEETINGS, {
+  const { data, loading } = useQuery<{
+    taskPipelineMeetings: MeetingListItem[];
+  }>(GET_MEETINGS, {
     client,
     fetchPolicy: 'cache-and-network',
     pollInterval: LIVE_REFRESH_MS,
   });
 
-  const meetings = data?.taskPipelineMeetings ?? [];
+  const meetings = useMemo(() => data?.taskPipelineMeetings ?? [], [data]);
+  const firstMeetingId = meetings[0]?.id ?? null;
 
   useEffect(() => {
-    if (!selectedId && meetings.length > 0) {
-      setSearchParams({ meeting: meetings[0].id }, { replace: true });
+    if (selectedId === null && firstMeetingId !== null) {
+      setSearchParams({ meeting: firstMeetingId }, { replace: true });
     }
-  }, [selectedId, meetings, setSearchParams]);
+  }, [selectedId, firstMeetingId, setSearchParams]);
 
   return (
     <StyledPage>
@@ -578,11 +709,15 @@ export const MeetingsPage = () => {
           <IconVideo size={16} />
           {t`Meetings`}
         </StyledListHeader>
-        {loading && meetings.length === 0 && <StyledEmpty>{t`Loading…`}</StyledEmpty>}
+        {loading && meetings.length === 0 && (
+          <StyledEmpty>{t`Loading…`}</StyledEmpty>
+        )}
         {!loading && meetings.length === 0 && (
           <StyledEmpty>
             <div>{t`No meetings yet. Connect Fathom in a task pipeline's settings and your recorded meetings will appear here.`}</div>
-            <Button title={t`Go to Tasks`} variant="secondary" onClick={() => navigate(AppPath.TaskPipelinesPage)} />
+            <StyledRouterLink
+              to={AppPath.TaskPipelinesPage}
+            >{t`Go to Tasks`}</StyledRouterLink>
           </StyledEmpty>
         )}
         {meetings.map((meeting) => (
@@ -595,7 +730,11 @@ export const MeetingsPage = () => {
             <StyledItemTitle>{meeting.title}</StyledItemTitle>
             <StyledItemMeta>
               <span>{formatDate(meeting.startedAt)}</span>
-              {formatDuration(meeting.startedAt, meeting.endedAt) && <span>· {formatDuration(meeting.startedAt, meeting.endedAt)}</span>}
+              {formatDuration(meeting.startedAt, meeting.endedAt) && (
+                <span>
+                  · {formatDuration(meeting.startedAt, meeting.endedAt)}
+                </span>
+              )}
             </StyledItemMeta>
             <StyledItemMeta>
               <span>
@@ -614,7 +753,8 @@ export const MeetingsPage = () => {
       {selectedId ? (
         <MeetingDetailView key={selectedId} meetingId={selectedId} />
       ) : (
-        !loading && meetings.length > 0 && <StyledEmpty>{t`Pick a meeting.`}</StyledEmpty>
+        !loading &&
+        meetings.length > 0 && <StyledEmpty>{t`Pick a meeting.`}</StyledEmpty>
       )}
     </StyledPage>
   );

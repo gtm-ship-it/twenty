@@ -54,7 +54,9 @@ const isWebServerProcess = (): boolean => {
 };
 
 @Injectable()
-export class FathomConnectionsService implements OnApplicationBootstrap, OnModuleDestroy {
+export class FathomConnectionsService
+  implements OnApplicationBootstrap, OnModuleDestroy
+{
   private readonly logger = new Logger(FathomConnectionsService.name);
   private backupTimer: NodeJS.Timeout | null = null;
   private readonly runningSyncs = new Set<string>();
@@ -117,12 +119,20 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     );
   }
 
-  async findConnectionForWebhook(connectionId: string): Promise<FathomConnectionEntity | null> {
-    if (!/^[0-9a-f-]{36}$/i.test(connectionId)) {
+  async findConnectionForWebhook(
+    connectionId: string,
+  ): Promise<FathomConnectionEntity | null> {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        connectionId,
+      )
+    ) {
       return null;
     }
 
-    return this.connectionRepositoryUnscoped.findOne({ where: { id: connectionId } });
+    return this.connectionRepositoryUnscoped.findOne({
+      where: { id: connectionId },
+    });
   }
 
   async connect(
@@ -131,7 +141,11 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     label: string,
     apiKey: string,
   ): Promise<TaskPipelineFathomConnectionDTO> {
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
 
     const trimmedKey = apiKey.trim();
 
@@ -150,39 +164,50 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
       sample = items;
     } catch (error) {
       throw new UserInputError(
-        error instanceof FathomApiError ? error.message : 'Could not validate the Fathom API key',
+        error instanceof FathomApiError
+          ? error.message
+          : 'Could not validate the Fathom API key',
       );
     }
 
-    const existingConnections = await this.connectionRepository.find(actor.workspaceId, {
-      where: { pipelineId },
-    });
+    const existingConnections = await this.connectionRepository.find(
+      actor.workspaceId,
+      {
+        where: { pipelineId },
+      },
+    );
 
     for (const existing of existingConnections) {
       if (this.decryptApiKey(existing) === trimmedKey) {
-        throw new UserInputError('This Fathom account is already connected to this pipeline');
+        throw new UserInputError(
+          'This Fathom account is already connected to this pipeline',
+        );
       }
     }
 
-    const recordedBy = sample.find((meeting) => isNonEmptyString(meeting.recorded_by?.email))
-      ?.recorded_by;
+    const recordedBy = sample.find((meeting) =>
+      isNonEmptyString(meeting.recorded_by?.email),
+    )?.recorded_by;
 
-    const connection = await this.connectionRepository.insertAndReturnOne(actor.workspaceId, {
-      pipelineId,
-      label: label.trim() || recordedBy?.name || 'Fathom',
-      apiKeyEncrypted: this.secretEncryptionService.encryptVersioned(
-        trimmedKey as PlaintextString,
-        { workspaceId: actor.workspaceId },
-      ),
-      apiKeyHint: `…${trimmedKey.slice(-4)}`,
-      fathomUserEmail: recordedBy?.email?.toLowerCase() ?? null,
-      fathomUserName: recordedBy?.name ?? null,
-      connectedByWorkspaceMemberId: actor.workspaceMemberId ?? null,
-      status: 'ACTIVE',
-      lastError: null,
-      fathomWebhookId: null,
-      webhookSecretEncrypted: null,
-    });
+    const connection = await this.connectionRepository.insertAndReturnOne(
+      actor.workspaceId,
+      {
+        pipelineId,
+        label: label.trim() || recordedBy?.name || 'Fathom',
+        apiKeyEncrypted: this.secretEncryptionService.encryptVersioned(
+          trimmedKey as PlaintextString,
+          { workspaceId: actor.workspaceId },
+        ),
+        apiKeyHint: `…${trimmedKey.slice(-4)}`,
+        fathomUserEmail: recordedBy?.email?.toLowerCase() ?? null,
+        fathomUserName: recordedBy?.name ?? null,
+        connectedByWorkspaceMemberId: actor.workspaceMemberId ?? null,
+        status: 'ACTIVE',
+        lastError: null,
+        fathomWebhookId: null,
+        webhookSecretEncrypted: null,
+      },
+    );
 
     // 2) Webhook en vivo. Si Fathom no puede llegar a nuestra URL (p. ej. en
     // local) la conexión sigue viva con el respaldo periódico.
@@ -190,17 +215,25 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
 
     // 3) Primera importación de las últimas 2 semanas, sin bloquear la respuesta.
     void this.syncConnection(connection.id).catch((error) =>
-      this.logger.warn(`Initial Fathom sync failed: ${(error as Error).message}`),
+      this.logger.warn(
+        `Initial Fathom sync failed: ${(error as Error).message}`,
+      ),
     );
 
-    const refreshed = await this.connectionRepository.findOneOrFail(actor.workspaceId, {
-      where: { id: connection.id },
-    });
+    const refreshed = await this.connectionRepository.findOneOrFail(
+      actor.workspaceId,
+      {
+        where: { id: connection.id },
+      },
+    );
 
     return this.taskPipelinesService.toConnectionDTO(refreshed);
   }
 
-  async ensureWebhook(connection: FathomConnectionEntity, apiKey: string): Promise<void> {
+  async ensureWebhook(
+    connection: FathomConnectionEntity,
+    apiKey: string,
+  ): Promise<void> {
     try {
       const webhook = await this.fathomApiClient.createWebhook(
         apiKey,
@@ -220,7 +253,9 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
         },
       );
     } catch (error) {
-      this.logger.warn(`Could not register Fathom webhook: ${(error as Error).message}`);
+      this.logger.warn(
+        `Could not register Fathom webhook: ${(error as Error).message}`,
+      );
       await this.connectionRepository.update(
         connection.workspaceId,
         { id: connection.id },
@@ -232,9 +267,12 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
   }
 
   async disconnect(actor: Actor, connectionId: string): Promise<boolean> {
-    const connection = await this.connectionRepository.findOne(actor.workspaceId, {
-      where: { id: connectionId },
-    });
+    const connection = await this.connectionRepository.findOne(
+      actor.workspaceId,
+      {
+        where: { id: connectionId },
+      },
+    );
 
     if (!isDefined(connection)) {
       throw new NotFoundError('Fathom connection not found');
@@ -247,13 +285,18 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     });
 
     await this.removeRemoteWebhook(connection);
-    await this.connectionRepository.delete(actor.workspaceId, { id: connection.id });
+    await this.connectionRepository.delete(actor.workspaceId, {
+      id: connection.id,
+    });
 
     return true;
   }
 
   // Se llama antes de borrar un tablero: sin esto quedarían webhooks huérfanos en Fathom.
-  async disconnectAllForPipeline(workspaceId: string, pipelineId: string): Promise<void> {
+  async disconnectAllForPipeline(
+    workspaceId: string,
+    pipelineId: string,
+  ): Promise<void> {
     const connections = await this.connectionRepository.find(workspaceId, {
       where: { pipelineId },
     });
@@ -263,7 +306,9 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     }
   }
 
-  private async removeRemoteWebhook(connection: FathomConnectionEntity): Promise<void> {
+  private async removeRemoteWebhook(
+    connection: FathomConnectionEntity,
+  ): Promise<void> {
     if (!isNonEmptyString(connection.fathomWebhookId)) {
       return;
     }
@@ -280,10 +325,16 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     }
   }
 
-  async syncForActor(actor: Actor, connectionId: string): Promise<FathomSyncResultDTO> {
-    const connection = await this.connectionRepository.findOne(actor.workspaceId, {
-      where: { id: connectionId },
-    });
+  async syncForActor(
+    actor: Actor,
+    connectionId: string,
+  ): Promise<FathomSyncResultDTO> {
+    const connection = await this.connectionRepository.findOne(
+      actor.workspaceId,
+      {
+        where: { id: connectionId },
+      },
+    );
 
     if (!isDefined(connection)) {
       throw new NotFoundError('Fathom connection not found');
@@ -300,7 +351,12 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
 
   async syncConnection(connectionId: string): Promise<FathomSyncResultDTO> {
     if (this.runningSyncs.has(connectionId)) {
-      return { meetingsProcessed: 0, tasksCreated: 0, actionItemsSeen: 0, error: 'A sync is already running' };
+      return {
+        meetingsProcessed: 0,
+        tasksCreated: 0,
+        actionItemsSeen: 0,
+        error: 'A sync is already running',
+      };
     }
 
     this.runningSyncs.add(connectionId);
@@ -311,15 +367,28 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
       });
 
       if (!isDefined(connection)) {
-        return { meetingsProcessed: 0, tasksCreated: 0, actionItemsSeen: 0, error: 'Connection not found' };
+        return {
+          meetingsProcessed: 0,
+          tasksCreated: 0,
+          actionItemsSeen: 0,
+          error: 'Connection not found',
+        };
       }
 
       const startedAt = new Date();
       const createdAfter = isDefined(connection.lastSyncAt)
         ? new Date(connection.lastSyncAt.getTime() - SYNC_OVERLAP_MS)
-        : new Date(startedAt.getTime() - FIRST_SYNC_LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
+        : new Date(
+            startedAt.getTime() -
+              FIRST_SYNC_LOOKBACK_DAYS * 24 * 60 * 60 * 1000,
+          );
 
-      const result = { meetingsProcessed: 0, tasksCreated: 0, actionItemsSeen: 0, error: null as string | null };
+      const result = {
+        meetingsProcessed: 0,
+        tasksCreated: 0,
+        actionItemsSeen: 0,
+        error: null as string | null,
+      };
       let latestMeetingAt = connection.lastMeetingAt;
 
       try {
@@ -327,19 +396,27 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
         let cursor: string | null = null;
 
         for (let page = 0; page < MAX_SYNC_PAGES; page++) {
-          const { items, nextCursor } = await this.fathomApiClient.listMeetings(apiKey, {
-            createdAfter,
-            cursor,
-            includeDetails: true,
-          });
+          const { items, nextCursor } = await this.fathomApiClient.listMeetings(
+            apiKey,
+            {
+              createdAfter,
+              cursor,
+              includeDetails: true,
+            },
+          );
 
           for (const meeting of items) {
             // Sin resumen Fathom aún no terminó de procesarla: la próxima pasada la toma.
-            if (!isNonEmptyString(meeting.default_summary?.markdown_formatted)) {
+            if (
+              !isNonEmptyString(meeting.default_summary?.markdown_formatted)
+            ) {
               continue;
             }
 
-            const ingestion = await this.ingestionService.ingestMeeting(connection, meeting);
+            const ingestion = await this.ingestionService.ingestMeeting(
+              connection,
+              meeting,
+            );
 
             result.meetingsProcessed++;
             result.tasksCreated += ingestion.tasksCreated;
@@ -349,7 +426,10 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
               ? new Date(meeting.recording_start_time)
               : null;
 
-            if (meetingDate && (!latestMeetingAt || meetingDate > latestMeetingAt)) {
+            if (
+              meetingDate &&
+              (!latestMeetingAt || meetingDate > latestMeetingAt)
+            ) {
               latestMeetingAt = meetingDate;
             }
           }
@@ -368,16 +448,23 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
             lastMeetingAt: latestMeetingAt,
             status: 'ACTIVE',
             // El aviso de "sin webhook" se conserva; un error viejo de sync se limpia.
-            lastError: isNonEmptyString(connection.fathomWebhookId) ? null : connection.lastError,
+            lastError: isNonEmptyString(connection.fathomWebhookId)
+              ? null
+              : connection.lastError,
           },
         );
       } catch (error) {
         result.error = (error as Error).message;
-        this.logger.warn(`Fathom sync failed for connection ${connection.id}: ${result.error}`);
+        this.logger.warn(
+          `Fathom sync failed for connection ${connection.id}: ${result.error}`,
+        );
         await this.connectionRepositoryUnscoped.update(
           { id: connection.id },
           {
-            status: error instanceof FathomApiError && error.status === 401 ? 'ERROR' : connection.status,
+            status:
+              error instanceof FathomApiError && error.status === 401
+                ? 'ERROR'
+                : connection.status,
             lastError: result.error,
           },
         );
@@ -389,8 +476,14 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
     }
   }
 
-  async processWebhookMeeting(connection: FathomConnectionEntity, meeting: FathomMeeting) {
-    const result = await this.ingestionService.ingestMeeting(connection, meeting);
+  async processWebhookMeeting(
+    connection: FathomConnectionEntity,
+    meeting: FathomMeeting,
+  ) {
+    const result = await this.ingestionService.ingestMeeting(
+      connection,
+      meeting,
+    );
 
     await this.connectionRepositoryUnscoped.update(
       { id: connection.id },
@@ -415,7 +508,9 @@ export class FathomConnectionsService implements OnApplicationBootstrap, OnModul
         await this.syncConnection(connection.id);
       }
     } catch (error) {
-      this.logger.warn(`Fathom backup sync failed: ${(error as Error).message}`);
+      this.logger.warn(
+        `Fathom backup sync failed: ${(error as Error).message}`,
+      );
     }
   }
 }

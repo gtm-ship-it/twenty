@@ -6,6 +6,7 @@ import { AddMessageBodyHtmlFieldCommand } from 'src/database/commands/upgrade-ve
 import { AddTimelineActivityTypeSnapshotCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608319-add-timeline-activity-type-snapshot.command';
 import { ConfigureTimelineActivityRoutingCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608317-configure-timeline-activity-routing.command';
 import { ConfigureStandardTimelineRenderersCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471608318-configure-standard-timeline-renderers.command';
+import { EnsureTaskPipelineTablesCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471738700-ensure-task-pipeline-tables.command';
 import { AddAttachmentTimelineActivityTypesCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787471738599-add-attachment-timeline-activity-types.command';
 import { RepairActivityTargetsJunctionTargetCommand } from 'src/database/commands/upgrade-version-command/2-34/2-34-workspace-command-1787461587487-repair-activity-targets-junction-target.command';
 import { ApplicationModule } from 'src/engine/core-modules/application/application.module';
@@ -30,6 +31,7 @@ import { WorkspaceMigrationModule } from 'src/engine/workspace-manager/workspace
     ConfigureStandardTimelineRenderersCommand,
     AddAttachmentTimelineActivityTypesCommand,
     RepairActivityTargetsJunctionTargetCommand,
+    EnsureTaskPipelineTablesCommand,
   ],
 })
 export class V2_34_UpgradeVersionCommandModule {}

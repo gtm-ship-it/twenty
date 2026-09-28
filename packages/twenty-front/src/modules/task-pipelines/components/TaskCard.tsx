@@ -12,13 +12,19 @@ import {
 } from 'twenty-ui/icon';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
-import { MemberAvatar, PRIORITY_META } from '@/task-pipelines/components/TaskPipelineUi';
+import {
+  MemberAvatar,
+  PRIORITY_META,
+} from '@/task-pipelines/components/TaskPipelineUi';
 import { type TaskMemberInfo } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
   type PipelineTask,
   type TaskPipelineLabel,
 } from '@/task-pipelines/types/TaskPipelineTypes';
-import { formatTaskDueDate, getTaskDueStatus } from '@/task-pipelines/utils/taskDueStatus';
+import {
+  formatTaskDueDate,
+  getTaskDueStatus,
+} from '@/task-pipelines/utils/taskDueStatus';
 
 const StyledCard = styled.div<{ isDone: boolean }>`
   background: ${themeCssVariables.background.primary};
@@ -131,30 +137,52 @@ export const TaskCard = ({
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(event) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
           onOpen();
         }
       }}
     >
-      {showPipelineName && <StyledPipelineName>{task.pipelineName}</StyledPipelineName>}
+      {showPipelineName && (
+        <StyledPipelineName>{task.pipelineName}</StyledPipelineName>
+      )}
       {task.labels.length > 0 && (
         <StyledLabels>
           {task.labels.map((label) => (
-            <Tag key={label} color={(labelColors.get(label) ?? 'gray') as TagColor} text={label} />
+            <Tag
+              key={label}
+              color={(labelColors.get(label) ?? 'gray') as TagColor}
+              text={label}
+            />
           ))}
         </StyledLabels>
       )}
       <StyledTitle isDone={isDone}>{task.title}</StyledTitle>
       <StyledMetaRow>
         {priority && (
-          <StyledMeta tone={task.priority === 'URGENT' ? 'danger' : task.priority === 'HIGH' ? 'warning' : 'default'}>
+          <StyledMeta
+            tone={
+              task.priority === 'URGENT'
+                ? 'danger'
+                : task.priority === 'HIGH'
+                  ? 'warning'
+                  : 'default'
+            }
+          >
             <IconFlag size={12} />
             {priority.label()}
           </StyledMeta>
         )}
         {task.dueAt && (
           <StyledMeta
-            tone={dueStatus === 'overdue' ? 'danger' : dueStatus === 'today' ? 'warning' : 'default'}
+            tone={
+              dueStatus === 'overdue'
+                ? 'danger'
+                : dueStatus === 'today'
+                  ? 'warning'
+                  : 'default'
+            }
             title={dueStatus === 'overdue' ? t`Overdue` : undefined}
           >
             <IconCalendar size={12} />

@@ -43,10 +43,16 @@ export const useTaskPipelines = () => {
   );
   const [updateMutation] = useMutation(UPDATE_TASK_PIPELINE, { client });
   const [deleteMutation] = useMutation(DELETE_TASK_PIPELINE, { client });
-  const [saveStagesMutation] = useMutation(SAVE_TASK_PIPELINE_STAGES, { client });
+  const [saveStagesMutation] = useMutation(SAVE_TASK_PIPELINE_STAGES, {
+    client,
+  });
   const [addMemberMutation] = useMutation(ADD_TASK_PIPELINE_MEMBER, { client });
-  const [updateMemberMutation] = useMutation(UPDATE_TASK_PIPELINE_MEMBER, { client });
-  const [removeMemberMutation] = useMutation(REMOVE_TASK_PIPELINE_MEMBER, { client });
+  const [updateMemberMutation] = useMutation(UPDATE_TASK_PIPELINE_MEMBER, {
+    client,
+  });
+  const [removeMemberMutation] = useMutation(REMOVE_TASK_PIPELINE_MEMBER, {
+    client,
+  });
   const [connectFathomMutation] = useMutation(CONNECT_FATHOM, { client });
   const [disconnectFathomMutation] = useMutation(DISCONNECT_FATHOM, { client });
   const [syncFathomMutation] = useMutation<{
@@ -107,9 +113,17 @@ export const useTaskPipelines = () => {
     await reload();
   };
 
-  const addMember = async (pipelineId: string, workspaceMemberId: string, role: TaskPipelineRole) => {
+  const addMember = async (
+    pipelineId: string,
+    workspaceMemberId: string,
+    role: TaskPipelineRole,
+  ) => {
     await addMemberMutation({
-      variables: { pipelineId, memberWorkspaceMemberId: workspaceMemberId, role },
+      variables: {
+        pipelineId,
+        memberWorkspaceMemberId: workspaceMemberId,
+        role,
+      },
     });
     await reload();
   };
@@ -130,14 +144,21 @@ export const useTaskPipelines = () => {
     await reload();
   };
 
-  const removeMember = async (pipelineId: string, workspaceMemberId: string) => {
+  const removeMember = async (
+    pipelineId: string,
+    workspaceMemberId: string,
+  ) => {
     await removeMemberMutation({
       variables: { pipelineId, memberWorkspaceMemberId: workspaceMemberId },
     });
     await reload();
   };
 
-  const connectFathom = async (pipelineId: string, label: string, apiKey: string) => {
+  const connectFathom = async (
+    pipelineId: string,
+    label: string,
+    apiKey: string,
+  ) => {
     await connectFathomMutation({ variables: { pipelineId, label, apiKey } });
     await reload();
   };

@@ -110,13 +110,20 @@ export class TaskPipelinesService {
     return this.toPipelineDTOs(actor.workspaceId, pipelines, memberships);
   }
 
-  async getPipeline(actor: Actor, pipelineId: string): Promise<TaskPipelineDTO> {
+  async getPipeline(
+    actor: Actor,
+    pipelineId: string,
+  ): Promise<TaskPipelineDTO> {
     const { pipeline, membership } = await this.accessService.getAccessOrThrow({
       ...actor,
       pipelineId,
     });
 
-    const [dto] = await this.toPipelineDTOs(actor.workspaceId, [pipeline], [membership]);
+    const [dto] = await this.toPipelineDTOs(
+      actor.workspaceId,
+      [pipeline],
+      [membership],
+    );
 
     return dto;
   }
@@ -149,44 +156,46 @@ export class TaskPipelinesService {
           }))
         : DEFAULT_TASK_PIPELINE_STAGES;
 
-    const pipelineId = await this.coreDataSource.transaction(async (manager) => {
-      const pipeline = await manager.save(
-        manager.create(TaskPipelineEntity, {
-          workspaceId: actor.workspaceId,
-          name: input.name.trim(),
-          color: input.color ?? 'blue',
-          visibility: input.visibility,
-          ownerWorkspaceMemberId: workspaceMemberId,
-          labels: [],
-          archivedAt: null,
-        }),
-      );
+    const pipelineId = await this.coreDataSource.transaction(
+      async (manager) => {
+        const pipeline = await manager.save(
+          manager.create(TaskPipelineEntity, {
+            workspaceId: actor.workspaceId,
+            name: input.name.trim(),
+            color: input.color ?? 'blue',
+            visibility: input.visibility,
+            ownerWorkspaceMemberId: workspaceMemberId,
+            labels: [],
+            archivedAt: null,
+          }),
+        );
 
-      await manager.save(
-        manager.create(TaskPipelineMemberEntity, {
-          workspaceId: actor.workspaceId,
-          pipelineId: pipeline.id,
-          workspaceMemberId,
-          role: 'ADMIN',
-          aliases: [],
-        }),
-      );
-
-      await manager.save(
-        stages.map((stage, index) =>
-          manager.create(TaskPipelineStageEntity, {
+        await manager.save(
+          manager.create(TaskPipelineMemberEntity, {
             workspaceId: actor.workspaceId,
             pipelineId: pipeline.id,
-            name: stage.name,
-            color: stage.color,
-            isDone: stage.isDone,
-            position: index * POSITION_STEP,
+            workspaceMemberId,
+            role: 'ADMIN',
+            aliases: [],
           }),
-        ),
-      );
+        );
 
-      return pipeline.id;
-    });
+        await manager.save(
+          stages.map((stage, index) =>
+            manager.create(TaskPipelineStageEntity, {
+              workspaceId: actor.workspaceId,
+              pipelineId: pipeline.id,
+              name: stage.name,
+              color: stage.color,
+              isDone: stage.isDone,
+              position: index * POSITION_STEP,
+            }),
+          ),
+        );
+
+        return pipeline.id;
+      },
+    );
 
     return this.getPipeline(actor, pipelineId);
   }
@@ -196,9 +205,14 @@ export class TaskPipelinesService {
     pipelineId: string,
     input: UpdateTaskPipelineInput,
   ): Promise<TaskPipelineDTO> {
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
 
-    const patch: QueryDeepPartialEntity<TaskPipelineEntity> & Record<string, unknown> = {};
+    const patch: QueryDeepPartialEntity<TaskPipelineEntity> &
+      Record<string, unknown> = {};
 
     if (isDefined(input.name)) {
       patch.name = input.name.trim();
@@ -227,18 +241,38 @@ export class TaskPipelinesService {
     }
 
     if (Object.keys(patch).length > 0) {
-      await this.pipelineRepository.update(actor.workspaceId, { id: pipelineId }, patch);
+      await this.pipelineRepository.update(
+        actor.workspaceId,
+        { id: pipelineId },
+        patch,
+      );
     }
 
     return this.getPipeline(actor, pipelineId);
   }
 
   async deletePipeline(actor: Actor, pipelineId: string): Promise<boolean> {
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
 
     // Las conexiones de Fathom se desconectan antes (lo hace el resolver con
     // FathomConnectionsService); aquí solo se borra en cascada.
     await this.pipelineRepository.delete(actor.workspaceId, { id: pipelineId });
+
+    // Reuniones: se quita el tablero y se borran las que ya no alimentan a
+    // ninguno (su transcripción no debe quedar guardada sin dueño).
+    await this.coreDataSource.query(
+      `UPDATE "core"."meeting" SET "pipelineIds" = "pipelineIds" - $2::text
+        WHERE "workspaceId" = $1 AND "pipelineIds" ? $2::text`,
+      [actor.workspaceId, pipelineId],
+    );
+    await this.coreDataSource.query(
+      `DELETE FROM "core"."meeting" WHERE "workspaceId" = $1 AND jsonb_array_length("pipelineIds") = 0`,
+      [actor.workspaceId],
+    );
 
     return true;
   }
@@ -249,7 +283,11 @@ export class TaskPipelinesService {
     stages: TaskPipelineStageInput[],
     fallbackStageId: string | null | undefined,
   ): Promise<TaskPipelineDTO> {
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
+    await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
 
     if (stages.length === 0) {
       throw new UserInputError('A pipeline needs at least one stage');
@@ -317,7 +355,11 @@ export class TaskPipelinesService {
           .getRawOne<{ max: number }>();
 
         const tasksToMove = await manager.find(TaskPipelineTaskEntity, {
-          where: { pipelineId, stageId: In(removedIds), workspaceId: actor.workspaceId },
+          where: {
+            pipelineId,
+            stageId: In(removedIds),
+            workspaceId: actor.workspaceId,
+          },
           order: { position: 'ASC' },
         });
 
@@ -350,9 +392,42 @@ export class TaskPipelinesService {
     workspaceMemberId: string,
     role: TaskPipelineMemberRole,
   ): Promise<TaskPipelineDTO> {
-    await this.accessService.getAccessOrThrow({ ...actor, pipelineId, requireAdmin: true });
+    const { pipeline } = await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+      requireAdmin: true,
+    });
 
-    const exists = await this.workspaceMembersService.exists(actor.workspaceId, workspaceMemberId);
+    // Tablero personal: solo su dueño invita, y los invitados nunca administran
+    // (así nadie puede sacar al dueño de su propio tablero).
+    if (pipeline.visibility === 'PERSONAL') {
+      if (actor.workspaceMemberId !== pipeline.ownerWorkspaceMemberId) {
+        throw new ForbiddenError(
+          'Only the owner can invite people to a personal pipeline',
+        );
+      }
+
+      if (
+        role === 'ADMIN' &&
+        workspaceMemberId !== pipeline.ownerWorkspaceMemberId
+      ) {
+        throw new UserInputError(
+          'People invited to a personal pipeline can only be members',
+        );
+      }
+    }
+
+    if (
+      workspaceMemberId === pipeline.ownerWorkspaceMemberId &&
+      role !== 'ADMIN'
+    ) {
+      throw new UserInputError('The owner of a pipeline is always an admin');
+    }
+
+    const exists = await this.workspaceMembersService.exists(
+      actor.workspaceId,
+      workspaceMemberId,
+    );
 
     if (!exists) {
       throw new UserInputError('That person is not a member of this workspace');
@@ -363,7 +438,19 @@ export class TaskPipelinesService {
     });
 
     if (isDefined(current)) {
-      await this.memberRepository.update(actor.workspaceId, { id: current.id }, { role });
+      if (current.role === 'ADMIN' && role !== 'ADMIN') {
+        await this.assertAnotherAdminRemains(
+          actor.workspaceId,
+          pipelineId,
+          workspaceMemberId,
+        );
+      }
+
+      await this.memberRepository.update(
+        actor.workspaceId,
+        { id: current.id },
+        { role },
+      );
     } else {
       await this.memberRepository.insert(actor.workspaceId, {
         pipelineId,
@@ -383,7 +470,29 @@ export class TaskPipelinesService {
     patch: { role?: TaskPipelineMemberRole | null; aliases?: string[] | null },
   ): Promise<TaskPipelineDTO> {
     const actorMemberId = this.requireMember(actor);
-    const { isAdmin } = await this.accessService.getAccessOrThrow({ ...actor, pipelineId });
+    const { isAdmin, pipeline } = await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+    });
+
+    if (
+      isDefined(patch.role) &&
+      patch.role !== 'ADMIN' &&
+      workspaceMemberId === pipeline.ownerWorkspaceMemberId
+    ) {
+      throw new UserInputError('The owner of a pipeline is always an admin');
+    }
+
+    if (
+      isDefined(patch.role) &&
+      patch.role === 'ADMIN' &&
+      pipeline.visibility === 'PERSONAL' &&
+      workspaceMemberId !== pipeline.ownerWorkspaceMemberId
+    ) {
+      throw new UserInputError(
+        'People invited to a personal pipeline can only be members',
+      );
+    }
 
     // Cada quien puede editar sus propios alias; el rol y los alias de otros, solo admins.
     const isSelf = actorMemberId === workspaceMemberId;
@@ -400,26 +509,43 @@ export class TaskPipelinesService {
       throw new NotFoundError('Member not found in this pipeline');
     }
 
-    const update: QueryDeepPartialEntity<TaskPipelineMemberEntity> & Record<string, unknown> = {};
+    const update: QueryDeepPartialEntity<TaskPipelineMemberEntity> &
+      Record<string, unknown> = {};
 
     if (isDefined(patch.role) && patch.role !== target.role) {
       if (target.role === 'ADMIN' && patch.role !== 'ADMIN') {
-        await this.assertAnotherAdminRemains(actor.workspaceId, pipelineId, workspaceMemberId);
+        await this.assertAnotherAdminRemains(
+          actor.workspaceId,
+          pipelineId,
+          workspaceMemberId,
+        );
       }
 
       update.role = patch.role;
     }
 
     if (isDefined(patch.aliases)) {
+      await this.assertAliasesDoNotImpersonate(
+        actor.workspaceId,
+        pipelineId,
+        workspaceMemberId,
+        patch.aliases,
+      );
       update.aliases = [
         ...new Set(
-          patch.aliases.map((alias) => alias.trim()).filter((alias) => alias.length > 0),
+          patch.aliases
+            .map((alias) => alias.trim())
+            .filter((alias) => alias.length > 0),
         ),
       ].slice(0, 30);
     }
 
     if (Object.keys(update).length > 0) {
-      await this.memberRepository.update(actor.workspaceId, { id: target.id }, update);
+      await this.memberRepository.update(
+        actor.workspaceId,
+        { id: target.id },
+        update,
+      );
     }
 
     return this.getPipeline(actor, pipelineId);
@@ -431,7 +557,10 @@ export class TaskPipelinesService {
     workspaceMemberId: string,
   ): Promise<boolean> {
     const actorMemberId = this.requireMember(actor);
-    const { isAdmin } = await this.accessService.getAccessOrThrow({ ...actor, pipelineId });
+    const { isAdmin } = await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+    });
 
     // Salirse uno mismo siempre se puede (si no es el último admin); sacar a otros, solo admins.
     if (!isAdmin && actorMemberId !== workspaceMemberId) {
@@ -446,8 +575,25 @@ export class TaskPipelinesService {
       return true;
     }
 
+    const pipeline = await this.pipelineRepository.findOneOrFail(
+      actor.workspaceId,
+      {
+        where: { id: pipelineId },
+      },
+    );
+
+    if (workspaceMemberId === pipeline.ownerWorkspaceMemberId) {
+      throw new UserInputError(
+        'The owner cannot leave the pipeline. Delete it instead.',
+      );
+    }
+
     if (target.role === 'ADMIN') {
-      await this.assertAnotherAdminRemains(actor.workspaceId, pipelineId, workspaceMemberId);
+      await this.assertAnotherAdminRemains(
+        actor.workspaceId,
+        pipelineId,
+        workspaceMemberId,
+      );
     }
 
     await this.memberRepository.delete(actor.workspaceId, { id: target.id });
@@ -469,14 +615,23 @@ export class TaskPipelinesService {
     pipelineId: string,
     includeArchived: boolean,
   ): Promise<TaskPipelineTaskDTO[]> {
-    const { pipeline } = await this.accessService.getAccessOrThrow({ ...actor, pipelineId });
+    const { pipeline } = await this.accessService.getAccessOrThrow({
+      ...actor,
+      pipelineId,
+    });
 
     const tasks = await this.taskRepository.find(actor.workspaceId, {
-      where: includeArchived ? { pipelineId } : { pipelineId, archivedAt: IsNull() },
+      where: includeArchived
+        ? { pipelineId }
+        : { pipelineId, archivedAt: IsNull() },
       order: { position: 'ASC', createdAt: 'ASC' },
     });
 
-    return this.toTaskDTOs(actor.workspaceId, tasks, new Map([[pipeline.id, pipeline.name]]));
+    return this.toTaskDTOs(
+      actor.workspaceId,
+      tasks,
+      new Map([[pipeline.id, pipeline.name]]),
+    );
   }
 
   // Todas mis tareas abiertas de todos mis tableros.
@@ -530,53 +685,74 @@ export class TaskPipelinesService {
     return dto;
   }
 
-  async createTask(actor: Actor, input: CreateTaskPipelineTaskInput): Promise<TaskPipelineTaskDTO> {
+  async createTask(
+    actor: Actor,
+    input: CreateTaskPipelineTaskInput,
+  ): Promise<TaskPipelineTaskDTO> {
     const workspaceMemberId = this.requireMember(actor);
     const { pipeline } = await this.accessService.getAccessOrThrow({
       ...actor,
       pipelineId: input.pipelineId,
     });
 
-    const stageId = await this.resolveStageId(actor.workspaceId, pipeline.id, input.stageId);
+    const stageId = await this.resolveStageId(
+      actor.workspaceId,
+      pipeline.id,
+      input.stageId,
+    );
 
     if (isDefined(input.assigneeWorkspaceMemberId)) {
-      await this.assertPipelineMember(actor.workspaceId, pipeline.id, input.assigneeWorkspaceMemberId);
+      await this.assertPipelineMember(
+        actor.workspaceId,
+        pipeline.id,
+        input.assigneeWorkspaceMemberId,
+      );
     }
 
     const stage = await this.stageRepository.findOneOrFail(actor.workspaceId, {
       where: { id: stageId },
     });
 
-    const created = await this.taskRepository.insertAndReturnOne(actor.workspaceId, {
-      pipelineId: pipeline.id,
-      stageId,
-      position: await this.nextPosition(actor.workspaceId, stageId),
-      title: input.title.trim(),
-      body: input.body ?? '',
-      assigneeWorkspaceMemberId: input.assigneeWorkspaceMemberId ?? null,
-      dueAt: input.dueAt ?? null,
-      priority: (input.priority as TaskPipelineTaskPriority | null | undefined) ?? null,
-      labels: this.sanitizeLabels(input.labels),
-      checklist: [],
-      relatedRecords: input.relatedRecords ?? [],
-      source: input.source === 'EMAIL' ? 'EMAIL' : 'MANUAL',
-      sourceLink: input.sourceLink ?? null,
-      meetingId: null,
-      externalKey: null,
-      originalText: null,
-      needsAssignment: false,
-      createdByWorkspaceMemberId: workspaceMemberId,
-      completedAt: stage.isDone ? new Date() : null,
-      archivedAt: null,
-    });
+    const created = await this.taskRepository.insertAndReturnOne(
+      actor.workspaceId,
+      {
+        pipelineId: pipeline.id,
+        stageId,
+        position: await this.nextPosition(actor.workspaceId, stageId),
+        title: input.title.trim(),
+        body: input.body ?? '',
+        assigneeWorkspaceMemberId: input.assigneeWorkspaceMemberId ?? null,
+        dueAt: input.dueAt ?? null,
+        priority:
+          (input.priority as TaskPipelineTaskPriority | null | undefined) ??
+          null,
+        labels: this.sanitizeLabels(input.labels),
+        checklist: [],
+        relatedRecords: input.relatedRecords ?? [],
+        source: input.source === 'EMAIL' ? 'EMAIL' : 'MANUAL',
+        sourceLink: input.sourceLink ?? null,
+        meetingId: null,
+        externalKey: null,
+        originalText: null,
+        needsAssignment: false,
+        createdByWorkspaceMemberId: workspaceMemberId,
+        completedAt: stage.isDone ? new Date() : null,
+        archivedAt: null,
+      },
+    );
 
-    await this.logActivity(actor.workspaceId, created.id, workspaceMemberId, 'created this task');
+    await this.logActivity(
+      actor.workspaceId,
+      created.id,
+      workspaceMemberId,
+      'created this task',
+    );
 
     if (
       isDefined(created.assigneeWorkspaceMemberId) &&
       created.assigneeWorkspaceMemberId !== workspaceMemberId
     ) {
-      await this.notificationService.notifyAssigned({
+      void this.notificationService.notifyAssigned({
         workspaceId: actor.workspaceId,
         task: created,
         pipelineName: pipeline.name,
@@ -595,7 +771,8 @@ export class TaskPipelinesService {
     const workspaceMemberId = this.requireMember(actor);
     const { task, pipeline } = await this.getTaskWithAccess(actor, taskId);
 
-    const patch: QueryDeepPartialEntity<TaskPipelineTaskEntity> & Record<string, unknown> = {};
+    const patch: QueryDeepPartialEntity<TaskPipelineTaskEntity> &
+      Record<string, unknown> = {};
     const activity: string[] = [];
 
     if (isDefined(input.title) && input.title.trim() !== task.title) {
@@ -608,13 +785,20 @@ export class TaskPipelinesService {
 
     let newAssignee: string | null | undefined;
 
-    if (input.clearAssignee === true && isDefined(task.assigneeWorkspaceMemberId)) {
+    if (
+      input.clearAssignee === true &&
+      isDefined(task.assigneeWorkspaceMemberId)
+    ) {
       newAssignee = null;
     } else if (
       isDefined(input.assigneeWorkspaceMemberId) &&
       input.assigneeWorkspaceMemberId !== task.assigneeWorkspaceMemberId
     ) {
-      await this.assertPipelineMember(actor.workspaceId, pipeline.id, input.assigneeWorkspaceMemberId);
+      await this.assertPipelineMember(
+        actor.workspaceId,
+        pipeline.id,
+        input.assigneeWorkspaceMemberId,
+      );
       newAssignee = input.assigneeWorkspaceMemberId;
     }
 
@@ -623,7 +807,9 @@ export class TaskPipelinesService {
       patch.needsAssignment = false;
 
       const [member] = isDefined(newAssignee)
-        ? await this.workspaceMembersService.findMembers(actor.workspaceId, [newAssignee])
+        ? await this.workspaceMembersService.findMembers(actor.workspaceId, [
+            newAssignee,
+          ])
         : [];
 
       activity.push(
@@ -641,7 +827,9 @@ export class TaskPipelinesService {
 
     if (isDefined(input.priority)) {
       patch.priority =
-        input.priority === 'NONE' ? null : (input.priority as TaskPipelineTaskPriority);
+        input.priority === 'NONE'
+          ? null
+          : (input.priority as TaskPipelineTaskPriority);
     }
 
     if (isDefined(input.labels)) {
@@ -660,27 +848,42 @@ export class TaskPipelinesService {
       patch.relatedRecords = input.relatedRecords;
     }
 
-    if (input.sourceLink !== undefined && input.sourceLink !== task.sourceLink) {
+    if (
+      input.sourceLink !== undefined &&
+      input.sourceLink !== task.sourceLink
+    ) {
       patch.sourceLink = input.sourceLink;
     }
 
     if (Object.keys(patch).length > 0) {
-      await this.taskRepository.update(actor.workspaceId, { id: task.id }, patch);
+      await this.taskRepository.update(
+        actor.workspaceId,
+        { id: task.id },
+        patch,
+      );
     }
 
     for (const line of activity) {
-      await this.logActivity(actor.workspaceId, task.id, workspaceMemberId, line);
+      await this.logActivity(
+        actor.workspaceId,
+        task.id,
+        workspaceMemberId,
+        line,
+      );
     }
 
     if (isDefined(newAssignee) && newAssignee !== workspaceMemberId) {
-      await this.notificationService.notifyAssigned({
+      void this.notificationService.notifyAssigned({
         workspaceId: actor.workspaceId,
         task: {
           id: task.id,
           pipelineId: task.pipelineId,
           title: (patch.title as string | undefined) ?? task.title,
           body: (patch.body as string | undefined) ?? task.body,
-          dueAt: patch.dueAt !== undefined ? (patch.dueAt as Date | null) : task.dueAt,
+          dueAt:
+            patch.dueAt !== undefined
+              ? (patch.dueAt as Date | null)
+              : task.dueAt,
           assigneeWorkspaceMemberId: newAssignee,
         },
         pipelineName: pipeline.name,
@@ -691,7 +894,10 @@ export class TaskPipelinesService {
     return this.getTask(actor, task.id);
   }
 
-  async moveTask(actor: Actor, input: MoveTaskPipelineTaskInput): Promise<TaskPipelineTaskDTO> {
+  async moveTask(
+    actor: Actor,
+    input: MoveTaskPipelineTaskInput,
+  ): Promise<TaskPipelineTaskDTO> {
     const workspaceMemberId = this.requireMember(actor);
     const { task } = await this.getTaskWithAccess(actor, input.taskId);
 
@@ -703,11 +909,19 @@ export class TaskPipelinesService {
       throw new UserInputError('That stage does not belong to this pipeline');
     }
 
+    if (
+      isDefined(input.position) &&
+      (!Number.isFinite(input.position) || Math.abs(input.position) > 1e12)
+    ) {
+      throw new UserInputError('Invalid position');
+    }
+
     const position = isDefined(input.position)
       ? input.position
       : await this.nextPosition(actor.workspaceId, targetStage.id);
 
-    const patch: QueryDeepPartialEntity<TaskPipelineTaskEntity> & Record<string, unknown> = { stageId: targetStage.id, position };
+    const patch: QueryDeepPartialEntity<TaskPipelineTaskEntity> &
+      Record<string, unknown> = { stageId: targetStage.id, position };
 
     if (targetStage.isDone && !isDefined(task.completedAt)) {
       patch.completedAt = new Date();
@@ -731,7 +945,11 @@ export class TaskPipelinesService {
     return this.getTask(actor, task.id);
   }
 
-  async setTaskArchived(actor: Actor, taskId: string, archived: boolean): Promise<TaskPipelineTaskDTO> {
+  async setTaskArchived(
+    actor: Actor,
+    taskId: string,
+    archived: boolean,
+  ): Promise<TaskPipelineTaskDTO> {
     const workspaceMemberId = this.requireMember(actor);
     const { task } = await this.getTaskWithAccess(actor, taskId);
 
@@ -756,7 +974,9 @@ export class TaskPipelinesService {
 
     // Borrar para siempre: admins del tablero o quien la creó.
     if (!isAdmin && task.createdByWorkspaceMemberId !== workspaceMemberId) {
-      throw new ForbiddenError('Only admins of this pipeline or the creator can delete a task');
+      throw new ForbiddenError(
+        'Only admins of this pipeline or the creator can delete a task',
+      );
     }
 
     await this.taskRepository.delete(actor.workspaceId, { id: task.id });
@@ -766,7 +986,10 @@ export class TaskPipelinesService {
 
   // ----------------------------------------------------------------- comments
 
-  async listComments(actor: Actor, taskId: string): Promise<TaskPipelineTaskCommentDTO[]> {
+  async listComments(
+    actor: Actor,
+    taskId: string,
+  ): Promise<TaskPipelineTaskCommentDTO[]> {
     await this.getTaskWithAccess(actor, taskId);
 
     const comments = await this.commentRepository.find(actor.workspaceId, {
@@ -777,7 +1000,11 @@ export class TaskPipelinesService {
     return comments.map((comment) => this.toCommentDTO(comment));
   }
 
-  async addComment(actor: Actor, taskId: string, body: string): Promise<TaskPipelineTaskCommentDTO> {
+  async addComment(
+    actor: Actor,
+    taskId: string,
+    body: string,
+  ): Promise<TaskPipelineTaskCommentDTO> {
     const workspaceMemberId = this.requireMember(actor);
 
     await this.getTaskWithAccess(actor, taskId);
@@ -788,15 +1015,22 @@ export class TaskPipelinesService {
       throw new UserInputError('Comment cannot be empty');
     }
 
-    const comment = await this.commentRepository.insertAndReturnOne(actor.workspaceId, {
-      taskId,
-      authorWorkspaceMemberId: workspaceMemberId,
-      kind: 'COMMENT',
-      body: trimmed,
-    });
+    const comment = await this.commentRepository.insertAndReturnOne(
+      actor.workspaceId,
+      {
+        taskId,
+        authorWorkspaceMemberId: workspaceMemberId,
+        kind: 'COMMENT',
+        body: trimmed,
+      },
+    );
 
     // Toca updatedAt de la tarea para que "actividad reciente" la refleje.
-    await this.taskRepository.update(actor.workspaceId, { id: taskId }, { updatedAt: new Date() });
+    await this.taskRepository.update(
+      actor.workspaceId,
+      { id: taskId },
+      { updatedAt: new Date() },
+    );
 
     return this.toCommentDTO(comment);
   }
@@ -813,9 +1047,17 @@ export class TaskPipelinesService {
       throw new UserInputError('Comment cannot be empty');
     }
 
-    await this.commentRepository.update(actor.workspaceId, { id: comment.id }, { body: trimmed });
+    await this.commentRepository.update(
+      actor.workspaceId,
+      { id: comment.id },
+      { body: trimmed },
+    );
 
-    return this.toCommentDTO({ ...comment, body: trimmed, updatedAt: new Date() });
+    return this.toCommentDTO({
+      ...comment,
+      body: trimmed,
+      updatedAt: new Date(),
+    });
   }
 
   async deleteComment(actor: Actor, commentId: string): Promise<boolean> {
@@ -843,7 +1085,9 @@ export class TaskPipelinesService {
   }
 
   async nextPosition(workspaceId: string, stageId: string): Promise<number> {
-    const max = await this.taskRepository.maximum(workspaceId, 'position', { stageId });
+    const max = await this.taskRepository.maximum(workspaceId, 'position', {
+      stageId,
+    });
 
     return (max ?? 0) + POSITION_STEP;
   }
@@ -888,7 +1132,11 @@ export class TaskPipelinesService {
 
   private sanitizeLabels(labels: string[] | null | undefined): string[] {
     return [
-      ...new Set((labels ?? []).map((label) => label.trim()).filter((label) => label.length > 0)),
+      ...new Set(
+        (labels ?? [])
+          .map((label) => label.trim())
+          .filter((label) => label.length > 0),
+      ),
     ].slice(0, 20);
   }
 
@@ -902,7 +1150,62 @@ export class TaskPipelinesService {
     });
 
     if (!isDefined(member)) {
-      throw new UserInputError('Tasks can only be assigned to members of this pipeline');
+      throw new UserInputError(
+        'Tasks can only be assigned to members of this pipeline',
+      );
+    }
+  }
+
+  // Un alias no puede ser el nombre o el correo de OTRO miembro del tablero:
+  // si no, alguien podría quedarse con los accionables dirigidos a otra persona.
+  private async assertAliasesDoNotImpersonate(
+    workspaceId: string,
+    pipelineId: string,
+    workspaceMemberId: string,
+    aliases: string[],
+  ): Promise<void> {
+    const memberships = await this.memberRepository.find(workspaceId, {
+      where: { pipelineId },
+    });
+    const others = memberships.filter(
+      (membership) => membership.workspaceMemberId !== workspaceMemberId,
+    );
+    const people = await this.workspaceMembersService.findMembers(
+      workspaceId,
+      others.map((membership) => membership.workspaceMemberId),
+    );
+    const normalize = (value: string) =>
+      value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+    const taken = new Set<string>();
+
+    for (const person of people) {
+      const fullName = normalize(
+        `${person.firstName ?? ''} ${person.lastName ?? ''}`,
+      );
+      const firstName = normalize(person.firstName ?? '');
+
+      [fullName, firstName, normalize(person.email ?? '')]
+        .filter((entry) => entry.length > 0)
+        .forEach((entry) => taken.add(entry));
+    }
+
+    for (const membership of others) {
+      (membership.aliases ?? []).forEach((alias) =>
+        taken.add(normalize(alias)),
+      );
+    }
+
+    const clash = aliases.find((alias) => taken.has(normalize(alias)));
+
+    if (isDefined(clash)) {
+      throw new UserInputError(
+        `"${clash}" already identifies another member of this pipeline`,
+      );
     }
   }
 
@@ -915,13 +1218,21 @@ export class TaskPipelinesService {
       where: { pipelineId, role: 'ADMIN' },
     });
 
-    if (admins.every((admin) => admin.workspaceMemberId === leavingWorkspaceMemberId)) {
-      throw new UserInputError('A pipeline needs at least one admin. Promote someone else first.');
+    if (
+      admins.every(
+        (admin) => admin.workspaceMemberId === leavingWorkspaceMemberId,
+      )
+    ) {
+      throw new UserInputError(
+        'A pipeline needs at least one admin. Promote someone else first.',
+      );
     }
   }
 
   private async getTaskWithAccess(actor: Actor, taskId: string) {
-    const task = await this.taskRepository.findOne(actor.workspaceId, { where: { id: taskId } });
+    const task = await this.taskRepository.findOne(actor.workspaceId, {
+      where: { id: taskId },
+    });
 
     if (!isDefined(task)) {
       throw new NotFoundError('Task not found');
@@ -947,14 +1258,19 @@ export class TaskPipelinesService {
 
     await this.getTaskWithAccess(actor, comment.taskId);
 
-    if (comment.kind !== 'COMMENT' || comment.authorWorkspaceMemberId !== workspaceMemberId) {
+    if (
+      comment.kind !== 'COMMENT' ||
+      comment.authorWorkspaceMemberId !== workspaceMemberId
+    ) {
       throw new ForbiddenError('You can only edit your own comments');
     }
 
     return comment;
   }
 
-  private toCommentDTO(comment: TaskPipelineTaskCommentEntity): TaskPipelineTaskCommentDTO {
+  private toCommentDTO(
+    comment: TaskPipelineTaskCommentEntity,
+  ): TaskPipelineTaskCommentDTO {
     return {
       id: comment.id,
       taskId: comment.taskId,
@@ -1001,9 +1317,14 @@ export class TaskPipelinesService {
     ]);
 
     const roleByPipeline = new Map(
-      myMemberships.map((membership) => [membership.pipelineId, membership.role]),
+      myMemberships.map((membership) => [
+        membership.pipelineId,
+        membership.role,
+      ]),
     );
-    const countByPipeline = new Map(openCounts.map((row) => [row.pipelineId, row.count]));
+    const countByPipeline = new Map(
+      openCounts.map((row) => [row.pipelineId, row.count]),
+    );
 
     return pipelines.map((pipeline) => {
       const myRole = roleByPipeline.get(pipeline.id) ?? 'MEMBER';
@@ -1044,7 +1365,9 @@ export class TaskPipelinesService {
     });
   }
 
-  toConnectionDTO(connection: FathomConnectionEntity): TaskPipelineFathomConnectionDTO {
+  toConnectionDTO(
+    connection: FathomConnectionEntity,
+  ): TaskPipelineFathomConnectionDTO {
     return {
       id: connection.id,
       label: connection.label,
@@ -1069,7 +1392,9 @@ export class TaskPipelinesService {
     }
 
     const taskIds = tasks.map((task) => task.id);
-    const meetingIds = [...new Set(tasks.map((task) => task.meetingId).filter(isDefined))];
+    const meetingIds = [
+      ...new Set(tasks.map((task) => task.meetingId).filter(isDefined)),
+    ];
 
     const [commentCounts, meetings] = await Promise.all([
       this.coreDataSource.query(
@@ -1087,11 +1412,17 @@ export class TaskPipelinesService {
         : Promise.resolve([] as MeetingEntity[]),
     ]);
 
-    const countByTask = new Map(commentCounts.map((row) => [row.taskId, row.count]));
-    const meetingById = new Map(meetings.map((meeting) => [meeting.id, meeting]));
+    const countByTask = new Map(
+      commentCounts.map((row) => [row.taskId, row.count]),
+    );
+    const meetingById = new Map(
+      meetings.map((meeting) => [meeting.id, meeting]),
+    );
 
     return tasks.map((task) => {
-      const meeting = isDefined(task.meetingId) ? meetingById.get(task.meetingId) : undefined;
+      const meeting = isDefined(task.meetingId)
+        ? meetingById.get(task.meetingId)
+        : undefined;
 
       return {
         id: task.id,
@@ -1110,7 +1441,11 @@ export class TaskPipelinesService {
         source: task.source,
         sourceLink: task.sourceLink,
         meeting: isDefined(meeting)
-          ? { id: meeting.id, title: meeting.title, startedAt: meeting.startedAt }
+          ? {
+              id: meeting.id,
+              title: meeting.title,
+              startedAt: meeting.startedAt,
+            }
           : null,
         originalText: task.originalText,
         needsAssignment: task.needsAssignment,

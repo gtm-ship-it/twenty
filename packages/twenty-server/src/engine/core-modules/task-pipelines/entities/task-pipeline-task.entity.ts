@@ -26,12 +26,19 @@ export type TaskPipelineTaskRelatedRecord = {
 
 @Entity({ name: 'taskPipelineTask', schema: 'core' })
 @Index('IDX_TASK_PIPELINE_TASK_PIPELINE_STAGE', ['pipelineId', 'stageId'])
-@Index('IDX_TASK_PIPELINE_TASK_ASSIGNEE', ['workspaceId', 'assigneeWorkspaceMemberId'])
+@Index('IDX_TASK_PIPELINE_TASK_ASSIGNEE', [
+  'workspaceId',
+  'assigneeWorkspaceMemberId',
+])
 // Dedupe de accionables de Fathom: un mismo accionable no crea dos tareas en el mismo tablero.
-@Index('IDX_TASK_PIPELINE_TASK_EXTERNAL_KEY_UNIQUE', ['pipelineId', 'externalKey'], {
-  unique: true,
-  where: '"externalKey" IS NOT NULL',
-})
+@Index(
+  'IDX_TASK_PIPELINE_TASK_EXTERNAL_KEY_UNIQUE',
+  ['pipelineId', 'externalKey'],
+  {
+    unique: true,
+    where: '"externalKey" IS NOT NULL',
+  },
+)
 export class TaskPipelineTaskEntity extends WorkspaceRelatedEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

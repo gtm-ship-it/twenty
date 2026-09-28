@@ -5,7 +5,10 @@ import { PermissionFlagType } from 'twenty-shared/constants';
 
 import { TaskPipelineMemberEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-member.entity';
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
-import { ForbiddenError, NotFoundError } from 'src/engine/core-modules/graphql/utils/graphql-errors.util';
+import {
+  ForbiddenError,
+  NotFoundError,
+} from 'src/engine/core-modules/graphql/utils/graphql-errors.util';
 import { PermissionsService } from 'src/engine/metadata-modules/permissions/permissions.service';
 import { InjectWorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scoped-repository/inject-workspace-scoped-repository.decorator';
 import { WorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scoped-repository/workspace-scoped-repository';
@@ -55,7 +58,11 @@ export class TaskPipelineAccessService {
         })
       : null;
 
-    if (!isDefined(pipeline) || !isDefined(membership) || isDefined(pipeline.archivedAt)) {
+    if (
+      !isDefined(pipeline) ||
+      !isDefined(membership) ||
+      isDefined(pipeline.archivedAt)
+    ) {
       throw new NotFoundError('Task pipeline not found');
     }
 

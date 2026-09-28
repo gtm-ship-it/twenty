@@ -39,13 +39,18 @@ import {
 } from '@/task-pipelines/components/TaskPipelineUi';
 import { usePipelineTasks } from '@/task-pipelines/hooks/usePipelineTasks';
 import { useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
-import { type TaskMemberInfo, useWorkspaceMembersById } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
-  type PipelineTask,
+  type TaskMemberInfo,
+  useWorkspaceMembersById,
+} from '@/task-pipelines/hooks/useWorkspaceMembersById';
+import {
   type TaskPipeline,
   type TaskPriority,
 } from '@/task-pipelines/types/TaskPipelineTypes';
-import { type TaskAssigneeFilter, filterPipelineTasks } from '@/task-pipelines/utils/filterPipelineTasks';
+import {
+  type TaskAssigneeFilter,
+  filterPipelineTasks,
+} from '@/task-pipelines/utils/filterPipelineTasks';
 import { dueFromInputValue } from '@/task-pipelines/utils/taskDueStatus';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
@@ -91,10 +96,14 @@ const StyledSectionTitle = styled.div`
 
 const StyledNavItem = styled.button<{ isActive: boolean }>`
   align-items: center;
-  background: ${({ isActive }) => (isActive ? themeCssVariables.background.transparent.medium : 'transparent')};
+  background: ${({ isActive }) =>
+    isActive ? themeCssVariables.background.transparent.medium : 'transparent'};
   border: none;
   border-radius: ${themeCssVariables.border.radius.sm};
-  color: ${({ isActive }) => (isActive ? themeCssVariables.font.color.primary : themeCssVariables.font.color.secondary)};
+  color: ${({ isActive }) =>
+    isActive
+      ? themeCssVariables.font.color.primary
+      : themeCssVariables.font.color.secondary};
   cursor: pointer;
   display: flex;
   font-family: inherit;
@@ -221,7 +230,9 @@ const NewTaskModal = ({
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [stageId, setStageId] = useState(pipeline.stages[0]?.id ?? '');
-  const [assigneeId, setAssigneeId] = useState<string | null>(defaultAssigneeId);
+  const [assigneeId, setAssigneeId] = useState<string | null>(
+    defaultAssigneeId,
+  );
   const [due, setDue] = useState('');
   const [priority, setPriority] = useState<TaskPriority | ''>('');
   const [error, setError] = useState<string | null>(null);
@@ -246,7 +257,11 @@ const NewTaskModal = ({
         priority: priority || null,
       });
     } catch (creationError) {
-      setError(creationError instanceof Error ? creationError.message : t`Could not create the task`);
+      setError(
+        creationError instanceof Error
+          ? creationError.message
+          : t`Could not create the task`,
+      );
       setIsSaving(false);
     }
   };
@@ -259,7 +274,12 @@ const NewTaskModal = ({
       footer={
         <>
           <Button title={t`Cancel`} variant="secondary" onClick={onClose} />
-          <Button title={t`Create task`} accent="blue" disabled={isSaving} onClick={() => void submit()} />
+          <Button
+            title={t`Create task`}
+            accent="blue"
+            disabled={isSaving}
+            onClick={() => void submit()}
+          />
         </>
       }
     >
@@ -280,8 +300,13 @@ const NewTaskModal = ({
       </div>
       <StyledFormGrid>
         <div>
-          <StyledFieldLabel>{t`Stage`}</StyledFieldLabel>
-          <StyledSelect style={{ width: '100%' }} value={stageId} onChange={(event) => setStageId(event.target.value)}>
+          <StyledFieldLabel htmlFor="new-task-stage">{t`Stage`}</StyledFieldLabel>
+          <StyledSelect
+            id="new-task-stage"
+            style={{ width: '100%' }}
+            value={stageId}
+            onChange={(event) => setStageId(event.target.value)}
+          >
             {pipeline.stages.map((stage) => (
               <option key={stage.id} value={stage.id}>
                 {stage.name}
@@ -291,27 +316,51 @@ const NewTaskModal = ({
         </div>
         <div>
           <StyledFieldLabel>{t`Assignee`}</StyledFieldLabel>
-          <MemberPicker members={members} value={assigneeId} onChange={setAssigneeId} />
+          <MemberPicker
+            members={members}
+            value={assigneeId}
+            onChange={setAssigneeId}
+          />
         </div>
         <div>
-          <StyledFieldLabel>{t`Due date`}</StyledFieldLabel>
-          <StyledTextInput type="date" value={due} onChange={(event) => setDue(event.target.value)} />
+          <StyledFieldLabel htmlFor="new-task-due">{t`Due date`}</StyledFieldLabel>
+          <StyledTextInput
+            id="new-task-due"
+            type="date"
+            value={due}
+            onChange={(event) => setDue(event.target.value)}
+          />
         </div>
         <div>
-          <StyledFieldLabel>{t`Priority`}</StyledFieldLabel>
-          <StyledSelect style={{ width: '100%' }} value={priority} onChange={(event) => setPriority(event.target.value as TaskPriority | '')}>
+          <StyledFieldLabel htmlFor="new-task-priority">{t`Priority`}</StyledFieldLabel>
+          <StyledSelect
+            id="new-task-priority"
+            style={{ width: '100%' }}
+            value={priority}
+            onChange={(event) =>
+              setPriority(event.target.value as TaskPriority | '')
+            }
+          >
             <option value="">{t`No priority`}</option>
-            {(['URGENT', 'HIGH', 'MEDIUM', 'LOW'] as TaskPriority[]).map((entry) => (
-              <option key={entry} value={entry}>
-                {PRIORITY_META[entry].label()}
-              </option>
-            ))}
+            {(['URGENT', 'HIGH', 'MEDIUM', 'LOW'] as TaskPriority[]).map(
+              (entry) => (
+                <option key={entry} value={entry}>
+                  {PRIORITY_META[entry].label()}
+                </option>
+              ),
+            )}
           </StyledSelect>
         </div>
       </StyledFormGrid>
       <div>
-        <StyledFieldLabel>{t`Description`}</StyledFieldLabel>
-        <StyledTextArea rows={5} value={body} placeholder={t`Optional · Markdown supported`} onChange={(event) => setBody(event.target.value)} />
+        <StyledFieldLabel htmlFor="new-task-body">{t`Description`}</StyledFieldLabel>
+        <StyledTextArea
+          id="new-task-body"
+          rows={5}
+          value={body}
+          placeholder={t`Optional · Markdown supported`}
+          onChange={(event) => setBody(event.target.value)}
+        />
       </div>
       {error && <StyledErrorText>{error}</StyledErrorText>}
     </TaskModal>
@@ -332,23 +381,33 @@ export const TasksPage = () => {
 
   const [view, setView] = useState<'board' | 'list'>(() => {
     try {
-      return (localStorage.getItem('ptsai.tasks.view') as 'board' | 'list') ?? 'board';
+      return (
+        (localStorage.getItem('ptsai.tasks.view') as 'board' | 'list') ??
+        'board'
+      );
     } catch {
       return 'board';
     }
   });
   const [search, setSearch] = useState('');
-  const [assigneeFilter, setAssigneeFilter] = useState<TaskAssigneeFilter>('all');
+  const [assigneeFilter, setAssigneeFilter] =
+    useState<TaskAssigneeFilter>('all');
   const [labelFilter, setLabelFilter] = useState<string | null>(null);
   const [isCreatingPipeline, setIsCreatingPipeline] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const pipelines = api.pipelines;
-  const shared = pipelines.filter((pipeline) => pipeline.visibility === 'WORKSPACE');
-  const personal = pipelines.filter((pipeline) => pipeline.visibility === 'PERSONAL');
+  const shared = pipelines.filter(
+    (pipeline) => pipeline.visibility === 'WORKSPACE',
+  );
+  const personal = pipelines.filter(
+    (pipeline) => pipeline.visibility === 'PERSONAL',
+  );
   const isMine = selectedKey === MY_TASKS;
-  const selectedPipeline = isMine ? null : (pipelines.find((pipeline) => pipeline.id === selectedKey) ?? null);
+  const selectedPipeline = isMine
+    ? null
+    : (pipelines.find((pipeline) => pipeline.id === selectedKey) ?? null);
 
   // Sin selección (o selección inválida) se abre el primer tablero.
   useEffect(() => {
@@ -362,7 +421,15 @@ export const TasksPage = () => {
       next.set('pipeline', pipelines[0].id);
       setSearchParams(next, { replace: true });
     }
-  }, [api.isLoading, pipelines, selectedKey, isMine, selectedPipeline, searchParams, setSearchParams]);
+  }, [
+    api.isLoading,
+    pipelines,
+    selectedKey,
+    isMine,
+    selectedPipeline,
+    searchParams,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     try {
@@ -378,7 +445,10 @@ export const TasksPage = () => {
     setSearch('');
   }, [selectedKey]);
 
-  const tasksApi = usePipelineTasks(isMine ? null : (selectedPipeline?.id ?? null), isMine ? 'mine' : 'pipeline');
+  const tasksApi = usePipelineTasks(
+    isMine ? null : (selectedPipeline?.id ?? null),
+    isMine ? 'mine' : 'pipeline',
+  );
 
   const pipelineMembers = useMemo(
     () =>
@@ -388,10 +458,18 @@ export const TasksPage = () => {
     [selectedPipeline, membersById],
   );
 
-  const allWorkspaceMembers = useMemo(() => [...membersById.values()], [membersById]);
+  const allWorkspaceMembers = useMemo(
+    () => [...membersById.values()],
+    [membersById],
+  );
 
   const stagesById = useMemo(
-    () => new Map(pipelines.flatMap((pipeline) => pipeline.stages.map((stage) => [stage.id, stage] as const))),
+    () =>
+      new Map(
+        pipelines.flatMap((pipeline) =>
+          pipeline.stages.map((stage) => [stage.id, stage] as const),
+        ),
+      ),
     [pipelines],
   );
 
@@ -402,8 +480,12 @@ export const TasksPage = () => {
     currentWorkspaceMemberId: currentMemberId,
   });
 
-  const openTask = tasksApi.tasks.find((task) => task.id === openTaskId) ?? null;
-  const openTaskPipeline = openTask ? (pipelines.find((pipeline) => pipeline.id === openTask.pipelineId) ?? null) : null;
+  const openTask =
+    tasksApi.tasks.find((task) => task.id === openTaskId) ?? null;
+  const openTaskPipeline = openTask
+    ? (pipelines.find((pipeline) => pipeline.id === openTask.pipelineId) ??
+      null)
+    : null;
 
   const selectPipeline = (key: string) => {
     const next = new URLSearchParams();
@@ -428,7 +510,10 @@ export const TasksPage = () => {
     try {
       await action();
     } catch (error) {
-      enqueueErrorSnackBar({ message: error instanceof Error ? error.message : t`Something went wrong` });
+      enqueueErrorSnackBar({
+        message:
+          error instanceof Error ? error.message : t`Something went wrong`,
+      });
     }
   };
 
@@ -439,7 +524,13 @@ export const TasksPage = () => {
       isActive={selectedPipeline?.id === pipeline.id}
       onClick={() => selectPipeline(pipeline.id)}
     >
-      <StyledColorDot color={themeCssVariables.tag.text[pipeline.color as keyof typeof themeCssVariables.tag.text] ?? pipeline.color} />
+      <StyledColorDot
+        color={
+          themeCssVariables.tag.text[
+            pipeline.color as keyof typeof themeCssVariables.tag.text
+          ] ?? pipeline.color
+        }
+      />
       <StyledNavName>{pipeline.name}</StyledNavName>
       <StyledNavCount>{pipeline.openTaskCount || ''}</StyledNavCount>
     </StyledNavItem>
@@ -451,7 +542,11 @@ export const TasksPage = () => {
     <StyledPage>
       <StyledSidebar aria-label={t`Task pipelines`}>
         <StyledSidebarSection>
-          <StyledNavItem type="button" isActive={isMine} onClick={() => selectPipeline(MY_TASKS)}>
+          <StyledNavItem
+            type="button"
+            isActive={isMine}
+            onClick={() => selectPipeline(MY_TASKS)}
+          >
             <IconUser size={16} />
             <StyledNavName>{t`My tasks`}</StyledNavName>
           </StyledNavItem>
@@ -460,7 +555,9 @@ export const TasksPage = () => {
           <StyledSectionTitle>{t`Shared`}</StyledSectionTitle>
           {shared.map(renderNavItem)}
           {shared.length === 0 && !api.isLoading && (
-            <StyledSectionTitle style={{ textTransform: 'none', letterSpacing: 0 }}>{t`None yet`}</StyledSectionTitle>
+            <StyledSectionTitle
+              style={{ textTransform: 'none', letterSpacing: 0 }}
+            >{t`None yet`}</StyledSectionTitle>
           )}
         </StyledSidebarSection>
         <StyledSidebarSection>
@@ -468,7 +565,13 @@ export const TasksPage = () => {
           {personal.map(renderNavItem)}
         </StyledSidebarSection>
         <div>
-          <Button title={t`New pipeline`} Icon={IconPlus} size="small" variant="secondary" onClick={() => setIsCreatingPipeline(true)} />
+          <Button
+            title={t`New pipeline`}
+            Icon={IconPlus}
+            size="small"
+            variant="secondary"
+            onClick={() => setIsCreatingPipeline(true)}
+          />
         </div>
       </StyledSidebar>
 
@@ -479,7 +582,12 @@ export const TasksPage = () => {
           <StyledEmpty>
             <IconLayoutKanban size={32} />
             <div>{t`Create your first task pipeline to start organizing work.`}</div>
-            <Button title={t`New pipeline`} Icon={IconPlus} accent="blue" onClick={() => setIsCreatingPipeline(true)} />
+            <Button
+              title={t`New pipeline`}
+              Icon={IconPlus}
+              accent="blue"
+              onClick={() => setIsCreatingPipeline(true)}
+            />
           </StyledEmpty>
         ) : (
           <>
@@ -492,13 +600,21 @@ export const TasksPage = () => {
                   </>
                 ) : selectedPipeline ? (
                   <>
-                    {selectedPipeline.visibility === 'PERSONAL' ? <IconLock size={18} /> : <IconUsers size={18} />}
+                    {selectedPipeline.visibility === 'PERSONAL' ? (
+                      <IconLock size={18} />
+                    ) : (
+                      <IconUsers size={18} />
+                    )}
                     {selectedPipeline.name}
                   </>
                 ) : null}
               </StyledTitle>
               {selectedPipeline && (
-                <StyledAvatars title={pipelineMembers.map((member) => member.fullName).join(', ')}>
+                <StyledAvatars
+                  title={pipelineMembers
+                    .map((member) => member.fullName)
+                    .join(', ')}
+                >
                   {pipelineMembers.slice(0, 6).map((member) => (
                     <MemberAvatar key={member.id} member={member} size="sm" />
                   ))}
@@ -506,10 +622,19 @@ export const TasksPage = () => {
               )}
               <StyledSearch>
                 <IconSearch size={14} />
-                <input value={search} placeholder={t`Search tasks`} onChange={(event) => setSearch(event.target.value)} />
+                <input
+                  aria-label={t`Search tasks`}
+                  value={search}
+                  placeholder={t`Search tasks`}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
               </StyledSearch>
               {selectedPipeline && (
-                <StyledSelect aria-label={t`Assignee filter`} value={assigneeFilter} onChange={(event) => setAssigneeFilter(event.target.value)}>
+                <StyledSelect
+                  aria-label={t`Assignee filter`}
+                  value={assigneeFilter}
+                  onChange={(event) => setAssigneeFilter(event.target.value)}
+                >
                   <option value="all">{t`Everyone`}</option>
                   <option value="me">{t`Assigned to me`}</option>
                   <option value="unassigned">{t`Unassigned`}</option>
@@ -521,7 +646,13 @@ export const TasksPage = () => {
                 </StyledSelect>
               )}
               {selectedPipeline && selectedPipeline.labels.length > 0 && (
-                <StyledSelect aria-label={t`Label filter`} value={labelFilter ?? ''} onChange={(event) => setLabelFilter(event.target.value || null)}>
+                <StyledSelect
+                  aria-label={t`Label filter`}
+                  value={labelFilter ?? ''}
+                  onChange={(event) =>
+                    setLabelFilter(event.target.value || null)
+                  }
+                >
                   <option value="">{t`All labels`}</option>
                   {selectedPipeline.labels.map((label) => (
                     <option key={label.name} value={label.name}>
@@ -532,21 +663,43 @@ export const TasksPage = () => {
               )}
               {selectedPipeline && (
                 <StyledSegmented>
-                  <StyledSegment type="button" isActive={view === 'board'} onClick={() => setView('board')} aria-label={t`Board`}>
+                  <StyledSegment
+                    type="button"
+                    isActive={view === 'board'}
+                    onClick={() => setView('board')}
+                    aria-label={t`Board`}
+                  >
                     <IconLayoutKanban size={14} />
                     {t`Board`}
                   </StyledSegment>
-                  <StyledSegment type="button" isActive={view === 'list'} onClick={() => setView('list')} aria-label={t`List`}>
+                  <StyledSegment
+                    type="button"
+                    isActive={view === 'list'}
+                    onClick={() => setView('list')}
+                    aria-label={t`List`}
+                  >
                     <IconList size={14} />
                     {t`List`}
                   </StyledSegment>
                 </StyledSegmented>
               )}
               {selectedPipeline && (
-                <IconButton Icon={IconSettings} variant="secondary" size="small" ariaLabel={t`Pipeline settings`} onClick={() => setSettingsOpen(true)} />
+                <IconButton
+                  Icon={IconSettings}
+                  variant="secondary"
+                  size="small"
+                  ariaLabel={t`Pipeline settings`}
+                  onClick={() => setSettingsOpen(true)}
+                />
               )}
               {selectedPipeline && (
-                <Button title={t`New task`} Icon={IconPlus} accent="blue" size="small" onClick={() => setIsCreatingTask(true)} />
+                <Button
+                  title={t`New task`}
+                  Icon={IconPlus}
+                  accent="blue"
+                  size="small"
+                  onClick={() => setIsCreatingTask(true)}
+                />
               )}
             </StyledHeader>
 
@@ -564,16 +717,31 @@ export const TasksPage = () => {
               <TaskBoard
                 stages={selectedPipeline.stages}
                 tasks={visibleTasks}
+                allTasks={tasksApi.tasks}
                 membersById={membersById}
                 labelColors={labelColors}
                 onOpenTask={setOpenTask}
-                onMoveTask={(taskId, stageId, position) => void guard(() => tasksApi.moveTask(taskId, stageId, position))}
-                onQuickAdd={(stageId, title) =>
-                  guard(async () => {
-                    await tasksApi.createTask({ pipelineId: selectedPipeline.id, stageId, title });
-                    await api.reload();
-                  })
+                onMoveTask={(taskId, stageId, position) =>
+                  void guard(() => tasksApi.moveTask(taskId, stageId, position))
                 }
+                onQuickAdd={async (stageId, title) => {
+                  try {
+                    await tasksApi.createTask({
+                      pipelineId: selectedPipeline.id,
+                      stageId,
+                      title,
+                    });
+                    await api.reload();
+                  } catch (error) {
+                    enqueueErrorSnackBar({
+                      message:
+                        error instanceof Error
+                          ? error.message
+                          : t`Could not create the task`,
+                    });
+                    throw error;
+                  }
+                }}
               />
             ) : selectedPipeline ? (
               <TaskListView
@@ -609,10 +777,17 @@ export const TasksPage = () => {
         <NewTaskModal
           pipeline={selectedPipeline}
           members={pipelineMembers}
-          defaultAssigneeId={pipelineMembers.some((member) => member.id === currentMemberId) ? currentMemberId : null}
+          defaultAssigneeId={
+            pipelineMembers.some((member) => member.id === currentMemberId)
+              ? currentMemberId
+              : null
+          }
           onClose={() => setIsCreatingTask(false)}
           onCreate={async (input) => {
-            await tasksApi.createTask({ pipelineId: selectedPipeline.id, ...input });
+            await tasksApi.createTask({
+              pipelineId: selectedPipeline.id,
+              ...input,
+            });
             setIsCreatingTask(false);
             enqueueSuccessSnackBar({ message: t`Task created` });
             await api.reload();
@@ -645,8 +820,12 @@ export const TasksPage = () => {
           onClose={() => setOpenTask(null)}
           onUpdate={(input) => tasksApi.updateTask(openTask.id, input)}
           onMove={async (stageId) => {
-            const others = tasksApi.tasks.filter((task) => task.stageId === stageId && task.id !== openTask.id);
-            const position = others.reduce((max, task) => Math.max(max, task.position), 0) + 1024;
+            const others = tasksApi.tasks.filter(
+              (task) => task.stageId === stageId && task.id !== openTask.id,
+            );
+            const position =
+              others.reduce((max, task) => Math.max(max, task.position), 0) +
+              1024;
 
             await tasksApi.moveTask(openTask.id, stageId, position);
             await api.reload();
@@ -667,7 +846,9 @@ export const TasksPage = () => {
             enqueueSuccessSnackBar({ message: t`Task deleted` });
             await api.reload();
           }}
-          onOpenMeeting={(meetingId) => navigate(`${AppPath.MeetingsPage}?meeting=${meetingId}`)}
+          onOpenMeeting={(meetingId) =>
+            navigate(`${AppPath.MeetingsPage}?meeting=${meetingId}`)
+          }
         />
       )}
     </StyledPage>

@@ -28,7 +28,9 @@ export class FathomWebhookController {
   private readonly logger = new Logger(FathomWebhookController.name);
   private readonly recentDeliveries = new Map<string, number>();
 
-  constructor(private readonly fathomConnectionsService: FathomConnectionsService) {}
+  constructor(
+    private readonly fathomConnectionsService: FathomConnectionsService,
+  ) {}
 
   @Post(':connectionId')
   @HttpCode(200)
@@ -40,14 +42,27 @@ export class FathomWebhookController {
     @Headers('webhook-signature') webhookSignature: string | undefined,
     @Req() request: RawBodyRequest<Request>,
   ): Promise<{ ok: boolean }> {
-    const connection = await this.fathomConnectionsService.findConnectionForWebhook(connectionId);
+    const connection =
+      await this.fathomConnectionsService.findConnectionForWebhook(
+        connectionId,
+      );
 
     // Misma respuesta para "no existe" y "firma mala": no se revela nada.
     if (!isDefined(connection) || !isDefined(request.rawBody)) {
       return { ok: false };
     }
 
-    const secret = this.fathomConnectionsService.decryptWebhookSecret(connection);
+    let secret: string | null = null;
+
+    try {
+      secret = this.fathomConnectionsService.decryptWebhookSecret(connection);
+    } catch (error) {
+      this.logger.error(
+        `Cannot decrypt the webhook secret of Fathom connection ${connectionId}: ${(error as Error).message}`,
+      );
+
+      return { ok: false };
+    }
 
     if (
       !isDefined(secret) ||
@@ -59,7 +74,9 @@ export class FathomWebhookController {
         rawBody: request.rawBody,
       })
     ) {
-      this.logger.warn(`Rejected Fathom webhook for connection ${connectionId}: bad signature`);
+      this.logger.warn(
+        `Rejected Fathom webhook for connection ${connectionId}: bad signature`,
+      );
 
       return { ok: false };
     }

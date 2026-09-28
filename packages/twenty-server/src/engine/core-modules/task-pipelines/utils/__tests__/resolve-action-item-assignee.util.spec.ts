@@ -1,4 +1,7 @@
-import { resolveActionItemAssignee, type AssignableMember } from 'src/engine/core-modules/task-pipelines/utils/resolve-action-item-assignee.util';
+import {
+  resolveActionItemAssignee,
+  type AssignableMember,
+} from 'src/engine/core-modules/task-pipelines/utils/resolve-action-item-assignee.util';
 
 const yeison: AssignableMember = {
   workspaceMemberId: 'yeison',
@@ -34,31 +37,46 @@ const base = {
 describe('resolveActionItemAssignee', () => {
   it('matches by assignee email (case-insensitive)', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: null, email: 'GTM@PTSTAX.com' } }),
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: null, email: 'GTM@PTSTAX.com' },
+      }),
     ).toEqual({ workspaceMemberId: 'yeison', resolution: 'EMAIL' });
   });
 
   it('matches by an email alias', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: 'X', email: 'contacto@mithub.club' } }).workspaceMemberId,
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'X', email: 'contacto@mithub.club' },
+      }).workspaceMemberId,
     ).toBe('mauro');
   });
 
   it('matches by name alias (Fathom calls Yeison "Jason")', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: 'Jason', email: null } }),
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'Jason', email: null },
+      }),
     ).toEqual({ workspaceMemberId: 'yeison', resolution: 'ALIAS' });
   });
 
   it('matches by full name ignoring accents', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: 'yeison bermudez', email: null } }).resolution,
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'yeison bermudez', email: null },
+      }).resolution,
     ).toBe('NAME');
   });
 
   it('matches by first name token', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: 'Mateo V.', email: null } }).workspaceMemberId,
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'Mateo V.', email: null },
+      }).workspaceMemberId,
     ).toBe('mateo');
   });
 
@@ -67,7 +85,9 @@ describe('resolveActionItemAssignee', () => {
       resolveActionItemAssignee({
         ...base,
         assignee: { name: 'M. Esparza', email: null },
-        invitees: [{ name: 'M. Esparza', email: 'mauricio@ptsfinancialservices.com' }],
+        invitees: [
+          { name: 'M. Esparza', email: 'mauricio@ptsfinancialservices.com' },
+        ],
       }),
     ).toEqual({ workspaceMemberId: 'mauro', resolution: 'INVITEE' });
   });
@@ -99,8 +119,16 @@ describe('resolveActionItemAssignee', () => {
         assignee: null,
         recordingTimestamp: '00:10:05',
         transcript: [
-          { speakerName: 'Mauro Sparza', speakerEmail: null, timestamp: '00:09:00' },
-          { speakerName: 'Mateo Valencia', speakerEmail: null, timestamp: '00:10:30' },
+          {
+            speakerName: 'Mauro Sparza',
+            speakerEmail: null,
+            timestamp: '00:09:00',
+          },
+          {
+            speakerName: 'Mateo Valencia',
+            speakerEmail: null,
+            timestamp: '00:10:30',
+          },
         ],
       }),
     ).toEqual({ workspaceMemberId: 'mauro', resolution: 'SPEAKER' });
@@ -108,7 +136,11 @@ describe('resolveActionItemAssignee', () => {
 
   it('assigns to the only member of a personal board', () => {
     expect(
-      resolveActionItemAssignee({ ...base, members: [yeison], assignee: { name: 'Someone', email: null } }),
+      resolveActionItemAssignee({
+        ...base,
+        members: [yeison],
+        assignee: { name: 'Someone', email: null },
+      }),
     ).toEqual({ workspaceMemberId: 'yeison', resolution: 'SOLE_MEMBER' });
   });
 
@@ -118,14 +150,23 @@ describe('resolveActionItemAssignee', () => {
         ...base,
         assignee: { name: 'Pilar Rodriguez', email: 'pilar@client.com' },
         recordingTimestamp: '00:10:05',
-        transcript: [{ speakerName: 'Mauro Sparza', speakerEmail: null, timestamp: '00:09:00' }],
+        transcript: [
+          {
+            speakerName: 'Mauro Sparza',
+            speakerEmail: null,
+            timestamp: '00:09:00',
+          },
+        ],
       }),
     ).toEqual({ workspaceMemberId: null, resolution: 'NONE' });
   });
 
   it('returns NONE for an outsider', () => {
     expect(
-      resolveActionItemAssignee({ ...base, assignee: { name: 'Pilar Rodriguez', email: 'pilar@x.com' } }),
+      resolveActionItemAssignee({
+        ...base,
+        assignee: { name: 'Pilar Rodriguez', email: 'pilar@x.com' },
+      }),
     ).toEqual({ workspaceMemberId: null, resolution: 'NONE' });
   });
 });

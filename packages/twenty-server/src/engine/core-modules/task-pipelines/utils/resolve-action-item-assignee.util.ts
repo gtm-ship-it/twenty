@@ -38,7 +38,9 @@ export type ResolvedAssignee = {
   resolution: AssigneeResolution;
 };
 
-const timestampToSeconds = (value: string | null | undefined): number | null => {
+const timestampToSeconds = (
+  value: string | null | undefined,
+): number | null => {
   if (!value) {
     return null;
   }
@@ -114,7 +116,9 @@ const findByName = (members: AssignableMember[], name: string | null) => {
   const firstToken = normalized.split(' ')[0];
 
   return uniqueMatch(members, (member) =>
-    getMemberNames(member).some((memberName) => memberName.split(' ')[0] === firstToken),
+    getMemberNames(member).some(
+      (memberName) => memberName.split(' ')[0] === firstToken,
+    ),
   );
 };
 
@@ -143,7 +147,10 @@ export const resolveActionItemAssignee = ({
   const byEmail = findByEmail(members, assignee?.email ?? null);
 
   if (byEmail) {
-    return { workspaceMemberId: byEmail.workspaceMemberId, resolution: 'EMAIL' };
+    return {
+      workspaceMemberId: byEmail.workspaceMemberId,
+      resolution: 'EMAIL',
+    };
   }
 
   const assigneeName = normalizePersonName(assignee?.name);
@@ -157,13 +164,19 @@ export const resolveActionItemAssignee = ({
     );
 
     if (byAlias) {
-      return { workspaceMemberId: byAlias.workspaceMemberId, resolution: 'ALIAS' };
+      return {
+        workspaceMemberId: byAlias.workspaceMemberId,
+        resolution: 'ALIAS',
+      };
     }
 
     const byName = findByName(members, assignee?.name ?? null);
 
     if (byName) {
-      return { workspaceMemberId: byName.workspaceMemberId, resolution: 'NAME' };
+      return {
+        workspaceMemberId: byName.workspaceMemberId,
+        resolution: 'NAME',
+      };
     }
 
     // El nombre coincide con un invitado del calendario -> su correo -> miembro.
@@ -173,7 +186,10 @@ export const resolveActionItemAssignee = ({
     const byInvitee = findByEmail(members, invitee?.email ?? null);
 
     if (byInvitee) {
-      return { workspaceMemberId: byInvitee.workspaceMemberId, resolution: 'INVITEE' };
+      return {
+        workspaceMemberId: byInvitee.workspaceMemberId,
+        resolution: 'INVITEE',
+      };
     }
   }
 
@@ -182,23 +198,31 @@ export const resolveActionItemAssignee = ({
   const byMention = uniqueMatch(members, (member) =>
     getMemberNames(member).some(
       (memberName) =>
-        memberName.length >= 3 && normalizedDescription.includes(` ${memberName} `),
+        memberName.length >= 3 &&
+        normalizedDescription.includes(` ${memberName} `),
     ),
   );
 
   if (byMention) {
-    return { workspaceMemberId: byMention.workspaceMemberId, resolution: 'MENTION' };
+    return {
+      workspaceMemberId: byMention.workspaceMemberId,
+      resolution: 'MENTION',
+    };
   }
 
   // Fathom nombró a alguien concreto que NO está en el tablero (p. ej. el
   // cliente): no se adivina por quién hablaba; queda por asignar, salvo en un
   // tablero de una sola persona, donde todo es de su dueño.
   const fathomNamedSomeone =
-    normalizePersonName(assignee?.name).length > 0 || normalizeEmail(assignee?.email).length > 0;
+    normalizePersonName(assignee?.name).length > 0 ||
+    normalizeEmail(assignee?.email).length > 0;
 
   if (fathomNamedSomeone) {
     return members.length === 1
-      ? { workspaceMemberId: members[0].workspaceMemberId, resolution: 'SOLE_MEMBER' }
+      ? {
+          workspaceMemberId: members[0].workspaceMemberId,
+          resolution: 'SOLE_MEMBER',
+        }
       : { workspaceMemberId: null, resolution: 'NONE' };
   }
 
@@ -222,14 +246,20 @@ export const resolveActionItemAssignee = ({
         findByName(members, speakerLine.speakerName);
 
       if (bySpeaker) {
-        return { workspaceMemberId: bySpeaker.workspaceMemberId, resolution: 'SPEAKER' };
+        return {
+          workspaceMemberId: bySpeaker.workspaceMemberId,
+          resolution: 'SPEAKER',
+        };
       }
     }
   }
 
   // Tablero de una sola persona (típico de los personales): es suyo.
   if (members.length === 1) {
-    return { workspaceMemberId: members[0].workspaceMemberId, resolution: 'SOLE_MEMBER' };
+    return {
+      workspaceMemberId: members[0].workspaceMemberId,
+      resolution: 'SOLE_MEMBER',
+    };
   }
 
   return { workspaceMemberId: null, resolution: 'NONE' };
