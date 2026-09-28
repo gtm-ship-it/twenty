@@ -1,0 +1,169 @@
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+
+import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
+
+@ObjectType('MeetingParticipant')
+export class MeetingParticipantDTO {
+  @Field(() => String, { nullable: true })
+  name: string | null;
+
+  @Field(() => String, { nullable: true })
+  email: string | null;
+
+  @Field(() => Boolean)
+  isExternal: boolean;
+}
+
+@ObjectType('MeetingTranscriptLine')
+export class MeetingTranscriptLineDTO {
+  @Field(() => String, { nullable: true })
+  speakerName: string | null;
+
+  @Field(() => String, { nullable: true })
+  speakerEmail: string | null;
+
+  @Field(() => String)
+  timestamp: string;
+
+  @Field(() => String)
+  text: string;
+}
+
+@ObjectType('MeetingActionItem')
+export class MeetingActionItemDTO {
+  @Field(() => UUIDScalarType)
+  id: string;
+
+  @Field(() => UUIDScalarType)
+  pipelineId: string;
+
+  @Field(() => String)
+  pipelineName: string;
+
+  @Field(() => String)
+  textEn: string;
+
+  @Field(() => String, { nullable: true })
+  textEs: string | null;
+
+  @Field(() => String, { nullable: true })
+  assigneeName: string | null;
+
+  @Field(() => String, { nullable: true })
+  assigneeEmail: string | null;
+
+  @Field(() => String, { nullable: true })
+  recordingTimestamp: string | null;
+
+  @Field(() => String, { nullable: true })
+  playbackUrl: string | null;
+
+  @Field(() => Boolean)
+  completed: boolean;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  resolvedWorkspaceMemberId: string | null;
+
+  @Field(() => String, { nullable: true })
+  resolution: string | null;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  taskId: string | null;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  taskStageId: string | null;
+
+  @Field(() => Boolean)
+  taskIsDone: boolean;
+}
+
+@ObjectType('MeetingListItem')
+export class MeetingListItemDTO {
+  @Field(() => UUIDScalarType)
+  id: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => Date, { nullable: true })
+  startedAt: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  endedAt: Date | null;
+
+  @Field(() => Int)
+  participantCount: number;
+
+  @Field(() => Int)
+  actionItemCount: number;
+
+  @Field(() => [String])
+  pipelineNames: string[];
+
+  @Field(() => String, { nullable: true })
+  recordedByName: string | null;
+}
+
+@ObjectType('MeetingDetail')
+export class MeetingDetailDTO {
+  @Field(() => UUIDScalarType)
+  id: string;
+
+  @Field(() => String)
+  recordingId: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => String, { nullable: true })
+  url: string | null;
+
+  @Field(() => String, { nullable: true })
+  shareUrl: string | null;
+
+  // Stream HLS de la grabación compartida (si Fathom lo expone) para verlo dentro del CRM.
+  @Field(() => String, { nullable: true })
+  videoUrl: string | null;
+
+  @Field(() => Date, { nullable: true })
+  startedAt: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  endedAt: Date | null;
+
+  @Field(() => [MeetingParticipantDTO])
+  participants: MeetingParticipantDTO[];
+
+  @Field(() => String, { nullable: true })
+  recordedByName: string | null;
+
+  @Field(() => String, { nullable: true })
+  recordedByEmail: string | null;
+
+  @Field(() => String, { nullable: true })
+  summaryMarkdown: string | null;
+
+  @Field(() => String, { nullable: true })
+  summaryMarkdownEs: string | null;
+
+  @Field(() => [MeetingTranscriptLineDTO])
+  transcript: MeetingTranscriptLineDTO[];
+
+  @Field(() => [MeetingActionItemDTO])
+  actionItems: MeetingActionItemDTO[];
+}
+
+@ObjectType('FathomSyncResult')
+export class FathomSyncResultDTO {
+  @Field(() => Int)
+  meetingsProcessed: number;
+
+  @Field(() => Int)
+  tasksCreated: number;
+
+  @Field(() => Int)
+  actionItemsSeen: number;
+
+  @Field(() => String, { nullable: true })
+  error: string | null;
+}

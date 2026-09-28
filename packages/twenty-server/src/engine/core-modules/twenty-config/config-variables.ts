@@ -2087,6 +2087,34 @@ export class ConfigVariables {
   @IsOptional()
   PEOPLE_DATA_LABS_API_KEY?: string;
 
+  // --- PTS AI CRM: Tasks + Reuniones de Fathom (integración propia del fork) ---
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'LibreTranslate base URL used to translate Fathom action items and summaries to Spanish (e.g. http://libretranslate:5000). When unset, meetings keep their original language.',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  LIBRETRANSLATE_URL?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'Public base URL Fathom must call for meeting webhooks. Defaults to SERVER_URL.',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  FATHOM_WEBHOOK_BASE_URL?: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'Fathom external API base URL (default https://api.fathom.ai/external/v1). Only change it for tests.',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  FATHOM_API_BASE_URL?: string;
+
   // --- PTS AI CRM: "Call with Atlas" (integración propia del fork) ---
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,

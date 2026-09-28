@@ -49,6 +49,7 @@ import { LogicFunctionModule } from 'src/engine/core-modules/logic-function/logi
 import { MessageQueueModule } from 'src/engine/core-modules/message-queue/message-queue.module';
 import { messageQueueModuleFactory } from 'src/engine/core-modules/message-queue/message-queue.module-factory';
 import { AtlasCallsModule } from 'src/engine/core-modules/atlas-calls/atlas-calls.module';
+import { TaskPipelinesModule } from 'src/engine/core-modules/task-pipelines/task-pipelines.module';
 import { TimelineMessagingModule } from 'src/engine/core-modules/messaging/timeline-messaging.module';
 import { MessagingWebhooksModule } from 'src/modules/messaging-webhooks/messaging-webhooks.module';
 import { ConnectedAccountSyncWebhooksModule } from 'src/modules/connected-account-sync-webhooks/connected-account-sync-webhooks.module';
@@ -115,6 +116,7 @@ import { FileModule } from './file/file.module';
     TimelineMessagingModule,
     TimelineCalendarEventModule,
     AtlasCallsModule,
+    TaskPipelinesModule,
     UserModule,
     WorkspaceModule,
     WorkspaceInvitationModule,
