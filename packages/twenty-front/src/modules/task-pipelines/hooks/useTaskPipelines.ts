@@ -72,6 +72,7 @@ export const useTaskPipelines = () => {
     name: string;
     color: string;
     visibility: TaskPipelineVisibility;
+    stages?: StageDraft[];
   }) => {
     const result = await createMutation({ variables: { input } });
 

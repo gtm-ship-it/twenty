@@ -44,11 +44,13 @@ import {
   type UpdatePipelineTaskInput,
 } from '@/task-pipelines/types/TaskPipelineTypes';
 import { SafeMarkdown } from '@/task-pipelines/components/SafeMarkdown';
+import { formatTaskActivity } from '@/task-pipelines/utils/formatTaskActivity';
 import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
 import {
   dueFromInputValue,
   dueInputValue,
 } from '@/task-pipelines/utils/taskDueStatus';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
 const StyledBackdrop = styled.div`
@@ -103,12 +105,16 @@ const StyledTitleInput = styled.textarea`
   background: transparent;
   border: 1px solid transparent;
   border-radius: ${themeCssVariables.border.radius.sm};
+  box-sizing: border-box;
   color: ${themeCssVariables.font.color.primary};
+  flex-shrink: 0;
   font-family: inherit;
   font-size: ${themeCssVariables.font.size.xl};
   font-weight: ${themeCssVariables.font.weight.semiBold};
-  line-height: 1.3;
+  line-height: 1.35;
+  min-height: 40px;
   outline: none;
+  overflow: hidden;
   padding: ${themeCssVariables.spacing[1]};
   resize: none;
   width: 100%;
@@ -399,6 +405,20 @@ export const TaskDetailPanel = ({
   );
   const [confirmDelete, setConfirmDelete] = useState(false);
   const panelRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+  // Esc en la descripción descarta: el onBlur que viene detrás no debe guardar.
+  // oxlint-disable-next-line twenty/no-state-useref
+  const cancelBodyEdit = useRef(false);
+
+  // El título crece con el texto (nunca se corta).
+  useEffect(() => {
+    const element = titleRef.current;
+
+    if (element !== null) {
+      element.style.height = 'auto';
+      element.style.height = `${element.scrollHeight}px`;
+    }
+  }, [title]);
 
   // Checklist y etiquetas se editan en local al instante y se guardan en cola:
   // cada guardado parte del último valor local, así dos clics seguidos no se pisan.
@@ -442,6 +462,11 @@ export const TaskDetailPanel = ({
 
   const closePanel = () => {
     flushTitle();
+
+    if (isEditingBody && body !== task.body) {
+      void onUpdate({ body });
+    }
+
     onClose();
   };
 
@@ -507,8 +532,7 @@ export const TaskDetailPanel = ({
       await action();
     } catch (error) {
       enqueueErrorSnackBar({
-        message:
-          error instanceof Error ? error.message : t`Something went wrong`,
+        message: friendlyErrorMessage(error, t`Something went wrong`),
       });
     }
   };
@@ -595,9 +619,13 @@ export const TaskDetailPanel = ({
 
         <StyledPanelBody>
           <StyledTitleInput
-            rows={Math.min(4, Math.max(1, Math.ceil(title.length / 40)))}
+            ref={titleRef}
+            rows={1}
+            aria-label={t`Title`}
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) =>
+              setTitle(event.target.value.replace(/[\r\n]+/g, ' '))
+            }
             onBlur={() => {
               const next = title.trim();
 
@@ -615,19 +643,46 @@ export const TaskDetailPanel = ({
             }}
           />
 
+          {isDone && task.completedAt !== null && (
+            <StyledHint>
+              ✓ {t`Completed on ${formatDateTime(task.completedAt)}`}
+            </StyledHint>
+          )}
+
           <StyledGrid>
             <StyledGridLabel>{t`Assignee`}</StyledGridLabel>
-            <MemberPicker
-              members={pipelineMembers}
-              value={task.assigneeWorkspaceMemberId}
-              onChange={(memberId) =>
-                void save(
-                  memberId
-                    ? { assigneeWorkspaceMemberId: memberId }
-                    : { clearAssignee: true },
-                )
-              }
-            />
+            <StyledInline style={{ flexWrap: 'nowrap' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <MemberPicker
+                  members={pipelineMembers}
+                  value={task.assigneeWorkspaceMemberId}
+                  onChange={(memberId) =>
+                    void save(
+                      memberId !== null
+                        ? { assigneeWorkspaceMemberId: memberId }
+                        : { clearAssignee: true },
+                    )
+                  }
+                />
+              </div>
+              {currentWorkspaceMemberId !== null &&
+                task.assigneeWorkspaceMemberId !== currentWorkspaceMemberId &&
+                pipelineMembers.some(
+                  (member) => member.id === currentWorkspaceMemberId,
+                ) && (
+                  <StyledTextButton
+                    type="button"
+                    style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                    onClick={() =>
+                      void save({
+                        assigneeWorkspaceMemberId: currentWorkspaceMemberId,
+                      })
+                    }
+                  >
+                    {t`Assign to me`}
+                  </StyledTextButton>
+                )}
+            </StyledInline>
 
             <StyledGridLabel>{t`Due date`}</StyledGridLabel>
             <StyledInline>
@@ -724,50 +779,42 @@ export const TaskDetailPanel = ({
                 <StyledTextArea
                   autoFocus
                   rows={8}
+                  aria-label={t`Description`}
                   value={body}
                   placeholder={t`Details, links, next steps… (Markdown supported)`}
                   onChange={(event) => setBody(event.target.value)}
+                  // Igual que el resto de campos: se guarda solo al salir.
+                  onBlur={() => {
+                    setIsEditingBody(false);
+
+                    if (cancelBodyEdit.current) {
+                      cancelBodyEdit.current = false;
+                      setBody(task.body);
+
+                      return;
+                    }
+
+                    if (body !== task.body) {
+                      void save({ body });
+                    }
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === 'Escape') {
-                      setBody(task.body);
-                      setIsEditingBody(false);
+                      cancelBodyEdit.current = true;
+                      (event.target as HTMLTextAreaElement).blur();
                     }
 
                     if (
                       event.key === 'Enter' &&
                       (event.metaKey || event.ctrlKey)
                     ) {
-                      setIsEditingBody(false);
-
-                      if (body !== task.body) {
-                        void save({ body });
-                      }
+                      (event.target as HTMLTextAreaElement).blur();
                     }
                   }}
                 />
-                <StyledFooterRow style={{ marginTop: 8 }}>
-                  <Button
-                    title={t`Cancel`}
-                    size="small"
-                    variant="secondary"
-                    onClick={() => {
-                      setBody(task.body);
-                      setIsEditingBody(false);
-                    }}
-                  />
-                  <Button
-                    title={t`Save`}
-                    size="small"
-                    accent="blue"
-                    onClick={() => {
-                      setIsEditingBody(false);
-
-                      if (body !== task.body) {
-                        void save({ body });
-                      }
-                    }}
-                  />
-                </StyledFooterRow>
+                <StyledHint style={{ marginTop: 4 }}>
+                  {t`Saves when you click outside · Esc to discard changes`}
+                </StyledHint>
               </>
             ) : (
               <StyledDescriptionView
@@ -983,7 +1030,8 @@ export const TaskDetailPanel = ({
                 if (comment.kind === 'ACTIVITY') {
                   return (
                     <StyledActivity key={comment.id}>
-                      <b>{author?.firstName ?? t`Fathom`}</b> {comment.body} ·{' '}
+                      <b>{author?.firstName ?? t`Fathom`}</b>{' '}
+                      {formatTaskActivity(comment.body)} ·{' '}
                       {formatDateTime(comment.createdAt)}
                     </StyledActivity>
                   );
@@ -1079,8 +1127,20 @@ export const TaskDetailPanel = ({
                   </StyledComment>
                 );
               })}
-              {visibleComments.length === 0 && (
-                <StyledHint>{t`No activity yet.`}</StyledHint>
+              {commentsQuery.error !== undefined && comments.length === 0 ? (
+                <StyledHint>
+                  {t`Could not load the activity.`}{' '}
+                  <StyledTextButton
+                    type="button"
+                    onClick={() => void commentsQuery.refetch()}
+                  >
+                    {t`Retry`}
+                  </StyledTextButton>
+                </StyledHint>
+              ) : (
+                visibleComments.length === 0 && (
+                  <StyledHint>{t`No activity yet.`}</StyledHint>
+                )
               )}
             </StyledTimeline>
           </div>
@@ -1116,9 +1176,6 @@ export const TaskDetailPanel = ({
               />
             )}
           </StyledFooterRow>
-          {isDone && task.completedAt && (
-            <StyledHint>{t`Completed on ${formatDateTime(task.completedAt)}`}</StyledHint>
-          )}
         </StyledPanelBody>
       </StyledPanel>
     </>

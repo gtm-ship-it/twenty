@@ -25,6 +25,7 @@ import {
 import { SafeMarkdown } from '@/task-pipelines/components/SafeMarkdown';
 import {
   MemberAvatar,
+  MemberPicker,
   StyledSegment,
   StyledSegmented,
 } from '@/task-pipelines/components/TaskPipelineUi';
@@ -33,8 +34,14 @@ import {
   CREATE_TASK_FROM_ACTION_ITEM,
   GET_MEETING,
   GET_MEETINGS,
+  UPDATE_PIPELINE_TASK,
 } from '@/task-pipelines/graphql/taskPipelinesDocuments';
-import { useWorkspaceMembersById } from '@/task-pipelines/hooks/useWorkspaceMembersById';
+import { useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
+import {
+  type TaskMemberInfo,
+  useWorkspaceMembersById,
+} from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
   type MeetingDetail,
   type MeetingListItem,
@@ -217,6 +224,19 @@ const StyledLinkButton = styled.button`
   }
 `;
 
+const StyledExternalLink = styled.a`
+  align-items: center;
+  color: ${themeCssVariables.font.color.tertiary};
+  display: inline-flex;
+  gap: 4px;
+  text-decoration: none;
+
+  &:hover {
+    color: ${themeCssVariables.font.color.primary};
+    text-decoration: underline;
+  }
+`;
+
 const StyledRouterLink = styled(Link)`
   color: ${themeCssVariables.color.blue};
   font-size: ${themeCssVariables.font.size.sm};
@@ -384,6 +404,41 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
     fetchPolicy: 'cache-and-network',
   });
   const [createTask] = useMutation(CREATE_TASK_FROM_ACTION_ITEM, { client });
+  const [updateTaskMutation] = useMutation(UPDATE_PIPELINE_TASK, { client });
+  const { pipelines } = useTaskPipelines();
+
+  const membersByPipeline = useMemo(
+    () =>
+      new Map(
+        pipelines.map((pipeline) => [
+          pipeline.id,
+          pipeline.members
+            .map((entry) => membersById.get(entry.workspaceMemberId))
+            .filter((entry): entry is TaskMemberInfo => entry !== undefined),
+        ]),
+      ),
+    [pipelines, membersById],
+  );
+
+  const assignTask = async (taskId: string, memberId: string | null) => {
+    try {
+      await updateTaskMutation({
+        variables: {
+          taskId,
+          input:
+            memberId !== null
+              ? { assigneeWorkspaceMemberId: memberId }
+              : { clearAssignee: true },
+        },
+      });
+      enqueueSuccessSnackBar({
+        message: memberId !== null ? t`Task assigned` : t`Assignee removed`,
+      });
+      await refetch();
+    } catch (error) {
+      enqueueErrorSnackBar({ message: friendlyErrorMessage(error) });
+    }
+  };
 
   const meeting = data?.taskPipelineMeeting;
 
@@ -456,30 +511,42 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
         <div>
           <StyledH1>{meeting.title}</StyledH1>
           <StyledItemMeta style={{ marginTop: 6 }}>
-            <span>{formatDate(meeting.startedAt)}</span>
-            {formatDuration(meeting.startedAt, meeting.endedAt) && (
-              <span>
-                · {formatDuration(meeting.startedAt, meeting.endedAt)}
-              </span>
-            )}
-            {meeting.recordedByName && (
-              <span>· {t`recorded by ${meeting.recordedByName}`}</span>
-            )}
-            {safeHttpUrl(meeting.shareUrl) && (
-              <a
-                href={safeHttpUrl(meeting.shareUrl)}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  color: 'inherit',
-                  display: 'inline-flex',
-                  gap: 4,
-                  alignItems: 'center',
-                }}
-              >
-                · <IconExternalLink size={12} /> Fathom
-              </a>
-            )}
+            {[
+              <span key="date">{formatDate(meeting.startedAt)}</span>,
+              formatDuration(meeting.startedAt, meeting.endedAt) !== '' ? (
+                <span key="duration">
+                  {formatDuration(meeting.startedAt, meeting.endedAt)}
+                </span>
+              ) : null,
+              meeting.recordedByName !== null ? (
+                <span key="recorded">{t`recorded by ${meeting.recordedByName}`}</span>
+              ) : null,
+              safeHttpUrl(meeting.shareUrl) !== undefined ? (
+                <StyledExternalLink
+                  key="fathom"
+                  href={safeHttpUrl(meeting.shareUrl)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <IconExternalLink size={12} />
+                  {t`Open in Fathom`}
+                </StyledExternalLink>
+              ) : null,
+            ]
+              .filter((entry) => entry !== null)
+              .map((entry, index) => (
+                <span
+                  key={index}
+                  style={{
+                    display: 'inline-flex',
+                    gap: 8,
+                    alignItems: 'center',
+                  }}
+                >
+                  {index > 0 && <span aria-hidden="true">·</span>}
+                  {entry}
+                </span>
+              ))}
           </StyledItemMeta>
         </div>
 
@@ -510,23 +577,34 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
               {t`Action items`} ({meeting.actionItems.length})
             </span>
             {hasSpanish && (
-              <StyledSegmented>
-                <StyledSegment
-                  type="button"
-                  isActive={language === 'es'}
-                  onClick={() => setLanguage('es')}
-                >
-                  <IconLanguage size={12} />
-                  ES
-                </StyledSegment>
-                <StyledSegment
-                  type="button"
-                  isActive={language === 'en'}
-                  onClick={() => setLanguage('en')}
-                >
-                  EN
-                </StyledSegment>
-              </StyledSegmented>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  gap: 8,
+                  alignItems: 'center',
+                  fontWeight: 400,
+                  fontSize: 13,
+                }}
+              >
+                {t`Summary & action items in`}
+                <StyledSegmented>
+                  <StyledSegment
+                    type="button"
+                    isActive={language === 'es'}
+                    onClick={() => setLanguage('es')}
+                  >
+                    <IconLanguage size={12} />
+                    ES
+                  </StyledSegment>
+                  <StyledSegment
+                    type="button"
+                    isActive={language === 'en'}
+                    onClick={() => setLanguage('en')}
+                  >
+                    EN
+                  </StyledSegment>
+                </StyledSegmented>
+              </span>
             )}
           </StyledSectionTitle>
           <div
@@ -553,7 +631,18 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
                       : item.textEn}
                   </StyledActionText>
                   <StyledActionRow>
-                    {member ? (
+                    {item.taskId !== null ? (
+                      <div style={{ minWidth: 180 }}>
+                        <MemberPicker
+                          members={membersByPipeline.get(item.pipelineId) ?? []}
+                          value={item.resolvedWorkspaceMemberId}
+                          placeholder={t`Needs assignee — pick someone`}
+                          onChange={(memberId) =>
+                            void assignTask(item.taskId as string, memberId)
+                          }
+                        />
+                      </div>
+                    ) : member !== undefined ? (
                       <span
                         style={{
                           display: 'inline-flex',
@@ -653,7 +742,11 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
         </StyledTranscriptHeader>
         <StyledTranscript>
           {filteredTranscript.length === 0 && (
-            <StyledEmpty>{t`No transcript.`}</StyledEmpty>
+            <StyledEmpty>
+              {transcriptSearch.length > 0
+                ? t`No lines match “${transcriptSearch}”.`
+                : t`Fathom sent no transcript for this meeting.`}
+            </StyledEmpty>
           )}
           {filteredTranscript.map((line) => {
             const index = line.index;

@@ -1483,6 +1483,7 @@ msgstr "Item aan map toevoegen"
 
 #. js-lingui-id: lyqwgn
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Add label"
 msgstr ""
 
@@ -1716,11 +1717,23 @@ msgstr "Voeg hieronder uw creditcard toe. Zodra deze is toegevoegd, start uw abo
 msgid "Add your first {objectLabel}"
 msgstr "Voeg uw eerste {objectLabel} toe"
 
+#. js-lingui-id: EiozUu
+#. placeholder {0}: text('text')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "added “{0}” to the checklist"
+msgstr ""
+
 #. js-lingui-id: vLO+NG
 #: src/modules/settings/hooks/useGetAddedRelativeDateDescription.ts
 #: src/modules/ui/layout/show-page/components/ShowPageSummaryCard.tsx
 msgid "Added {beautifiedCreatedAt}"
 msgstr "Toegevoegd {beautifiedCreatedAt}"
+
+#. js-lingui-id: QApyEH
+#. placeholder {0}: text('label')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "added the label {0}"
+msgstr ""
 
 #. js-lingui-id: 9iIYOy
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistTable.tsx
@@ -2757,6 +2770,11 @@ msgstr "Voor archiefbestanden is geen voorbeeldweergave mogelijk. Download het b
 msgid "Archived"
 msgstr "Gearchiveerd"
 
+#. js-lingui-id: 4U4ny7
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "archived this task"
+msgstr ""
+
 #. js-lingui-id: Faev6R
 #: src/pages/settings/communications/SettingsWorkspaceCommunicationGroupChannelDetail.tsx
 msgid "Are you sure you want to delete {sourceHandle}? Inbound mail forwarded to this address and outbound replies from it will stop working."
@@ -2892,6 +2910,11 @@ msgstr "Toewijzen aan agent"
 msgid "Assign to API key"
 msgstr "Toewijzen aan API-sleutel"
 
+#. js-lingui-id: mv2j1I
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Assign to me"
+msgstr ""
+
 #. js-lingui-id: 2y2quh
 #: src/modules/settings/roles/role-assignment/constants/RoleTargetConfig.ts
 msgid "Assign to member"
@@ -2916,6 +2939,12 @@ msgstr ""
 #: src/modules/settings/roles/role-assignment/components/SettingsRoleAssignmentTable.tsx
 msgid "Assigned {roleTargetDisplayName}"
 msgstr "Toegewezen {roleTargetDisplayName}"
+
+#. js-lingui-id: 8Nk2lV
+#. placeholder {0}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "assigned this to {0}"
+msgstr ""
 
 #. js-lingui-id: lxQ+5m
 #: src/modules/settings/roles/components/SettingsRolesTableHeader.tsx
@@ -2943,6 +2972,11 @@ msgstr ""
 #. js-lingui-id: FnPxcM
 #: src/pages/tasks/TasksPage.tsx
 msgid "Assignee filter"
+msgstr ""
+
+#. js-lingui-id: 0fHZhK
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Assignee removed"
 msgstr ""
 
 #. js-lingui-id: 0dtKl9
@@ -3411,6 +3445,11 @@ msgstr "blok"
 msgid "Block Settings"
 msgstr "Blokinstellingen"
 
+#. js-lingui-id: 32TndD
+#: src/pages/tasks/TasksPage.tsx
+msgid "Blocked"
+msgstr ""
+
 #. js-lingui-id: K1172m
 #: src/modules/settings/accounts/components/SettingsAccountsBlocklistSection.tsx
 msgid "Blocklist"
@@ -3827,7 +3866,6 @@ msgstr "Kan je niet scannen? Kopieer de"
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/ui/feedback/snack-bar-manager/components/SnackBar.tsx
 #: src/modules/ui/layout/modal/components/ConfirmationModal.tsx
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
@@ -4132,6 +4170,11 @@ msgstr "Controleer je inbox om je nieuwe e-mailadres te bevestigen."
 msgid "Checklist"
 msgstr ""
 
+#. js-lingui-id: 8iS+TN
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Checklist item"
+msgstr ""
+
 #. js-lingui-id: SxwQE8
 #: src/modules/settings/billing/hooks/useHandleCheckoutSession.ts
 #: src/modules/settings/billing/hooks/useHandleCheckoutSession.ts
@@ -4279,6 +4322,7 @@ msgstr "Filter wissen"
 #. js-lingui-id: u8JHrO
 #: src/modules/ai/components/AiChatThreadFilterDropdownRootMenu.tsx
 #: src/modules/settings/unsubscribers/components/filter-dropdown/SettingsUnsubscribersFilterMenuContent.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Clear filters"
 msgstr "Filters wissen"
 
@@ -4713,6 +4757,12 @@ msgstr "voltooid"
 #: src/pages/settings/admin-panel/SettingsAdminInstanceStatus.tsx
 msgid "Completed"
 msgstr "Voltooid"
+
+#. js-lingui-id: 1N/E6y
+#. placeholder {0}: text('text')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "completed “{0}”"
+msgstr ""
 
 #. js-lingui-id: 6y7/Rf
 #: src/pages/settings/admin-panel/SettingsAdminQueueDetail.tsx
@@ -5382,6 +5432,7 @@ msgstr ""
 #. js-lingui-id: mT6xzO
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Could not create the task"
 msgstr ""
 
@@ -5400,6 +5451,11 @@ msgstr "Het document kon niet worden gedownload."
 msgid "Could not generate the signed DPA. Please try again."
 msgstr "De ondertekende DPA kon niet worden gegenereerd. Probeer het opnieuw."
 
+#. js-lingui-id: tzCdYq
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Could not load the activity."
+msgstr ""
+
 #. js-lingui-id: KqYYBp
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
 msgid "Could not open billing portal. Please check your enterprise key is present, or contact support."
@@ -5414,6 +5470,11 @@ msgstr "Stripe kon niet worden geopend. Neem contact op met support."
 #: src/modules/settings/mcp-and-apis/hooks/useOpenPlayground.ts
 msgid "Could not open the API playground"
 msgstr "Kon de API-playground niet openen"
+
+#. js-lingui-id: S1RjBV
+#: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
+msgid "Could not reach the CRM server. Check your connection and try again."
+msgstr ""
 
 #. js-lingui-id: w1HkE9
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
@@ -5764,6 +5825,21 @@ msgstr "Gemaakt door"
 #: src/modules/settings/admin-panel/signing-keys/components/SettingsAdminSigningKeysTable.tsx
 msgid "Created on {0}"
 msgstr "Gemaakt op {0}"
+
+#. js-lingui-id: wb9+yC
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "created this from a meeting — nobody in this pipeline matched the assignee, please assign it"
+msgstr ""
+
+#. js-lingui-id: xpDlQ3
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "created this from a meeting ({how})"
+msgstr ""
+
+#. js-lingui-id: MHqtW1
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "created this task"
+msgstr ""
 
 #. js-lingui-id: sfLpPB
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
@@ -6940,6 +7016,7 @@ msgstr "Beschrijf wat je wilt dat de AI doet..."
 #: src/modules/settings/translations/components/SidePanelSettingsMetadataTranslationsPage.tsx
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 #: src/pages/settings/ai/SettingsToolDetail.tsx
 #: src/pages/settings/applications/components/SettingsApplicationsTable.tsx
@@ -7238,8 +7315,15 @@ msgstr "Synchroniseer geen e-mails van team@ support@ noreply@..."
 #: src/modules/page-layout/widgets/fields/components/FieldsConfigurationGroupRenameInput.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 #: src/pages/meetings/MeetingsPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Done"
 msgstr "Voltooid"
+
+#. js-lingui-id: jUHBqZ
+#. placeholder {0}: item.text
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Done: {0}"
+msgstr ""
 
 #. js-lingui-id: Wm78zZ
 #: src/modules/settings/experience/components/NumberFormatSelect.tsx
@@ -7542,6 +7626,11 @@ msgstr "Acties bewerken"
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useSettingsRolePermissionFlagConfig.ts
 msgid "Edit data structure and fields"
 msgstr "Bewerk gegevensstructuur en velden"
+
+#. js-lingui-id: O32mmL
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Edit description"
+msgstr ""
 
 #. js-lingui-id: ZwR0Vd
 #: src/modules/side-panel/pages/email-block-settings/components/EmailBoxSidesInput.tsx
@@ -9243,9 +9332,19 @@ msgstr ""
 msgid "Fathom connected — importing the last two weeks of meetings"
 msgstr ""
 
+#. js-lingui-id: d2JsiN
+#: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
+msgid "Fathom did not accept that API key. Generate a new one in Fathom → Settings → API Access and paste it again."
+msgstr ""
+
 #. js-lingui-id: bSQp4v
 #: src/pages/meetings/MeetingsPage.tsx
 msgid "Fathom did not detect action items."
+msgstr ""
+
+#. js-lingui-id: RDEppG
+#: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
+msgid "Fathom did not respond. Try again in a moment."
 msgstr ""
 
 #. js-lingui-id: PgCFaS
@@ -9253,10 +9352,20 @@ msgstr ""
 msgid "Fathom disconnected"
 msgstr ""
 
+#. js-lingui-id: /XUXcP
+#: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
+msgid "Fathom is limiting requests right now. Try again in a minute."
+msgstr ""
+
 #. js-lingui-id: B4u2HS
 #. placeholder {0}: item.assigneeName
 #: src/pages/meetings/MeetingsPage.tsx
 msgid "Fathom said: {0}"
+msgstr ""
+
+#. js-lingui-id: UrZ06I
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Fathom sent no transcript for this meeting."
 msgstr ""
 
 #. js-lingui-id: X9kySA
@@ -10357,6 +10466,11 @@ msgstr "Verborgen groepen verbergen"
 msgid "Hide label"
 msgstr "Label verbergen"
 
+#. js-lingui-id: tcUIbu
+#: src/pages/tasks/TasksPage.tsx
+msgid "Hide pipelines"
+msgstr ""
+
 #. js-lingui-id: y9sG4l
 #: src/modules/settings/data-model/object-details/components/tabs/SettingsObjectIndexesSection.tsx
 msgid "Hide system indexes"
@@ -10364,6 +10478,7 @@ msgstr "Systeemindexen verbergen"
 
 #. js-lingui-id: yx/fMc
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "High"
 msgstr ""
 
@@ -10797,10 +10912,20 @@ msgstr "Importeren"
 msgid "Importing Data ..."
 msgstr "Data importeren ..."
 
+#. js-lingui-id: 3iquYc
+#: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
+msgid "Importing the last two weeks…"
+msgstr ""
+
 #. js-lingui-id: HiyKEP
 #: src/modules/settings/developers/utils/formatExpiration.ts
 msgid "In {dateDiff}"
 msgstr "In {dateDiff}"
+
+#. js-lingui-id: /LCAwL
+#: src/pages/tasks/TasksPage.tsx
+msgid "In progress"
+msgstr ""
 
 #. js-lingui-id: hVockd
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
@@ -12448,6 +12573,7 @@ msgstr "lus"
 
 #. js-lingui-id: nTWWCZ
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "Low"
 msgstr ""
 
@@ -12639,6 +12765,26 @@ msgstr "Koppel {0} ({unmatchedCount} niet gekoppeld)"
 msgid "Match Columns"
 msgstr "Kolommen overeenkomen"
 
+#. js-lingui-id: 3fWgeh
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "matched by alias"
+msgstr ""
+
+#. js-lingui-id: EeQZJ0
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "matched by email"
+msgstr ""
+
+#. js-lingui-id: wPvAtS
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "matched by name"
+msgstr ""
+
+#. js-lingui-id: 2HSpxK
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "matched through the calendar invite"
+msgstr ""
+
 #. js-lingui-id: CK1KXz
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationLabel.ts
 #: src/modules/object-record/record-board/record-board-column/utils/getAggregateOperationShortLabel.ts
@@ -12750,6 +12896,7 @@ msgstr "Ik (Gebruikers-ID)"
 
 #. js-lingui-id: agPptk
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "Medium"
 msgstr ""
 
@@ -13166,6 +13313,12 @@ msgstr "Omhoog verplaatsen"
 msgid "Move work forward across teams and agents"
 msgstr "Breng het werk vooruit over teams en agenten heen"
 
+#. js-lingui-id: MMmvqW
+#. placeholder {0}: text('stage')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "moved this to {0}"
+msgstr ""
+
 #. js-lingui-id: XXzjfC
 #: src/modules/settings/admin-panel/chats/components/SettingsAdminChatsTable.tsx
 msgid "Msgs"
@@ -13309,6 +13462,11 @@ msgstr "Naam van je werkruimte"
 msgid "name or email + Enter"
 msgstr ""
 
+#. js-lingui-id: 8OVFpY
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "named in the action item"
+msgstr ""
+
 #. js-lingui-id: JxC/pi
 #: src/modules/workflow/workflow-trigger/components/WorkflowEditTriggerManual.tsx
 msgid "Navbar"
@@ -13360,6 +13518,11 @@ msgstr "Vereist een selectieveld"
 #: src/modules/task-pipelines/components/TaskListView.tsx
 #: src/pages/meetings/MeetingsPage.tsx
 msgid "Needs assignee"
+msgstr ""
+
+#. js-lingui-id: JkREUg
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Needs assignee — pick someone"
 msgstr ""
 
 #. js-lingui-id: wW3b68
@@ -13443,6 +13606,11 @@ msgstr "Nieuw goedgekeurd toegangsdomoen"
 #: src/modules/navigation/components/MainNavigationDrawerTabsRow.tsx
 msgid "New chat"
 msgstr "Nieuw gesprek"
+
+#. js-lingui-id: 6U3kRH
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "New checklist item"
+msgstr ""
 
 #. js-lingui-id: TsXckK
 #: src/modules/sign-in-background-mock/components/BackgroundMockPage.tsx
@@ -14100,6 +14268,11 @@ msgstr "Geen nieuwste versie gevonden"
 msgid "No limit"
 msgstr "Geen limiet"
 
+#. js-lingui-id: iChnnL
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "No lines match “{transcriptSearch}”."
+msgstr ""
+
 #. js-lingui-id: nivaRq
 #: src/modules/activities/emails/components/CampaignSentEnvelope.tsx
 msgid "No list"
@@ -14401,6 +14574,17 @@ msgstr "Geen doelen beschikbaar"
 msgid "No tasks here."
 msgstr ""
 
+#. js-lingui-id: ioKHgC
+#. placeholder {0}: search.trim()
+#: src/pages/tasks/TasksPage.tsx
+msgid "No tasks match “{0}”."
+msgstr ""
+
+#. js-lingui-id: vWkTfj
+#: src/pages/tasks/TasksPage.tsx
+msgid "No tasks match these filters."
+msgstr ""
+
 #. js-lingui-id: t0t36i
 #: src/modules/workflow/workflow-steps/workflow-actions/ai-agent-action/components/WorkflowRunStepLogsAiAgentDetail.tsx
 msgid "No tools were called"
@@ -14420,11 +14604,6 @@ msgstr "Geen transcriptie"
 #: src/modules/page-layout/widgets/call-recording-transcript/components/CallRecordingTranscriptBody.tsx
 msgid "No transcript is available for this recording."
 msgstr "Er is geen transcriptie beschikbaar voor deze opname."
-
-#. js-lingui-id: o2j3ri
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "No transcript."
-msgstr ""
 
 #. js-lingui-id: ZCTuAQ
 #: src/modules/settings/logic-functions/components/tabs/SettingsLogicFunctionTriggersTab.tsx
@@ -15038,6 +15217,11 @@ msgstr "alleen in {monthName}"
 msgid "only in {remainingMonths} and {0}"
 msgstr "alleen in {remainingMonths} en {0}"
 
+#. js-lingui-id: Fedg/n
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "only member of the pipeline"
+msgstr ""
+
 #. js-lingui-id: G+ijJ2
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getDayOfWeekDescription.ts
 #: src/modules/workflow/workflow-trigger/utils/cron-to-human/descriptors/getDayOfWeekDescription.ts
@@ -15142,6 +15326,11 @@ msgstr "Open Gmail"
 #: src/modules/settings/data-model/fields/forms/components/SettingsDataModelFieldOnClickActionForm.tsx
 msgid "Open in app"
 msgstr "In app openen"
+
+#. js-lingui-id: ZRntbL
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Open in Fathom"
+msgstr ""
 
 #. js-lingui-id: DP5C7w
 #: src/modules/settings/members/components/MemberPermissionsTab.tsx
@@ -16159,6 +16348,7 @@ msgstr "Geprioriteerd"
 #: src/modules/settings/components/SettingsDnsRecordsTable.tsx
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskListView.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Priority"
@@ -16985,6 +17175,27 @@ msgstr "Deze aanbieder verwijderen en al zijn modellen ontkoppelen"
 msgid "Remove variable"
 msgstr "Variabele verwijderen"
 
+#. js-lingui-id: H3ZB+3
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the assignee"
+msgstr ""
+
+#. js-lingui-id: aHRWVI
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the due date"
+msgstr ""
+
+#. js-lingui-id: P1Zth5
+#. placeholder {0}: text('label')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the label {0}"
+msgstr ""
+
+#. js-lingui-id: IpPZIa
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the priority"
+msgstr ""
+
 #. js-lingui-id: 2wxgft
 #: src/modules/activities/files/components/AttachmentDropdown.tsx
 #: src/modules/ai/components/AiChatThreadItemMenu.tsx
@@ -17003,10 +17214,21 @@ msgstr "Chat hernoemen"
 msgid "Rename for all languages"
 msgstr "Naam wijzigen voor alle talen"
 
+#. js-lingui-id: pBZvUX
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "renamed the task"
+msgstr ""
+
 #. js-lingui-id: oQjB9l
 #: src/modules/settings/billing/components/SettingsBillingSubscriptionInfo.tsx
 msgid "Renewal date"
 msgstr "Verloopdatum"
+
+#. js-lingui-id: QkQB9X
+#. placeholder {0}: text('text')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "reopened “{0}”"
+msgstr ""
 
 #. js-lingui-id: Ee8JBW
 #: src/modules/workflow/workflow-steps/workflow-actions/form-action/components/WorkflowEditActionFormBuilder.tsx
@@ -17209,6 +17431,11 @@ msgstr "Herstel"
 msgid "Restore {objectLabel}"
 msgstr "{objectLabel} herstellen"
 
+#. js-lingui-id: zZYp76
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "restored this task"
+msgstr ""
+
 #. js-lingui-id: hO3AfV
 #: src/pages/settings/ai/components/SettingsAiModelsTab.tsx
 msgid "Restrict available models to a curated list"
@@ -17237,6 +17464,7 @@ msgstr "Hervatten"
 #: src/modules/ai/components/AiChatErrorMessage.tsx
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminQueueJobRowDropdownMenu.tsx
 #: src/modules/settings/admin-panel/health-status/components/SettingsAdminRetryJobsConfirmationModal.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/pages/onboarding/PaymentSuccess.tsx
 #: src/pages/onboarding/WorkspaceActivation.tsx
 msgid "Retry"
@@ -17518,7 +17746,6 @@ msgstr "Zaterdag"
 #: src/modules/settings/accounts/components/SettingsAccountsConnectionForm.tsx
 #: src/modules/settings/components/SaveAndCancelButtons/SaveButton.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 #: src/pages/settings/data-model/new-field/SettingsObjectNewFieldConfigure.tsx
 msgid "Save"
@@ -17542,6 +17769,11 @@ msgstr "Sla de dashboardwijzigingen op of annuleer ze voordat u de lay-out bewer
 #. js-lingui-id: fPrCUB
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 msgid "Save stages"
+msgstr ""
+
+#. js-lingui-id: giOmR0
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Saves when you click outside · Esc to discard changes"
 msgstr ""
 
 #. js-lingui-id: XvjC4F
@@ -17889,6 +18121,7 @@ msgstr "Opties zoeken"
 
 #. js-lingui-id: l9vi1F
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
+#: src/modules/task-pipelines/components/TaskPipelineUi.tsx
 msgid "Search people"
 msgstr ""
 
@@ -17904,10 +18137,12 @@ msgstr "Registraties zoeken..."
 
 #. js-lingui-id: bM6bNI
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Search tasks"
 msgstr ""
 
 #. js-lingui-id: u8FIIa
+#: src/pages/meetings/MeetingsPage.tsx
 #: src/pages/meetings/MeetingsPage.tsx
 msgid "Search the transcript"
 msgstr ""
@@ -18566,6 +18801,11 @@ msgstr "Stel globale werkruimtevoorkeuren in"
 msgid "Set Password"
 msgstr "Wachtwoord instellen"
 
+#. js-lingui-id: 3aMt5H
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "set the due date to {date}"
+msgstr ""
+
 #. js-lingui-id: qNbuWB
 #: src/modules/settings/domains/components/SettingPublicDomain.tsx
 #: src/modules/settings/domains/components/SettingsCustomDomain.tsx
@@ -18576,6 +18816,11 @@ msgstr "Stel de naam van je aangepaste domein in en configureer je DNS-records."
 #: src/modules/settings/domains/components/SettingsSubdomain.tsx
 msgid "Set the name of your subdomain"
 msgstr "Stel de naam van je subdomein in"
+
+#. js-lingui-id: A6MVVd
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "set the priority to {label}"
+msgstr ""
 
 #. js-lingui-id: tG3Y2G
 #: src/modules/views/view-picker/components/ViewPickerContentCreateMode.tsx
@@ -18770,6 +19015,11 @@ msgstr "Meer weergeven"
 #: src/modules/spreadsheet-import/steps/components/ValidationStep/ValidationStep.tsx
 msgid "Show only rows with errors"
 msgstr "Toon alleen rijen met fouten"
+
+#. js-lingui-id: 0edYE7
+#: src/pages/tasks/TasksPage.tsx
+msgid "Show pipelines"
+msgstr ""
 
 #. js-lingui-id: 3UVA3z
 #: src/modules/settings/data-model/object-details/components/tabs/SettingsObjectSearchSection.tsx
@@ -19073,6 +19323,11 @@ msgstr "Er is iets misgegaan bij het maken van uw werkruimte. Probeer het opnieu
 msgid "Something went wrong while loading logs. Please try again."
 msgstr "Er is iets misgegaan bij het laden van logs. Probeer het opnieuw."
 
+#. js-lingui-id: fWsBTs
+#: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
+msgid "Something went wrong. Please try again."
+msgstr ""
+
 #. js-lingui-id: yHwG3y
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
 #: src/modules/object-record/object-options-dropdown/components/ObjectOptionsDropdownCalendarViewContent.tsx
@@ -19174,6 +19429,11 @@ msgstr "Spaans"
 msgid "Speaker"
 msgstr ""
 
+#. js-lingui-id: fdfkaT
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "speaker at that moment"
+msgstr ""
+
 #. js-lingui-id: pyfee5
 #: src/modules/settings/data-model/object-details/components/tabs/ObjectSettings.tsx
 msgid "Speed up reads on the fields you filter or sort by most. Each index also slows down writes and uses disk space, so add them with intent."
@@ -19225,6 +19485,11 @@ msgstr ""
 #: src/modules/task-pipelines/components/TaskListView.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Stage"
+msgstr ""
+
+#. js-lingui-id: e+uKMa
+#: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
+msgid "Stage name"
 msgstr ""
 
 #. js-lingui-id: ErU1td
@@ -19575,6 +19840,11 @@ msgstr "Som"
 msgid "Summary"
 msgstr ""
 
+#. js-lingui-id: W+rgZf
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Summary & action items in"
+msgstr ""
+
 #. js-lingui-id: DBC3t5
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsCalendarStartDaySelect.tsx
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsCalendarStartDaySelect.tsx
@@ -19813,6 +20083,11 @@ msgstr ""
 #. js-lingui-id: x8FWnw
 #: src/pages/tasks/TasksPage.tsx
 msgid "Task archived"
+msgstr ""
+
+#. js-lingui-id: OLs8GT
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Task assigned"
 msgstr ""
 
 #. js-lingui-id: cI8fS/
@@ -20676,6 +20951,7 @@ msgstr "titel"
 #: src/modules/advanced-text-editor/components/AdvancedTextEditorInsertRail.tsx
 #: src/modules/settings/admin-panel/chats/components/SettingsAdminChatsTable.tsx
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 #: src/pages/settings/admin-panel/SettingsAdminWorkspaceDetail.tsx
 #: src/pages/tasks/TasksPage.tsx
@@ -20691,6 +20967,11 @@ msgstr "Titel"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
 msgid "To"
 msgstr "Aan"
+
+#. js-lingui-id: rZ9HZq
+#: src/pages/tasks/TasksPage.tsx
+msgid "To do"
+msgstr ""
 
 #. js-lingui-id: PtX5oV
 #: src/modules/inbox/components/InboxThreadList.tsx
@@ -21225,6 +21506,7 @@ msgid "Unarchive"
 msgstr "Uit archief halen"
 
 #. js-lingui-id: EbMPZJ
+#: src/modules/task-pipelines/components/TaskCard.tsx
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
 #: src/pages/tasks/TasksPage.tsx
@@ -21667,6 +21949,11 @@ msgstr "Bijgewerkt (op specifieke velden)"
 msgid "Updated {objectLabel}"
 msgstr "{objectLabel} bijgewerkt"
 
+#. js-lingui-id: tGwwnq
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "updated the description"
+msgstr ""
+
 #. js-lingui-id: xuCD/Q
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
@@ -21845,6 +22132,7 @@ msgstr "{objectLabel} wordt geupsert"
 
 #. js-lingui-id: BBUDfW
 #: src/modules/task-pipelines/components/TaskPipelineUi.tsx
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "Urgent"
 msgstr ""
 
@@ -23191,6 +23479,11 @@ msgstr "Je behoort al tot de werkruimte {workspaceDisplayName}"
 #: src/modules/auth/sign-in-up/hooks/useWorkspaceFromInviteHash.ts
 msgid "You already belong to this workspace"
 msgstr "Je behoort al tot deze werkruimte"
+
+#. js-lingui-id: FmMhRU
+#: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
+msgid "You already have a pipeline with this name."
+msgstr ""
 
 #. js-lingui-id: MuS9Gh
 #: src/modules/settings/data-model/object-details/components/SettingsUpdateDataModelObjectAboutForm.tsx

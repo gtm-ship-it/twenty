@@ -37,6 +37,7 @@ import {
   type TaskPipelineLabel,
   type TaskPipelineRole,
 } from '@/task-pipelines/types/TaskPipelineTypes';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
 type SettingsTab = 'general' | 'stages' | 'members' | 'fathom';
@@ -195,6 +196,7 @@ export const TaskPipelineSettingsModal = ({
   initialTab = 'general',
   onClose,
   onDeleted,
+  onTasksMayHaveChanged,
 }: {
   pipeline: TaskPipeline;
   api: PipelinesApi;
@@ -204,6 +206,7 @@ export const TaskPipelineSettingsModal = ({
   initialTab?: SettingsTab;
   onClose: () => void;
   onDeleted: () => void;
+  onTasksMayHaveChanged?: () => void;
 }) => {
   const isAdmin = pipeline.myRole === 'ADMIN';
   const { enqueueErrorSnackBar, enqueueSuccessSnackBar } = useSnackBar();
@@ -255,8 +258,7 @@ export const TaskPipelineSettingsModal = ({
       return true;
     } catch (error) {
       enqueueErrorSnackBar({
-        message:
-          error instanceof Error ? error.message : t`Something went wrong`,
+        message: friendlyErrorMessage(error, t`Something went wrong`),
       });
 
       return false;
@@ -311,18 +313,20 @@ export const TaskPipelineSettingsModal = ({
       width={620}
       onClose={onClose}
     >
-      <StyledSegmented>
-        {tabs.map((entry) => (
-          <StyledSegment
-            key={entry.key}
-            type="button"
-            isActive={tab === entry.key}
-            onClick={() => setTab(entry.key)}
-          >
-            {entry.label}
-          </StyledSegment>
-        ))}
-      </StyledSegmented>
+      {tabs.length > 1 && (
+        <StyledSegmented>
+          {tabs.map((entry) => (
+            <StyledSegment
+              key={entry.key}
+              type="button"
+              isActive={tab === entry.key}
+              onClick={() => setTab(entry.key)}
+            >
+              {entry.label}
+            </StyledSegment>
+          ))}
+        </StyledSegmented>
+      )}
 
       {tab === 'general' && isAdmin && (
         <>
@@ -606,15 +610,17 @@ export const TaskPipelineSettingsModal = ({
               }
               onClick={() =>
                 void run(
-                  () =>
-                    api.saveStages(
+                  async () => {
+                    await api.saveStages(
                       pipeline.id,
                       stages.map(({ clientKey: _clientKey, ...stage }) => ({
                         ...stage,
                         name: stage.name.trim(),
                       })),
                       fallbackStageId ?? keptExistingStages[0]?.id ?? null,
-                    ),
+                    );
+                    onTasksMayHaveChanged?.();
+                  },
                   t`Stages saved`,
                 )
               }
@@ -636,6 +642,7 @@ export const TaskPipelineSettingsModal = ({
                       members={nonMembers}
                       value={newMemberId}
                       onChange={setNewMemberId}
+                      allowUnassigned={false}
                       placeholder={t`Pick a workspace member`}
                     />
                   </div>
@@ -683,6 +690,7 @@ export const TaskPipelineSettingsModal = ({
                     members={nonMembers}
                     value={newMemberId}
                     onChange={setNewMemberId}
+                    allowUnassigned={false}
                     placeholder={t`Invite a workspace member`}
                   />
                 </div>
@@ -871,8 +879,10 @@ export const TaskPipelineSettingsModal = ({
                 {connection.hasWebhook
                   ? t`Live updates on`
                   : t`Live updates off`}{' '}
-                · {t`last sync`} {formatWhen(connection.lastSyncAt)} ·{' '}
-                {t`last meeting`} {formatWhen(connection.lastMeetingAt)}
+                ·{' '}
+                {connection.lastSyncAt === null
+                  ? t`Importing the last two weeks…`
+                  : `${t`last sync`} ${formatWhen(connection.lastSyncAt)} · ${t`last meeting`} ${formatWhen(connection.lastMeetingAt)}`}
               </StyledSub>
               {connection.lastError && (
                 <StyledErrorText>{connection.lastError}</StyledErrorText>
@@ -888,7 +898,12 @@ export const TaskPipelineSettingsModal = ({
                     void run(async () => {
                       const result = await api.syncFathom(connection.id);
 
-                      if (result?.error) {
+                      onTasksMayHaveChanged?.();
+
+                      if (
+                        result?.error !== null &&
+                        result?.error !== undefined
+                      ) {
                         throw new Error(result.error);
                       }
 
@@ -951,6 +966,8 @@ export const TaskPipelineSettingsModal = ({
                         fathomLabel.trim(),
                         fathomKey.trim(),
                       );
+                      onTasksMayHaveChanged?.();
+                      window.setTimeout(() => void api.reload(), 5000);
                       setFathomKey('');
                       setFathomLabel('');
                       enqueueSuccessSnackBar({
@@ -958,9 +975,10 @@ export const TaskPipelineSettingsModal = ({
                       });
                     } catch (error) {
                       setFathomError(
-                        error instanceof Error
-                          ? error.message
-                          : t`Could not connect Fathom`,
+                        friendlyErrorMessage(
+                          error,
+                          t`Could not connect Fathom`,
+                        ),
                       );
                     } finally {
                       setIsBusy(false);

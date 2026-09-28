@@ -1,7 +1,7 @@
 import { DragDropProvider, useDraggable, useDroppable } from '@dnd-kit/react';
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { isDefined } from 'twenty-shared/utils';
 import { Tag, type TagColor } from 'twenty-ui/data-display';
 import { IconPlus } from 'twenty-ui/icon';
@@ -15,6 +15,14 @@ import {
 } from '@/task-pipelines/types/TaskPipelineTypes';
 import { computeInsertPosition } from '@/task-pipelines/utils/computeInsertPosition';
 
+const StyledBoardShell = styled.div`
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+`;
+
 const StyledBoard = styled.div`
   align-items: flex-start;
   display: flex;
@@ -23,6 +31,21 @@ const StyledBoard = styled.div`
   min-height: 0;
   overflow: auto;
   padding: ${themeCssVariables.spacing[4]};
+`;
+
+// Pista de "hay más columnas a la derecha".
+const StyledScrollHint = styled.div`
+  background: linear-gradient(
+    to right,
+    transparent,
+    ${themeCssVariables.background.primary}
+  );
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 48px;
 `;
 
 const StyledColumn = styled.div<{ isOver: boolean }>`
@@ -47,7 +70,7 @@ const StyledColumn = styled.div<{ isOver: boolean }>`
   transition:
     background 0.12s ease,
     border-color 0.12s ease;
-  width: 290px;
+  width: 272px;
 `;
 
 const StyledColumnHeader = styled.div`
@@ -288,6 +311,26 @@ export const TaskBoard = ({
   onMoveTask,
   onQuickAdd,
 }: TaskBoardProps) => {
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [hasMoreRight, setHasMoreRight] = useState(false);
+
+  const updateScrollHint = useCallback(() => {
+    const board = boardRef.current;
+
+    if (board !== null) {
+      setHasMoreRight(
+        board.scrollLeft + board.clientWidth < board.scrollWidth - 4,
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollHint();
+    window.addEventListener('resize', updateScrollHint);
+
+    return () => window.removeEventListener('resize', updateScrollHint);
+  }, [updateScrollHint, stages.length]);
+
   const tasksByStage = new Map<string, PipelineTask[]>(
     stages.map((stage) => [stage.id, []]),
   );
@@ -358,19 +401,22 @@ export const TaskBoard = ({
         );
       }}
     >
-      <StyledBoard>
-        {stages.map((stage) => (
-          <TaskColumn
-            key={stage.id}
-            stage={stage}
-            tasks={tasksByStage.get(stage.id) ?? []}
-            membersById={membersById}
-            labelColors={labelColors}
-            onOpenTask={onOpenTask}
-            onQuickAdd={onQuickAdd}
-          />
-        ))}
-      </StyledBoard>
+      <StyledBoardShell>
+        <StyledBoard ref={boardRef} onScroll={updateScrollHint}>
+          {stages.map((stage) => (
+            <TaskColumn
+              key={stage.id}
+              stage={stage}
+              tasks={tasksByStage.get(stage.id) ?? []}
+              membersById={membersById}
+              labelColors={labelColors}
+              onOpenTask={onOpenTask}
+              onQuickAdd={onQuickAdd}
+            />
+          ))}
+        </StyledBoard>
+        {hasMoreRight && <StyledScrollHint />}
+      </StyledBoardShell>
     </DragDropProvider>
   );
 };

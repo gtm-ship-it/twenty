@@ -25,6 +25,7 @@ import {
 } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import { type TaskPriority } from '@/task-pipelines/types/TaskPipelineTypes';
 import { dueFromInputValue } from '@/task-pipelines/utils/taskDueStatus';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
 import { type TimelineThread } from '~/generated/graphql';
@@ -194,9 +195,7 @@ export const CreateTaskFromEmailModal = ({
       }
     } catch (creationError) {
       setError(
-        creationError instanceof Error
-          ? creationError.message
-          : t`Could not create the task`,
+        friendlyErrorMessage(creationError, t`Could not create the task`),
       );
       setIsSaving(false);
     }

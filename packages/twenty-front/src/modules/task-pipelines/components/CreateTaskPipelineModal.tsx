@@ -14,6 +14,7 @@ import {
   TaskModal,
 } from '@/task-pipelines/components/TaskPipelineUi';
 import { type TaskPipelineVisibility } from '@/task-pipelines/types/TaskPipelineTypes';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 
 const StyledOptions = styled.div`
   display: grid;
@@ -94,10 +95,12 @@ export const PipelineColorSwatches = ({
 );
 
 export const CreateTaskPipelineModal = ({
+  existingNames = [],
   canCreateWorkspacePipelines,
   onCreate,
   onClose,
 }: {
+  existingNames?: string[];
   canCreateWorkspacePipelines: boolean;
   onCreate: (input: {
     name: string;
@@ -128,9 +131,7 @@ export const CreateTaskPipelineModal = ({
       await onCreate({ name: name.trim(), color, visibility });
     } catch (creationError) {
       setError(
-        creationError instanceof Error
-          ? creationError.message
-          : t`Could not create the pipeline`,
+        friendlyErrorMessage(creationError, t`Could not create the pipeline`),
       );
       setIsSaving(false);
     }
@@ -204,7 +205,13 @@ export const CreateTaskPipelineModal = ({
         <PipelineColorSwatches value={color} onChange={setColor} />
       </div>
       <StyledHint>{t`It starts with the stages To do · In progress · Blocked · Done — you can rename, recolor, reorder or replace them in its settings.`}</StyledHint>
-      {error && <StyledErrorText>{error}</StyledErrorText>}
+      {existingNames.some(
+        (existing) =>
+          existing.trim().toLowerCase() === name.trim().toLowerCase(),
+      ) && (
+        <StyledHint>{t`You already have a pipeline with this name.`}</StyledHint>
+      )}
+      {error !== null && <StyledErrorText>{error}</StyledErrorText>}
     </TaskModal>
   );
 };

@@ -5,6 +5,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
 import {
   IconLayoutKanban,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
   IconList,
   IconLock,
   IconPlus,
@@ -52,6 +54,7 @@ import {
   filterPipelineTasks,
 } from '@/task-pipelines/utils/filterPipelineTasks';
 import { dueFromInputValue } from '@/task-pipelines/utils/taskDueStatus';
+import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
 
@@ -76,7 +79,40 @@ const StyledSidebar = styled.nav`
   gap: ${themeCssVariables.spacing[4]};
   overflow-y: auto;
   padding: ${themeCssVariables.spacing[3]} ${themeCssVariables.spacing[2]};
-  width: 232px;
+  width: 208px;
+`;
+
+const StyledCollapsedRail = styled.div`
+  border-right: 1px solid ${themeCssVariables.border.color.light};
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[1]};
+`;
+
+const StyledFilterNotice = styled.div`
+  align-items: center;
+  background: ${themeCssVariables.background.secondary};
+  border-bottom: 1px solid ${themeCssVariables.border.color.light};
+  color: ${themeCssVariables.font.color.secondary};
+  display: flex;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[2]};
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[4]};
+`;
+
+const StyledTextButton = styled.button`
+  background: transparent;
+  border: none;
+  color: ${themeCssVariables.color.blue};
+  cursor: pointer;
+  font-family: inherit;
+  font-size: ${themeCssVariables.font.size.sm};
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const StyledSidebarSection = styled.div`
@@ -142,20 +178,29 @@ const StyledHeader = styled.div`
   align-items: center;
   border-bottom: 1px solid ${themeCssVariables.border.color.light};
   display: flex;
-  flex-wrap: wrap;
   gap: ${themeCssVariables.spacing[2]};
+  min-width: 0;
   padding: ${themeCssVariables.spacing[3]} ${themeCssVariables.spacing[4]};
+
+  & > * {
+    flex-shrink: 0;
+  }
 `;
 
 const StyledTitle = styled.h1`
   align-items: center;
   color: ${themeCssVariables.font.color.primary};
   display: flex;
+  flex: 1 1 auto;
+  flex-shrink: 1 !important;
   font-size: ${themeCssVariables.font.size.lg};
   font-weight: ${themeCssVariables.font.weight.semiBold};
   gap: ${themeCssVariables.spacing[2]};
   margin: 0;
-  margin-right: auto;
+  min-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const StyledAvatars = styled.div`
@@ -184,7 +229,7 @@ const StyledSearch = styled.div`
     font-size: ${themeCssVariables.font.size.sm};
     outline: none;
     padding: 5px 0;
-    width: 160px;
+    width: 130px;
   }
 `;
 
@@ -258,9 +303,7 @@ const NewTaskModal = ({
       });
     } catch (creationError) {
       setError(
-        creationError instanceof Error
-          ? creationError.message
-          : t`Could not create the task`,
+        friendlyErrorMessage(creationError, t`Could not create the task`),
       );
       setIsSaving(false);
     }
@@ -389,6 +432,13 @@ export const TasksPage = () => {
       return 'board';
     }
   });
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('ptsai.tasks.sidebarCollapsed') === '1';
+    } catch {
+      return false;
+    }
+  });
   const [search, setSearch] = useState('');
   const [assigneeFilter, setAssigneeFilter] =
     useState<TaskAssigneeFilter>('all');
@@ -430,6 +480,17 @@ export const TasksPage = () => {
     searchParams,
     setSearchParams,
   ]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'ptsai.tasks.sidebarCollapsed',
+        isSidebarCollapsed ? '1' : '0',
+      );
+    } catch {
+      // sin almacenamiento: solo se pierde la preferencia
+    }
+  }, [isSidebarCollapsed]);
 
   useEffect(() => {
     try {
@@ -511,8 +572,7 @@ export const TasksPage = () => {
       await action();
     } catch (error) {
       enqueueErrorSnackBar({
-        message:
-          error instanceof Error ? error.message : t`Something went wrong`,
+        message: friendlyErrorMessage(error, t`Something went wrong`),
       });
     }
   };
@@ -540,40 +600,63 @@ export const TasksPage = () => {
 
   return (
     <StyledPage>
-      <StyledSidebar aria-label={t`Task pipelines`}>
-        <StyledSidebarSection>
-          <StyledNavItem
-            type="button"
-            isActive={isMine}
-            onClick={() => selectPipeline(MY_TASKS)}
-          >
-            <IconUser size={16} />
-            <StyledNavName>{t`My tasks`}</StyledNavName>
-          </StyledNavItem>
-        </StyledSidebarSection>
-        <StyledSidebarSection>
-          <StyledSectionTitle>{t`Shared`}</StyledSectionTitle>
-          {shared.map(renderNavItem)}
-          {shared.length === 0 && !api.isLoading && (
-            <StyledSectionTitle
-              style={{ textTransform: 'none', letterSpacing: 0 }}
-            >{t`None yet`}</StyledSectionTitle>
-          )}
-        </StyledSidebarSection>
-        <StyledSidebarSection>
-          <StyledSectionTitle>{t`Personal`}</StyledSectionTitle>
-          {personal.map(renderNavItem)}
-        </StyledSidebarSection>
-        <div>
-          <Button
-            title={t`New pipeline`}
-            Icon={IconPlus}
+      {isSidebarCollapsed ? (
+        <StyledCollapsedRail>
+          <IconButton
+            Icon={IconLayoutSidebarLeftExpand}
             size="small"
-            variant="secondary"
-            onClick={() => setIsCreatingPipeline(true)}
+            variant="tertiary"
+            ariaLabel={t`Show pipelines`}
+            onClick={() => setIsSidebarCollapsed(false)}
           />
-        </div>
-      </StyledSidebar>
+        </StyledCollapsedRail>
+      ) : (
+        <StyledSidebar aria-label={t`Task pipelines`}>
+          <StyledSidebarSection
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <StyledNavItem
+                type="button"
+                isActive={isMine}
+                onClick={() => selectPipeline(MY_TASKS)}
+              >
+                <IconUser size={16} />
+                <StyledNavName>{t`My tasks`}</StyledNavName>
+              </StyledNavItem>
+            </div>
+            <IconButton
+              Icon={IconLayoutSidebarLeftCollapse}
+              size="small"
+              variant="tertiary"
+              ariaLabel={t`Hide pipelines`}
+              onClick={() => setIsSidebarCollapsed(true)}
+            />
+          </StyledSidebarSection>
+          <StyledSidebarSection>
+            <StyledSectionTitle>{t`Shared`}</StyledSectionTitle>
+            {shared.map(renderNavItem)}
+            {shared.length === 0 && !api.isLoading && (
+              <StyledSectionTitle
+                style={{ textTransform: 'none', letterSpacing: 0 }}
+              >{t`None yet`}</StyledSectionTitle>
+            )}
+          </StyledSidebarSection>
+          <StyledSidebarSection>
+            <StyledSectionTitle>{t`Personal`}</StyledSectionTitle>
+            {personal.map(renderNavItem)}
+          </StyledSidebarSection>
+          <div>
+            <Button
+              title={t`New pipeline`}
+              Icon={IconPlus}
+              size="small"
+              variant="secondary"
+              onClick={() => setIsCreatingPipeline(true)}
+            />
+          </div>
+        </StyledSidebar>
+      )}
 
       <StyledMain>
         {api.isLoading ? (
@@ -703,6 +786,25 @@ export const TasksPage = () => {
               )}
             </StyledHeader>
 
+            {!tasksApi.isLoading &&
+              tasksApi.tasks.length > 0 &&
+              visibleTasks.length === 0 && (
+                <StyledFilterNotice>
+                  {search.trim().length > 0
+                    ? t`No tasks match “${search.trim()}”.`
+                    : t`No tasks match these filters.`}
+                  <StyledTextButton
+                    type="button"
+                    onClick={() => {
+                      setSearch('');
+                      setAssigneeFilter('all');
+                      setLabelFilter(null);
+                    }}
+                  >
+                    {t`Clear filters`}
+                  </StyledTextButton>
+                </StyledFilterNotice>
+              )}
             {tasksApi.isLoading ? (
               <StyledEmpty>{t`Loading tasks…`}</StyledEmpty>
             ) : isMine ? (
@@ -734,10 +836,10 @@ export const TasksPage = () => {
                     await api.reload();
                   } catch (error) {
                     enqueueErrorSnackBar({
-                      message:
-                        error instanceof Error
-                          ? error.message
-                          : t`Could not create the task`,
+                      message: friendlyErrorMessage(
+                        error,
+                        t`Could not create the task`,
+                      ),
                     });
                     throw error;
                   }
@@ -758,10 +860,19 @@ export const TasksPage = () => {
 
       {isCreatingPipeline && (
         <CreateTaskPipelineModal
+          existingNames={pipelines.map((pipeline) => pipeline.name)}
           canCreateWorkspacePipelines={api.canCreateWorkspacePipelines}
           onClose={() => setIsCreatingPipeline(false)}
           onCreate={async (input) => {
-            const created = await api.createPipeline(input);
+            const created = await api.createPipeline({
+              ...input,
+              stages: [
+                { name: t`To do`, color: 'gray' },
+                { name: t`In progress`, color: 'blue' },
+                { name: t`Blocked`, color: 'red' },
+                { name: t`Done`, color: 'green', isDone: true },
+              ],
+            });
 
             setIsCreatingPipeline(false);
             enqueueSuccessSnackBar({ message: t`Pipeline created` });
@@ -803,6 +914,12 @@ export const TasksPage = () => {
           allMembers={allWorkspaceMembers}
           currentWorkspaceMemberId={currentMemberId}
           onClose={() => setSettingsOpen(false)}
+          onTasksMayHaveChanged={() => {
+            // La importación de Fathom corre en segundo plano: se refresca ya y un par de veces más.
+            void tasksApi.refetch();
+            window.setTimeout(() => void tasksApi.refetch(), 4000);
+            window.setTimeout(() => void tasksApi.refetch(), 12000);
+          }}
           onDeleted={() => {
             setSettingsOpen(false);
             setSearchParams(new URLSearchParams());

@@ -573,9 +573,11 @@ export class FathomIngestionService {
         [
           input.workspaceId,
           task.id,
-          input.needsAssignment
-            ? 'created this from a meeting — nobody in this pipeline matched the assignee, please assign it'
-            : `created this from a meeting (assigned by ${input.resolution.toLowerCase().replace('_', ' ')})`,
+          JSON.stringify(
+            input.needsAssignment
+              ? { type: 'fromMeetingUnassigned' }
+              : { type: 'fromMeeting', resolution: input.resolution },
+          ),
         ],
       );
 

@@ -2,7 +2,7 @@ import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { Avatar } from 'twenty-ui/data-display';
-import { IconX } from 'twenty-ui/icon';
+import { IconChevronDown, IconX } from 'twenty-ui/icon';
 import { IconButton } from 'twenty-ui/input';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
@@ -286,15 +286,18 @@ const StyledMemberMenu = styled.div`
   border: 1px solid ${themeCssVariables.border.color.medium};
   border-radius: ${themeCssVariables.border.radius.sm};
   box-shadow: ${themeCssVariables.boxShadow.strong};
-  left: 0;
-  max-height: 260px;
+  box-sizing: border-box;
   min-width: 220px;
   overflow-y: auto;
   padding: ${themeCssVariables.spacing[1]};
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 20;
+  position: fixed;
+  z-index: 2000;
+`;
+
+const StyledChevron = styled.span`
+  color: ${themeCssVariables.font.color.tertiary};
+  display: inline-flex;
+  margin-left: auto;
 `;
 
 const StyledMemberOption = styled.button<{ isSelected: boolean }>`
@@ -370,7 +373,33 @@ export const MemberPicker = ({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const selected = members.find((member) => member.id === value) ?? null;
+
+  // El menú flota por encima de modales/paneles con scroll (position: fixed),
+  // y se abre hacia arriba si abajo no cabe.
+  const openMenu = () => {
+    const rect = containerRef.current?.getBoundingClientRect();
+
+    if (rect !== undefined) {
+      const spaceBelow = window.innerHeight - rect.bottom - 8;
+      const spaceAbove = rect.top - 8;
+      const openUp = spaceBelow < 220 && spaceAbove > spaceBelow;
+      const maxHeight = Math.min(300, openUp ? spaceAbove : spaceBelow);
+
+      setMenuStyle({
+        left: rect.left,
+        maxHeight,
+        width: Math.max(rect.width, 240),
+        ...(openUp
+          ? { bottom: window.innerHeight - rect.top + 4 }
+          : { top: rect.bottom + 4 }),
+      });
+    }
+
+    setIsOpen(true);
+  };
 
   // Esc cierra solo el menú, no el panel/modal que lo contiene.
   useEffect(() => {
@@ -396,17 +425,31 @@ export const MemberPicker = ({
     }
 
     const onClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+
       if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        containerRef.current?.contains(target) !== true &&
+        menuRef.current?.contains(target) !== true
       ) {
+        setIsOpen(false);
+      }
+    };
+    // Un scroll de la página movería el botón: se cierra el menú (salvo el propio scroll del menú).
+    const onScroll = (event: Event) => {
+      if (menuRef.current?.contains(event.target as Node) !== true) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener('mousedown', onClick);
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
 
-    return () => document.removeEventListener('mousedown', onClick);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [isOpen]);
 
   const filtered = members.filter((member) =>
@@ -421,7 +464,7 @@ export const MemberPicker = ({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => (isOpen ? setIsOpen(false) : openMenu())}
       >
         {selected ? (
           <>
@@ -431,9 +474,12 @@ export const MemberPicker = ({
         ) : (
           <StyledMuted>{placeholder ?? t`Unassigned`}</StyledMuted>
         )}
+        <StyledChevron>
+          <IconChevronDown size={14} />
+        </StyledChevron>
       </StyledMemberButton>
       {isOpen && (
-        <StyledMemberMenu>
+        <StyledMemberMenu ref={menuRef} style={menuStyle} role="listbox">
           {members.length > 6 && (
             <StyledMemberSearch
               autoFocus

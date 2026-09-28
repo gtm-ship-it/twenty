@@ -31,7 +31,7 @@ const StyledCard = styled.div<{ isDone: boolean }>`
   border: 1px solid ${themeCssVariables.border.color.medium};
   border-radius: ${themeCssVariables.border.radius.sm};
   box-shadow: ${themeCssVariables.boxShadow.light};
-  cursor: pointer;
+  cursor: grab;
   display: flex;
   flex-direction: column;
   gap: ${themeCssVariables.spacing[2]};
@@ -41,6 +41,7 @@ const StyledCard = styled.div<{ isDone: boolean }>`
 
   &:hover {
     border-color: ${themeCssVariables.border.color.strong};
+    box-shadow: ${themeCssVariables.boxShadow.strong};
   }
 
   &:focus-visible {
@@ -99,6 +100,24 @@ const StyledNeedsAssignment = styled.span`
   font-size: ${themeCssVariables.font.size.xs};
   gap: 3px;
   padding: 1px 6px;
+`;
+
+const StyledUnassigned = styled.span`
+  border: 1px dashed ${themeCssVariables.border.color.strong};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${themeCssVariables.font.color.tertiary};
+  font-size: ${themeCssVariables.font.size.xs};
+  padding: 0 6px;
+`;
+
+const StyledAssignee = styled.span`
+  align-items: center;
+  color: ${themeCssVariables.font.color.secondary};
+  display: inline-flex;
+  font-size: ${themeCssVariables.font.size.xs};
+  gap: 4px;
+  margin-left: auto;
+  min-width: 0;
 `;
 
 const StyledPipelineName = styled.span`
@@ -213,15 +232,19 @@ export const TaskCard = ({
         )}
       </StyledMetaRow>
       <StyledFooter>
-        {task.needsAssignment && !assignee ? (
+        {assignee !== null ? (
+          <StyledAssignee title={assignee.fullName}>
+            {assignee.firstName}
+            <MemberAvatar member={assignee} size="sm" />
+          </StyledAssignee>
+        ) : task.needsAssignment ? (
           <StyledNeedsAssignment>
             <IconAlertTriangle size={12} />
             {t`Needs assignee`}
           </StyledNeedsAssignment>
         ) : (
-          <span />
+          <StyledUnassigned>{t`Unassigned`}</StyledUnassigned>
         )}
-        {assignee && <MemberAvatar member={assignee} size="xs" />}
       </StyledFooter>
     </StyledCard>
   );

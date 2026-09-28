@@ -58,6 +58,27 @@ export const DEFAULT_TASK_PIPELINE_STAGES: {
 
 const POSITION_STEP = 1024;
 
+export type TaskActivityEvent =
+  | { type: 'created' }
+  | { type: 'moved'; stage: string }
+  | { type: 'assigned'; name: string }
+  | { type: 'unassigned' }
+  | { type: 'renamed' }
+  | { type: 'description' }
+  | { type: 'due'; date: string }
+  | { type: 'dueCleared' }
+  | { type: 'priority'; priority: string }
+  | { type: 'priorityCleared' }
+  | { type: 'labelAdded'; label: string }
+  | { type: 'labelRemoved'; label: string }
+  | { type: 'checklistAdded'; text: string }
+  | { type: 'checklistDone'; text: string }
+  | { type: 'checklistUndone'; text: string }
+  | { type: 'archived' }
+  | { type: 'restored' }
+  | { type: 'fromMeeting'; resolution: string }
+  | { type: 'fromMeetingUnassigned' };
+
 type Actor = { workspaceId: string; workspaceMemberId: string | undefined };
 
 @Injectable()
@@ -741,12 +762,9 @@ export class TaskPipelinesService {
       },
     );
 
-    await this.logActivity(
-      actor.workspaceId,
-      created.id,
-      workspaceMemberId,
-      'created this task',
-    );
+    await this.logActivity(actor.workspaceId, created.id, workspaceMemberId, {
+      type: 'created',
+    });
 
     if (
       isDefined(created.assigneeWorkspaceMemberId) &&
@@ -773,14 +791,16 @@ export class TaskPipelinesService {
 
     const patch: QueryDeepPartialEntity<TaskPipelineTaskEntity> &
       Record<string, unknown> = {};
-    const activity: string[] = [];
+    const activity: TaskActivityEvent[] = [];
 
     if (isDefined(input.title) && input.title.trim() !== task.title) {
       patch.title = input.title.trim();
+      activity.push({ type: 'renamed' });
     }
 
     if (isDefined(input.body) && input.body !== task.body) {
       patch.body = input.body;
+      activity.push({ type: 'description' });
     }
 
     let newAssignee: string | null | undefined;
@@ -814,34 +834,82 @@ export class TaskPipelinesService {
 
       activity.push(
         isDefined(member)
-          ? `assigned this to ${[member.firstName, member.lastName].filter(Boolean).join(' ')}`
-          : 'removed the assignee',
+          ? {
+              type: 'assigned',
+              name: [member.firstName, member.lastName]
+                .filter(Boolean)
+                .join(' '),
+            }
+          : { type: 'unassigned' },
       );
     }
 
     if (input.clearDueAt === true) {
-      patch.dueAt = null;
-    } else if (isDefined(input.dueAt)) {
+      if (isDefined(task.dueAt)) {
+        patch.dueAt = null;
+        activity.push({ type: 'dueCleared' });
+      }
+    } else if (
+      isDefined(input.dueAt) &&
+      new Date(input.dueAt).getTime() !== task.dueAt?.getTime()
+    ) {
       patch.dueAt = input.dueAt;
+      activity.push({ type: 'due', date: new Date(input.dueAt).toISOString() });
     }
 
     if (isDefined(input.priority)) {
-      patch.priority =
+      const nextPriority =
         input.priority === 'NONE'
           ? null
           : (input.priority as TaskPipelineTaskPriority);
+
+      if (nextPriority !== task.priority) {
+        patch.priority = nextPriority;
+        activity.push(
+          isDefined(nextPriority)
+            ? { type: 'priority', priority: nextPriority }
+            : { type: 'priorityCleared' },
+        );
+      }
     }
 
     if (isDefined(input.labels)) {
-      patch.labels = this.sanitizeLabels(input.labels);
+      const nextLabels = this.sanitizeLabels(input.labels);
+      const previousLabels = task.labels ?? [];
+
+      patch.labels = nextLabels;
+      nextLabels
+        .filter((label) => !previousLabels.includes(label))
+        .forEach((label) => activity.push({ type: 'labelAdded', label }));
+      previousLabels
+        .filter((label) => !nextLabels.includes(label))
+        .forEach((label) => activity.push({ type: 'labelRemoved', label }));
     }
 
     if (isDefined(input.checklist)) {
-      patch.checklist = input.checklist.map((item) => ({
+      const nextChecklist = input.checklist.map((item) => ({
         id: item.id,
         text: item.text.trim(),
         done: item.done,
       }));
+      const previousById = new Map(
+        (task.checklist ?? []).map((item) => [item.id, item]),
+      );
+
+      patch.checklist = nextChecklist;
+
+      for (const item of nextChecklist) {
+        const previous = previousById.get(item.id);
+
+        if (!isDefined(previous)) {
+          activity.push({ type: 'checklistAdded', text: item.text });
+        } else if (previous.done !== item.done) {
+          activity.push({
+            type: item.done ? 'checklistDone' : 'checklistUndone',
+            text: item.text,
+          });
+        }
+      }
     }
 
     if (isDefined(input.relatedRecords)) {
@@ -934,12 +1002,10 @@ export class TaskPipelinesService {
     await this.taskRepository.update(actor.workspaceId, { id: task.id }, patch);
 
     if (targetStage.id !== task.stageId) {
-      await this.logActivity(
-        actor.workspaceId,
-        task.id,
-        workspaceMemberId,
-        `moved this to ${targetStage.name}`,
-      );
+      await this.logActivity(actor.workspaceId, task.id, workspaceMemberId, {
+        type: 'moved',
+        stage: targetStage.name,
+      });
     }
 
     return this.getTask(actor, task.id);
@@ -962,7 +1028,7 @@ export class TaskPipelinesService {
       actor.workspaceId,
       task.id,
       workspaceMemberId,
-      archived ? 'archived this task' : 'restored this task',
+      archived ? { type: 'archived' } : { type: 'restored' },
     );
 
     return this.getTask(actor, task.id);
@@ -1070,17 +1136,19 @@ export class TaskPipelinesService {
 
   // ------------------------------------------------------------------ helpers
 
+  // Actividad estructurada ({type, ...datos}) como JSON: el front la muestra
+  // traducida al idioma de quien la lee.
   async logActivity(
     workspaceId: string,
     taskId: string,
     workspaceMemberId: string | null,
-    body: string,
+    event: TaskActivityEvent,
   ): Promise<void> {
     await this.commentRepository.insert(workspaceId, {
       taskId,
       authorWorkspaceMemberId: workspaceMemberId,
       kind: 'ACTIVITY',
-      body,
+      body: JSON.stringify(event),
     });
   }
 
