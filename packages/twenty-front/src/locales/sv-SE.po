@@ -13359,6 +13359,9 @@ msgstr "Mina appar"
 #. js-lingui-id: R/v9tv
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "My tasks"
 msgstr ""
 
@@ -13730,6 +13733,7 @@ msgstr "Nytt Lösenord"
 
 #. js-lingui-id: 2llx5k
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "New pipeline"
@@ -15953,6 +15957,7 @@ msgstr ""
 
 #. js-lingui-id: 7MuXko
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Personal"
 msgstr ""
@@ -18938,6 +18943,7 @@ msgstr "Dela din app med andra arbetsytor utan att publicera den på marknadspla
 #. js-lingui-id: 0Gd0NU
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Shared"
 msgstr ""
 
@@ -19884,6 +19890,12 @@ msgstr "Stöder resonemang"
 #: src/localization/hooks/useLocaleOptions.ts
 msgid "Swedish"
 msgstr "Swedish"
+
+#. js-lingui-id: P6Wtp3
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+msgid "Switch pipeline"
+msgstr ""
 
 #. js-lingui-id: GPKudC
 #: src/modules/settings/billing/hooks/useBillingPlanActions.ts

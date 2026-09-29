@@ -13334,6 +13334,9 @@ msgstr "我的應用程式"
 #. js-lingui-id: R/v9tv
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "My tasks"
 msgstr ""
 
@@ -13705,6 +13708,7 @@ msgstr "新密碼"
 
 #. js-lingui-id: 2llx5k
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "New pipeline"
@@ -15928,6 +15932,7 @@ msgstr ""
 
 #. js-lingui-id: 7MuXko
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Personal"
 msgstr ""
@@ -18911,6 +18916,7 @@ msgstr "在不發佈到市集的情況下，將您的應用程式分享到其他
 #. js-lingui-id: 0Gd0NU
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Shared"
 msgstr ""
 
@@ -19855,6 +19861,12 @@ msgstr "支援推理"
 #: src/localization/hooks/useLocaleOptions.ts
 msgid "Swedish"
 msgstr "瑞典語"
+
+#. js-lingui-id: P6Wtp3
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+msgid "Switch pipeline"
+msgstr ""
 
 #. js-lingui-id: GPKudC
 #: src/modules/settings/billing/hooks/useBillingPlanActions.ts

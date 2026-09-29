@@ -13352,6 +13352,9 @@ msgstr "My apps"
 #. js-lingui-id: R/v9tv
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "My tasks"
 msgstr "My tasks"
 
@@ -13723,6 +13726,7 @@ msgstr "New Password"
 
 #. js-lingui-id: 2llx5k
 #: src/modules/inbox/components/PipelineEditorModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "New pipeline"
@@ -15946,6 +15950,7 @@ msgstr "personal"
 
 #. js-lingui-id: 7MuXko
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
+#: src/pages/tasks/TasksPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Personal"
 msgstr "Personal"
@@ -18929,6 +18934,7 @@ msgstr "Share your app to other workspaces without pushing it on the marketplace
 #. js-lingui-id: 0Gd0NU
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
 #: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
 msgid "Shared"
 msgstr "Shared"
 
@@ -19873,6 +19879,12 @@ msgstr "Supports reasoning"
 #: src/localization/hooks/useLocaleOptions.ts
 msgid "Swedish"
 msgstr "Swedish"
+
+#. js-lingui-id: P6Wtp3
+#: src/pages/tasks/TasksPage.tsx
+#: src/pages/tasks/TasksPage.tsx
+msgid "Switch pipeline"
+msgstr "Switch pipeline"
 
 #. js-lingui-id: GPKudC
 #: src/modules/settings/billing/hooks/useBillingPlanActions.ts

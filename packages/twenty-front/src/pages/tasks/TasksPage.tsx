@@ -1,9 +1,10 @@
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
 import {
+  IconChevronDown,
   IconLayoutKanban,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
@@ -198,9 +199,7 @@ const StyledTitle = styled.h1`
   gap: ${themeCssVariables.spacing[2]};
   margin: 0;
   min-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
 `;
 
 const StyledAvatars = styled.div`
@@ -251,6 +250,202 @@ const StyledFormGrid = styled.div`
   gap: ${themeCssVariables.spacing[3]};
   grid-template-columns: 1fr 1fr;
 `;
+
+const StyledSwitcherButton = styled.button`
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: ${themeCssVariables.spacing[2]};
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px ${themeCssVariables.spacing[2]};
+
+  &:hover {
+    background: ${themeCssVariables.background.transparent.light};
+    border-color: ${themeCssVariables.border.color.medium};
+  }
+`;
+
+const StyledSwitcherName = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const StyledSwitcherMenu = styled.div`
+  background: ${themeCssVariables.background.primary};
+  border: 1px solid ${themeCssVariables.border.color.medium};
+  border-radius: ${themeCssVariables.border.radius.md};
+  box-shadow: ${themeCssVariables.boxShadow.strong};
+  display: flex;
+  flex-direction: column;
+  font-size: ${themeCssVariables.font.size.md};
+  font-weight: ${themeCssVariables.font.weight.regular};
+  left: 0;
+  max-height: 60vh;
+  min-width: 260px;
+  overflow-y: auto;
+  padding: ${themeCssVariables.spacing[1]};
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 50;
+`;
+
+const StyledSwitcherSection = styled.div`
+  color: ${themeCssVariables.font.color.light};
+  font-size: ${themeCssVariables.font.size.xs};
+  letter-spacing: 0.04em;
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[2]} 2px;
+  text-transform: uppercase;
+`;
+
+const StyledRailDot = styled.button<{ isActive: boolean }>`
+  align-items: center;
+  background: ${({ isActive }) =>
+    isActive ? themeCssVariables.background.transparent.medium : 'transparent'};
+  border: none;
+  border-radius: ${themeCssVariables.border.radius.sm};
+  cursor: pointer;
+  display: flex;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+
+  &:hover {
+    background: ${themeCssVariables.background.transparent.light};
+  }
+`;
+
+// El nombre del tablero es también el selector: siempre se puede cambiar de
+// tablero desde aquí, aunque la columna lateral esté plegada.
+const PipelineSwitcher = ({
+  pipelines,
+  selectedKey,
+  onSelect,
+  onCreate,
+  children,
+}: {
+  pipelines: TaskPipeline[];
+  selectedKey: string | null;
+  onSelect: (key: string) => void;
+  onCreate: () => void;
+  children: React.ReactNode;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const onMouseDown = (event: MouseEvent) => {
+      if (containerRef.current?.contains(event.target as Node) !== true) {
+        setIsOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen]);
+
+  const pick = (key: string) => {
+    setIsOpen(false);
+    onSelect(key);
+  };
+
+  const shared = pipelines.filter(
+    (pipeline) => pipeline.visibility === 'WORKSPACE',
+  );
+  const personal = pipelines.filter(
+    (pipeline) => pipeline.visibility === 'PERSONAL',
+  );
+
+  const renderOption = (pipeline: TaskPipeline) => (
+    <StyledNavItem
+      key={pipeline.id}
+      type="button"
+      role="option"
+      aria-selected={pipeline.id === selectedKey}
+      isActive={pipeline.id === selectedKey}
+      onClick={() => pick(pipeline.id)}
+    >
+      {pipeline.visibility === 'PERSONAL' ? (
+        <IconLock size={14} />
+      ) : (
+        <IconUsers size={14} />
+      )}
+      <StyledNavName>{pipeline.name}</StyledNavName>
+      <StyledNavCount>
+        {pipeline.openTaskCount > 0 ? pipeline.openTaskCount : ''}
+      </StyledNavCount>
+    </StyledNavItem>
+  );
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', minWidth: 0 }}>
+      <StyledSwitcherButton
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        title={t`Switch pipeline`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {children}
+        <IconChevronDown size={16} />
+      </StyledSwitcherButton>
+      {isOpen && (
+        <StyledSwitcherMenu role="listbox" aria-label={t`Switch pipeline`}>
+          <StyledNavItem
+            type="button"
+            role="option"
+            aria-selected={selectedKey === MY_TASKS}
+            isActive={selectedKey === MY_TASKS}
+            onClick={() => pick(MY_TASKS)}
+          >
+            <IconUser size={14} />
+            <StyledNavName>{t`My tasks`}</StyledNavName>
+          </StyledNavItem>
+          {shared.length > 0 && (
+            <StyledSwitcherSection>{t`Shared`}</StyledSwitcherSection>
+          )}
+          {shared.map(renderOption)}
+          {personal.length > 0 && (
+            <StyledSwitcherSection>{t`Personal`}</StyledSwitcherSection>
+          )}
+          {personal.map(renderOption)}
+          <div style={{ padding: 6 }}>
+            <Button
+              title={t`New pipeline`}
+              Icon={IconPlus}
+              size="small"
+              variant="secondary"
+              onClick={() => {
+                setIsOpen(false);
+                onCreate();
+              }}
+            />
+          </div>
+        </StyledSwitcherMenu>
+      )}
+    </div>
+  );
+};
 
 const NewTaskModal = ({
   pipeline,
@@ -609,6 +804,33 @@ export const TasksPage = () => {
             ariaLabel={t`Show pipelines`}
             onClick={() => setIsSidebarCollapsed(false)}
           />
+          <StyledRailDot
+            type="button"
+            isActive={isMine}
+            title={t`My tasks`}
+            aria-label={t`My tasks`}
+            onClick={() => selectPipeline(MY_TASKS)}
+          >
+            <IconUser size={14} />
+          </StyledRailDot>
+          {pipelines.map((pipeline) => (
+            <StyledRailDot
+              key={pipeline.id}
+              type="button"
+              isActive={selectedPipeline?.id === pipeline.id}
+              title={pipeline.name}
+              aria-label={pipeline.name}
+              onClick={() => selectPipeline(pipeline.id)}
+            >
+              <StyledColorDot
+                color={
+                  themeCssVariables.tag.text[
+                    pipeline.color as keyof typeof themeCssVariables.tag.text
+                  ] ?? pipeline.color
+                }
+              />
+            </StyledRailDot>
+          ))}
         </StyledCollapsedRail>
       ) : (
         <StyledSidebar aria-label={t`Task pipelines`}>
@@ -676,21 +898,23 @@ export const TasksPage = () => {
           <>
             <StyledHeader>
               <StyledTitle>
-                {isMine ? (
-                  <>
+                <PipelineSwitcher
+                  pipelines={pipelines}
+                  selectedKey={selectedKey}
+                  onSelect={selectPipeline}
+                  onCreate={() => setIsCreatingPipeline(true)}
+                >
+                  {isMine ? (
                     <IconUser size={18} />
-                    {t`My tasks`}
-                  </>
-                ) : selectedPipeline ? (
-                  <>
-                    {selectedPipeline.visibility === 'PERSONAL' ? (
-                      <IconLock size={18} />
-                    ) : (
-                      <IconUsers size={18} />
-                    )}
-                    {selectedPipeline.name}
-                  </>
-                ) : null}
+                  ) : selectedPipeline?.visibility === 'PERSONAL' ? (
+                    <IconLock size={18} />
+                  ) : (
+                    <IconUsers size={18} />
+                  )}
+                  <StyledSwitcherName>
+                    {isMine ? t`My tasks` : (selectedPipeline?.name ?? '')}
+                  </StyledSwitcherName>
+                </PipelineSwitcher>
               </StyledTitle>
               {selectedPipeline && (
                 <StyledAvatars
