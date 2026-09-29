@@ -195,12 +195,16 @@ export const resolveActionItemAssignee = ({
 
   // El accionable nombra a una sola persona del tablero ("Yeison to verify…").
   const normalizedDescription = ` ${normalizePersonName(description)} `;
+  // También vale el nombre de pila de cada nombre/alias ("Mauro pedirá…" →
+  // alias "Mauro Sparza"); uniqueMatch evita asignar si nombra a dos miembros.
   const byMention = uniqueMatch(members, (member) =>
-    getMemberNames(member).some(
-      (memberName) =>
-        memberName.length >= 3 &&
-        normalizedDescription.includes(` ${memberName} `),
-    ),
+    getMemberNames(member)
+      .flatMap((memberName) => [memberName, memberName.split(' ')[0]])
+      .some(
+        (memberName) =>
+          memberName.length >= 3 &&
+          normalizedDescription.includes(` ${memberName} `),
+      ),
   );
 
   if (byMention) {

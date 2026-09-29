@@ -102,6 +102,16 @@ describe('resolveActionItemAssignee', () => {
     ).toEqual({ workspaceMemberId: 'mateo', resolution: 'MENTION' });
   });
 
+  it('resolves a mention by the first name of an alias', () => {
+    expect(
+      resolveActionItemAssignee({
+        ...base,
+        assignee: null,
+        description: 'Mauro pedirá a Alex 25 leads de D-Ladder',
+      }),
+    ).toEqual({ workspaceMemberId: 'mauro', resolution: 'MENTION' });
+  });
+
   it('does not use mention when two members are named', () => {
     expect(
       resolveActionItemAssignee({

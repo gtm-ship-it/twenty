@@ -22,6 +22,7 @@ import { LibreTranslateService } from 'src/engine/core-modules/task-pipelines/se
 import { TaskPipelineNotificationService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-notification.service';
 import { TaskPipelineWorkspaceMembersService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-workspace-members.service';
 import { computeActionItemKey } from 'src/engine/core-modules/task-pipelines/utils/compute-action-item-key.util';
+import { extractSummaryNextSteps } from 'src/engine/core-modules/task-pipelines/utils/extract-summary-next-steps.util';
 import {
   type AssignableMember,
   resolveActionItemAssignee,
@@ -31,6 +32,8 @@ import { WorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scope
 
 const POSITION_STEP = 1024;
 const MAX_TITLE_LENGTH = 500;
+// Al reprocesar reuniones viejas no se manda correo por cada tarea creada.
+const NOTIFY_MAX_MEETING_AGE_MS = 48 * 60 * 60 * 1000;
 
 export type MeetingIngestionResult = {
   meetingId: string | null;
@@ -124,9 +127,23 @@ export class FathomIngestionService {
       pipeline.id,
     );
 
+    // Fathom a veces deja `action_items` vacío (pasa con los resúmenes en
+    // español) aunque el resumen sí trae "Próximos pasos": se usan esos.
+    const fathomItems = fathomMeeting.action_items ?? [];
+    const summaryNextSteps =
+      fathomItems.length === 0
+        ? extractSummaryNextSteps(
+            fathomMeeting.default_summary?.markdown_formatted ??
+              meeting.summaryMarkdown,
+          )
+        : null;
+    const sourceItems =
+      fathomItems.length > 0 ? fathomItems : (summaryNextSteps?.items ?? []);
+    const itemsAlreadyInSpanish = summaryNextSteps?.language === 'es';
+
     // Accionables válidos y sin repetidos (Fathom a veces duplica uno en el mismo segundo).
     const seenKeys = new Set<string>();
-    const rawItems = (fathomMeeting.action_items ?? []).filter((item) => {
+    const rawItems = sourceItems.filter((item) => {
       const description = item.description?.trim();
 
       if (!isNonEmptyString(description)) {
@@ -214,16 +231,20 @@ export class FathomIngestionService {
 
     // Solo se traduce lo nuevo o lo que quedó sin traducir (el respaldo
     // re-ingiere cada reunión muchas veces: no hay que recargar el traductor).
-    const needsTranslation = keys
-      .map((key, index) => ({ key, index }))
-      .filter(({ key }) => !isDefined(existingByKey.get(key)?.textEs));
+    const needsTranslation = itemsAlreadyInSpanish
+      ? []
+      : keys
+          .map((key, index) => ({ key, index }))
+          .filter(({ key }) => !isDefined(existingByKey.get(key)?.textEs));
     const translatedSubset =
       needsTranslation.length > 0
         ? await this.translateService.translateMany(
             needsTranslation.map(({ index }) => texts[index]),
           )
         : [];
-    const translatedTexts: (string | null)[] = texts.map(() => null);
+    const translatedTexts: (string | null)[] = texts.map((text) =>
+      itemsAlreadyInSpanish ? text : null,
+    );
 
     needsTranslation.forEach(({ index }, position) => {
       translatedTexts[index] = translatedSubset?.[position] ?? null;
@@ -318,7 +339,15 @@ export class FathomIngestionService {
       if (isDefined(created)) {
         tasksCreated++;
 
-        if (isDefined(created.assigneeWorkspaceMemberId) && !isCompleted) {
+        const isRecentMeeting =
+          !isDefined(meeting.startedAt) ||
+          Date.now() - meeting.startedAt.getTime() <= NOTIFY_MAX_MEETING_AGE_MS;
+
+        if (
+          isDefined(created.assigneeWorkspaceMemberId) &&
+          !isCompleted &&
+          isRecentMeeting
+        ) {
           void this.notificationService.notifyAssigned({
             workspaceId,
             task: created,
