@@ -172,6 +172,44 @@ export const ensureTaskPipelineTables = async (queryRunner: QueryExecutor): Prom
     await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_MEETING_ACTION_ITEM_TASK" ON "core"."meetingActionItem" ("taskId")`);
     await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_MEETING_PIPELINE_IDS" ON "core"."meeting" USING GIN ("pipelineIds")`);
 
+    // --- 29-sep-2026: tarjetas tipo Trello + action points por IA ---
+    // Varios miembros por tarjeta, fecha de inicio, varias checklists (cada
+    // punto con su persona y fecha) y portada.
+    await queryRunner.query(`ALTER TABLE "core"."taskPipelineTask" ADD COLUMN IF NOT EXISTS "memberWorkspaceMemberIds" jsonb NOT NULL DEFAULT '[]'`);
+    await queryRunner.query(`ALTER TABLE "core"."taskPipelineTask" ADD COLUMN IF NOT EXISTS "startAt" TIMESTAMP WITH TIME ZONE`);
+    await queryRunner.query(`ALTER TABLE "core"."taskPipelineTask" ADD COLUMN IF NOT EXISTS "checklists" jsonb NOT NULL DEFAULT '[]'`);
+    await queryRunner.query(`ALTER TABLE "core"."taskPipelineTask" ADD COLUMN IF NOT EXISTS "coverAttachmentId" uuid`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_TASK_PIPELINE_TASK_MEMBERS" ON "core"."taskPipelineTask" USING GIN ("memberWorkspaceMemberIds")`);
+    // Datos viejos: el asignado único pasa a ser el primer miembro, y la
+    // checklist simple pasa a ser la primera checklist (sin persona ni fecha).
+    await queryRunner.query(`UPDATE "core"."taskPipelineTask" SET "memberWorkspaceMemberIds" = jsonb_build_array("assigneeWorkspaceMemberId"::text)
+      WHERE "assigneeWorkspaceMemberId" IS NOT NULL AND "memberWorkspaceMemberIds" = '[]'::jsonb`);
+    await queryRunner.query(`UPDATE "core"."taskPipelineTask" SET "checklists" = jsonb_build_array(jsonb_build_object('id', 'legacy', 'title', 'Checklist', 'items', "checklist"))
+      WHERE "checklist" <> '[]'::jsonb AND "checklists" = '[]'::jsonb`);
+
+    await queryRunner.query(`CREATE TABLE IF NOT EXISTS "core"."taskPipelineTaskAttachment" (
+      "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+      "workspaceId" uuid NOT NULL,
+      "taskId" uuid NOT NULL,
+      "fileId" uuid NOT NULL,
+      "fileFolder" character varying NOT NULL,
+      "name" character varying NOT NULL,
+      "mimeType" character varying,
+      "size" bigint,
+      "purpose" character varying NOT NULL DEFAULT 'ATTACHMENT',
+      "checklistItemId" character varying,
+      "uploadedByWorkspaceMemberId" uuid,
+      "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+      "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+      CONSTRAINT "PK_taskPipelineTaskAttachment" PRIMARY KEY ("id"),
+      CONSTRAINT "FK_taskPipelineTaskAttachment_task" FOREIGN KEY ("taskId") REFERENCES "core"."taskPipelineTask"("id") ON DELETE CASCADE)`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_TASK_PIPELINE_TASK_ATTACHMENT_TASK" ON "core"."taskPipelineTaskAttachment" ("taskId")`);
+
+    // Estado de los action points por tablero: {"<pipelineId>": {status, ...}}.
+    await queryRunner.query(`ALTER TABLE "core"."meeting" ADD COLUMN IF NOT EXISTS "actionPoints" jsonb NOT NULL DEFAULT '{}'`);
+    await queryRunner.query(`ALTER TABLE "core"."meetingActionItem" ADD COLUMN IF NOT EXISTS "checklistItemId" character varying`);
+    await queryRunner.query(`ALTER TABLE "core"."meeting" ADD COLUMN IF NOT EXISTS "fathomActionItems" jsonb NOT NULL DEFAULT '[]'`);
+
     for (const table of [
       'taskPipeline',
       'taskPipelineMember',
@@ -181,6 +219,7 @@ export const ensureTaskPipelineTables = async (queryRunner: QueryExecutor): Prom
       'taskPipelineTaskComment',
       'fathomConnection',
       'meetingActionItem',
+      'taskPipelineTaskAttachment',
     ]) {
       const exists = (await queryRunner.query(
         `SELECT 1 FROM pg_constraint WHERE conname = $1`,

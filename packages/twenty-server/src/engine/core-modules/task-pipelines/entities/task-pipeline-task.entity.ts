@@ -12,10 +12,28 @@ import { WorkspaceRelatedEntity } from 'src/engine/workspace-manager/types/works
 export type TaskPipelineTaskSource = 'MANUAL' | 'EMAIL' | 'FATHOM';
 export type TaskPipelineTaskPriority = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW';
 
+// Checklist simple (formato viejo, antes del 29-sep-2026): se conserva la
+// columna, pero lo vigente es `checklists`.
 export type TaskPipelineTaskChecklistItem = {
   id: string;
   text: string;
   done: boolean;
+};
+
+// Un punto de una checklist, con su responsable y su fecha (como Trello).
+export type TaskPipelineChecklistPoint = {
+  id: string;
+  text: string;
+  done: boolean;
+  assigneeWorkspaceMemberId: string | null;
+  dueAt: string | null;
+  completedAt: string | null;
+};
+
+export type TaskPipelineChecklist = {
+  id: string;
+  title: string;
+  items: TaskPipelineChecklistPoint[];
 };
 
 export type TaskPipelineTaskRelatedRecord = {
@@ -58,8 +76,16 @@ export class TaskPipelineTaskEntity extends WorkspaceRelatedEntity {
   @Column({ type: 'text', nullable: false, default: '' })
   body: string;
 
+  // Primer miembro de la tarjeta (compatibilidad con índices, correos y
+  // "Por asignar"); la lista completa está en memberWorkspaceMemberIds.
   @Column({ type: 'uuid', nullable: true })
   assigneeWorkspaceMemberId: string | null;
+
+  @Column({ type: 'jsonb', nullable: false, default: [] })
+  memberWorkspaceMemberIds: string[];
+
+  @Column({ type: 'timestamptz', nullable: true })
+  startAt: Date | null;
 
   @Column({ type: 'timestamptz', nullable: true })
   dueAt: Date | null;
@@ -72,6 +98,12 @@ export class TaskPipelineTaskEntity extends WorkspaceRelatedEntity {
 
   @Column({ type: 'jsonb', nullable: false, default: [] })
   checklist: TaskPipelineTaskChecklistItem[];
+
+  @Column({ type: 'jsonb', nullable: false, default: [] })
+  checklists: TaskPipelineChecklist[];
+
+  @Column({ type: 'uuid', nullable: true })
+  coverAttachmentId: string | null;
 
   @Column({ type: 'jsonb', nullable: false, default: [] })
   relatedRecords: TaskPipelineTaskRelatedRecord[];

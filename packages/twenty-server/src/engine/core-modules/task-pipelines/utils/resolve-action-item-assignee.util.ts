@@ -96,7 +96,10 @@ const findByEmail = (members: AssignableMember[], email: string | null) => {
   );
 };
 
-const findByName = (members: AssignableMember[], name: string | null) => {
+export const findMemberByName = (
+  members: AssignableMember[],
+  name: string | null,
+) => {
   const normalized = normalizePersonName(name);
 
   if (normalized.length === 0) {
@@ -170,7 +173,7 @@ export const resolveActionItemAssignee = ({
       };
     }
 
-    const byName = findByName(members, assignee?.name ?? null);
+    const byName = findMemberByName(members, assignee?.name ?? null);
 
     if (byName) {
       return {
@@ -247,7 +250,7 @@ export const resolveActionItemAssignee = ({
     if (speakerLine) {
       const bySpeaker =
         findByEmail(members, speakerLine.speakerEmail) ??
-        findByName(members, speakerLine.speakerName);
+        findMemberByName(members, speakerLine.speakerName);
 
       if (bySpeaker) {
         return {

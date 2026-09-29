@@ -30,9 +30,12 @@ import {
 import { TaskPipelineStageEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-stage.entity';
 import { TaskPipelineTaskCommentEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task-comment.entity';
 import {
+  type TaskPipelineChecklist,
   TaskPipelineTaskEntity,
   type TaskPipelineTaskPriority,
 } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task.entity';
+import { type TaskPipelineAttachmentPurpose } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task-attachment.entity';
+import { TaskPipelineAttachmentsService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-attachments.service';
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
 import { TaskPipelineAccessService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-access.service';
 import { TaskPipelineNotificationService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-notification.service';
@@ -74,12 +77,68 @@ export type TaskActivityEvent =
   | { type: 'checklistAdded'; text: string }
   | { type: 'checklistDone'; text: string }
   | { type: 'checklistUndone'; text: string }
+  | { type: 'memberAdded'; name: string }
+  | { type: 'memberRemoved'; name: string }
+  | { type: 'start'; date: string }
+  | { type: 'startCleared' }
+  | { type: 'checklistCreated'; title: string }
+  | { type: 'checklistRemoved'; title: string }
+  | { type: 'pointAssigned'; text: string; name: string }
+  | { type: 'attachmentAdded'; name: string }
+  | { type: 'attachmentRemoved'; name: string }
+  | { type: 'coverSet' }
+  | { type: 'coverCleared' }
   | { type: 'archived' }
   | { type: 'restored' }
   | { type: 'fromMeeting'; resolution: string }
   | { type: 'fromMeetingUnassigned' };
 
 type Actor = { workspaceId: string; workspaceMemberId: string | undefined };
+
+// Tarjetas creadas antes del 29-sep-2026 solo tienen asignado único y
+// checklist simple: se leen como 1 miembro y 1 checklist.
+export const getTaskMemberIds = (task: {
+  memberWorkspaceMemberIds?: string[] | null;
+  assigneeWorkspaceMemberId: string | null;
+}): string[] => {
+  const members = task.memberWorkspaceMemberIds ?? [];
+
+  if (members.length > 0) {
+    return members;
+  }
+
+  return isDefined(task.assigneeWorkspaceMemberId)
+    ? [task.assigneeWorkspaceMemberId]
+    : [];
+};
+
+export const getTaskChecklists = (task: {
+  checklists?: TaskPipelineChecklist[] | null;
+  checklist?: { id: string; text: string; done: boolean }[] | null;
+}): TaskPipelineChecklist[] => {
+  const checklists = task.checklists ?? [];
+
+  if (checklists.length > 0 || (task.checklist ?? []).length === 0) {
+    return checklists;
+  }
+
+  return [
+    {
+      id: 'legacy',
+      title: 'Checklist',
+      items: (task.checklist ?? []).map((item) => ({
+        id: item.id,
+        text: item.text,
+        done: item.done,
+        assigneeWorkspaceMemberId: null,
+        dueAt: null,
+        completedAt: null,
+      })),
+    },
+  ];
+};
+
+const uniqueIds = (ids: string[]) => [...new Set(ids)];
 
 @Injectable()
 export class TaskPipelinesService {
@@ -105,6 +164,7 @@ export class TaskPipelinesService {
     private readonly accessService: TaskPipelineAccessService,
     private readonly workspaceMembersService: TaskPipelineWorkspaceMembersService,
     private readonly notificationService: TaskPipelineNotificationService,
+    private readonly attachmentsService: TaskPipelineAttachmentsService,
   ) {}
 
   // ---------------------------------------------------------------- pipelines
@@ -678,15 +738,24 @@ export class TaskPipelinesService {
       return [];
     }
 
-    const tasks = await this.taskRepository.find(actor.workspaceId, {
+    // Mías = soy miembro de la tarjeta o tengo algún punto de sus checklists.
+    const openTasks = await this.taskRepository.find(actor.workspaceId, {
       where: {
         pipelineId: In(pipelines.map((pipeline) => pipeline.id)),
-        assigneeWorkspaceMemberId: workspaceMemberId,
         archivedAt: IsNull(),
         completedAt: IsNull(),
       },
       order: { dueAt: 'ASC', createdAt: 'ASC' },
     });
+    const tasks = openTasks.filter(
+      (task) =>
+        getTaskMemberIds(task).includes(workspaceMemberId) ||
+        getTaskChecklists(task).some((checklist) =>
+          checklist.items.some(
+            (item) => item.assigneeWorkspaceMemberId === workspaceMemberId,
+          ),
+        ),
+    );
 
     return this.toTaskDTOs(
       actor.workspaceId,
@@ -722,12 +791,15 @@ export class TaskPipelinesService {
       input.stageId,
     );
 
-    if (isDefined(input.assigneeWorkspaceMemberId)) {
-      await this.assertPipelineMember(
-        actor.workspaceId,
-        pipeline.id,
-        input.assigneeWorkspaceMemberId,
-      );
+    const memberIds = uniqueIds([
+      ...(input.memberWorkspaceMemberIds ?? []),
+      ...(isDefined(input.assigneeWorkspaceMemberId)
+        ? [input.assigneeWorkspaceMemberId]
+        : []),
+    ]);
+
+    for (const memberId of memberIds) {
+      await this.assertPipelineMember(actor.workspaceId, pipeline.id, memberId);
     }
 
     const stage = await this.stageRepository.findOneOrFail(actor.workspaceId, {
@@ -742,13 +814,17 @@ export class TaskPipelinesService {
         position: await this.nextPosition(actor.workspaceId, stageId),
         title: input.title.trim(),
         body: input.body ?? '',
-        assigneeWorkspaceMemberId: input.assigneeWorkspaceMemberId ?? null,
+        assigneeWorkspaceMemberId: memberIds[0] ?? null,
+        memberWorkspaceMemberIds: memberIds,
+        startAt: input.startAt ?? null,
         dueAt: input.dueAt ?? null,
         priority:
           (input.priority as TaskPipelineTaskPriority | null | undefined) ??
           null,
         labels: this.sanitizeLabels(input.labels),
         checklist: [],
+        checklists: [],
+        coverAttachmentId: null,
         relatedRecords: input.relatedRecords ?? [],
         source: input.source === 'EMAIL' ? 'EMAIL' : 'MANUAL',
         sourceLink: input.sourceLink ?? null,
@@ -766,16 +842,15 @@ export class TaskPipelinesService {
       type: 'created',
     });
 
-    if (
-      isDefined(created.assigneeWorkspaceMemberId) &&
-      created.assigneeWorkspaceMemberId !== workspaceMemberId
-    ) {
-      void this.notificationService.notifyAssigned({
-        workspaceId: actor.workspaceId,
-        task: created,
-        pipelineName: pipeline.name,
-        assignedByWorkspaceMemberId: workspaceMemberId,
-      });
+    for (const memberId of memberIds) {
+      if (memberId !== workspaceMemberId) {
+        void this.notificationService.notifyAssigned({
+          workspaceId: actor.workspaceId,
+          task: { ...created, assigneeWorkspaceMemberId: memberId },
+          pipelineName: pipeline.name,
+          assignedByWorkspaceMemberId: workspaceMemberId,
+        });
+      }
     }
 
     return this.getTask(actor, created.id);
@@ -803,45 +878,86 @@ export class TaskPipelinesService {
       activity.push({ type: 'description' });
     }
 
-    let newAssignee: string | null | undefined;
+    // Miembros: `memberWorkspaceMemberIds` reemplaza la lista; los campos
+    // viejos (asignado único) siguen funcionando.
+    const previousMembers = getTaskMemberIds(task);
+    let nextMembers: string[] | undefined;
 
-    if (
-      input.clearAssignee === true &&
-      isDefined(task.assigneeWorkspaceMemberId)
-    ) {
-      newAssignee = null;
+    if (isDefined(input.memberWorkspaceMemberIds)) {
+      nextMembers = uniqueIds(input.memberWorkspaceMemberIds);
+    } else if (input.clearAssignee === true) {
+      nextMembers = [];
     } else if (
       isDefined(input.assigneeWorkspaceMemberId) &&
       input.assigneeWorkspaceMemberId !== task.assigneeWorkspaceMemberId
     ) {
-      await this.assertPipelineMember(
-        actor.workspaceId,
-        pipeline.id,
+      nextMembers = uniqueIds([
         input.assigneeWorkspaceMemberId,
-      );
-      newAssignee = input.assigneeWorkspaceMemberId;
+        ...previousMembers.filter(
+          (memberId) => memberId !== task.assigneeWorkspaceMemberId,
+        ),
+      ]);
     }
 
-    if (newAssignee !== undefined) {
-      patch.assigneeWorkspaceMemberId = newAssignee;
-      patch.needsAssignment = false;
-
-      const [member] = isDefined(newAssignee)
-        ? await this.workspaceMembersService.findMembers(actor.workspaceId, [
-            newAssignee,
-          ])
+    const addedMembers =
+      nextMembers?.filter((memberId) => !previousMembers.includes(memberId)) ??
+      [];
+    const removedMembers =
+      nextMembers !== undefined
+        ? previousMembers.filter((memberId) => !nextMembers?.includes(memberId))
         : [];
 
-      activity.push(
-        isDefined(member)
-          ? {
-              type: 'assigned',
-              name: [member.firstName, member.lastName]
-                .filter(Boolean)
-                .join(' '),
-            }
-          : { type: 'unassigned' },
+    if (
+      nextMembers !== undefined &&
+      (addedMembers.length > 0 ||
+        removedMembers.length > 0 ||
+        nextMembers[0] !== task.assigneeWorkspaceMemberId)
+    ) {
+      for (const memberId of addedMembers) {
+        await this.assertPipelineMember(
+          actor.workspaceId,
+          pipeline.id,
+          memberId,
+        );
+      }
+
+      patch.memberWorkspaceMemberIds = nextMembers;
+      patch.assigneeWorkspaceMemberId = nextMembers[0] ?? null;
+
+      if (nextMembers.length > 0) {
+        patch.needsAssignment = false;
+      }
+
+      const names = await this.memberNames(actor.workspaceId, [
+        ...addedMembers,
+        ...removedMembers,
+      ]);
+
+      addedMembers.forEach((memberId) =>
+        activity.push({ type: 'memberAdded', name: names.get(memberId) ?? '' }),
       );
+      removedMembers.forEach((memberId) =>
+        activity.push({
+          type: 'memberRemoved',
+          name: names.get(memberId) ?? '',
+        }),
+      );
+    }
+
+    if (input.clearStartAt === true) {
+      if (isDefined(task.startAt)) {
+        patch.startAt = null;
+        activity.push({ type: 'startCleared' });
+      }
+    } else if (
+      isDefined(input.startAt) &&
+      new Date(input.startAt).getTime() !== task.startAt?.getTime()
+    ) {
+      patch.startAt = input.startAt;
+      activity.push({
+        type: 'start',
+        date: new Date(input.startAt).toISOString(),
+      });
     }
 
     if (input.clearDueAt === true) {
@@ -912,6 +1028,60 @@ export class TaskPipelinesService {
       }
     }
 
+    const newPointAssignees: string[] = [];
+
+    if (isDefined(input.checklists)) {
+      const result = await this.applyChecklists(
+        actor.workspaceId,
+        pipeline.id,
+        task,
+        input.checklists,
+      );
+
+      patch.checklists = result.checklists;
+      activity.push(...result.activity);
+      newPointAssignees.push(...result.newAssignees);
+
+      await this.attachmentsService.deleteForChecklistItems(
+        actor.workspaceId,
+        task.id,
+        result.removedItemIds,
+      );
+
+      if (result.removedItemIds.length > 0 || result.checklists.length > 0) {
+        // la checklist vieja ya quedó migrada a `checklists`
+        patch.checklist = [];
+      }
+    }
+
+    if (input.clearCover === true) {
+      if (isDefined(task.coverAttachmentId)) {
+        patch.coverAttachmentId = null;
+        activity.push({ type: 'coverCleared' });
+      }
+    } else if (
+      isDefined(input.coverAttachmentId) &&
+      input.coverAttachmentId !== task.coverAttachmentId
+    ) {
+      const attachment = await this.attachmentsService.findOne(
+        actor.workspaceId,
+        input.coverAttachmentId,
+      );
+
+      if (
+        !isDefined(attachment) ||
+        attachment.taskId !== task.id ||
+        !attachment.mimeType?.startsWith('image/')
+      ) {
+        throw new UserInputError(
+          'La portada tiene que ser una imagen de esta tarjeta',
+        );
+      }
+
+      patch.coverAttachmentId = attachment.id;
+      activity.push({ type: 'coverSet' });
+    }
+
     if (isDefined(input.relatedRecords)) {
       patch.relatedRecords = input.relatedRecords;
     }
@@ -940,7 +1110,11 @@ export class TaskPipelinesService {
       );
     }
 
-    if (isDefined(newAssignee) && newAssignee !== workspaceMemberId) {
+    const toNotify = uniqueIds([...addedMembers, ...newPointAssignees]).filter(
+      (memberId) => memberId !== workspaceMemberId,
+    );
+
+    for (const memberId of toNotify) {
       void this.notificationService.notifyAssigned({
         workspaceId: actor.workspaceId,
         task: {
@@ -952,7 +1126,7 @@ export class TaskPipelinesService {
             patch.dueAt !== undefined
               ? (patch.dueAt as Date | null)
               : task.dueAt,
-          assigneeWorkspaceMemberId: newAssignee,
+          assigneeWorkspaceMemberId: memberId,
         },
         pipelineName: pipeline.name,
         assignedByWorkspaceMemberId: workspaceMemberId,
@@ -1188,6 +1362,238 @@ export class TaskPipelinesService {
     }
 
     return first.id;
+  }
+
+  // ------------------------------------------------------------- attachments
+
+  async uploadAttachment(
+    actor: Actor,
+    {
+      taskId,
+      file,
+      filename,
+      purpose,
+      checklistItemId,
+    }: {
+      taskId: string;
+      file: Buffer;
+      filename: string;
+      purpose: TaskPipelineAttachmentPurpose;
+      checklistItemId: string | null;
+    },
+  ) {
+    const workspaceMemberId = this.requireMember(actor);
+    const { task } = await this.getTaskWithAccess(actor, taskId);
+
+    if (purpose === 'CHECKLIST_ITEM') {
+      const exists = getTaskChecklists(task).some((checklist) =>
+        checklist.items.some((item) => item.id === checklistItemId),
+      );
+
+      if (!exists) {
+        throw new UserInputError('Ese punto ya no existe en la tarjeta');
+      }
+    }
+
+    const attachment = await this.attachmentsService.upload({
+      workspaceId: actor.workspaceId,
+      taskId: task.id,
+      file,
+      filename,
+      purpose,
+      checklistItemId: purpose === 'CHECKLIST_ITEM' ? checklistItemId : null,
+      uploadedByWorkspaceMemberId: workspaceMemberId,
+    });
+
+    if (purpose === 'ATTACHMENT') {
+      await this.logActivity(actor.workspaceId, task.id, workspaceMemberId, {
+        type: 'attachmentAdded',
+        name: attachment.name,
+      });
+    }
+
+    const [dto] = await this.attachmentsService.toDTOs(actor.workspaceId, [
+      attachment,
+    ]);
+
+    return dto;
+  }
+
+  async deleteAttachment(actor: Actor, attachmentId: string): Promise<boolean> {
+    const workspaceMemberId = this.requireMember(actor);
+    const attachment = await this.attachmentsService.findOne(
+      actor.workspaceId,
+      attachmentId,
+    );
+
+    if (!isDefined(attachment)) {
+      throw new NotFoundError('Adjunto no encontrado');
+    }
+
+    const { task } = await this.getTaskWithAccess(actor, attachment.taskId);
+
+    if (task.coverAttachmentId === attachment.id) {
+      await this.taskRepository.update(
+        actor.workspaceId,
+        { id: task.id },
+        { coverAttachmentId: null },
+      );
+    }
+
+    await this.attachmentsService.delete(actor.workspaceId, attachment);
+
+    if (attachment.purpose === 'ATTACHMENT') {
+      await this.logActivity(actor.workspaceId, task.id, workspaceMemberId, {
+        type: 'attachmentRemoved',
+        name: attachment.name,
+      });
+    }
+
+    return true;
+  }
+
+  private async memberNames(
+    workspaceId: string,
+    memberIds: string[],
+  ): Promise<Map<string, string>> {
+    if (memberIds.length === 0) {
+      return new Map();
+    }
+
+    const members = await this.workspaceMembersService.findMembers(
+      workspaceId,
+      uniqueIds(memberIds),
+    );
+
+    return new Map(
+      members.map((member) => [
+        member.id,
+        [member.firstName, member.lastName].filter(Boolean).join(' '),
+      ]),
+    );
+  }
+
+  // Valida las checklists que manda el front (responsables = miembros del
+  // tablero) y calcula el historial: checklists/puntos nuevos, hechos,
+  // reasignados, y qué puntos desaparecieron (para borrar sus fotos).
+  private async applyChecklists(
+    workspaceId: string,
+    pipelineId: string,
+    task: TaskPipelineTaskEntity,
+    input: NonNullable<UpdateTaskPipelineTaskInput['checklists']>,
+  ): Promise<{
+    checklists: TaskPipelineChecklist[];
+    activity: TaskActivityEvent[];
+    newAssignees: string[];
+    removedItemIds: string[];
+  }> {
+    const previous = getTaskChecklists(task);
+    const previousChecklistById = new Map(
+      previous.map((checklist) => [checklist.id, checklist]),
+    );
+    const previousItemById = new Map(
+      previous.flatMap((checklist) =>
+        checklist.items.map((item) => [item.id, item] as const),
+      ),
+    );
+
+    const assigneeIds = uniqueIds(
+      input.flatMap((checklist) =>
+        checklist.items
+          .map((item) => item.assigneeWorkspaceMemberId)
+          .filter(isDefined),
+      ),
+    );
+
+    for (const assigneeId of assigneeIds) {
+      await this.assertPipelineMember(workspaceId, pipelineId, assigneeId);
+    }
+
+    const names = await this.memberNames(workspaceId, assigneeIds);
+    const activity: TaskActivityEvent[] = [];
+    const newAssignees: string[] = [];
+    const now = new Date().toISOString();
+    const seenItemIds = new Set<string>();
+
+    const checklists: TaskPipelineChecklist[] = input.map((checklist) => {
+      const title = checklist.title.trim() || 'Checklist';
+
+      if (!previousChecklistById.has(checklist.id)) {
+        activity.push({ type: 'checklistCreated', title });
+      }
+
+      return {
+        id: checklist.id,
+        title,
+        items: checklist.items
+          .filter((item) => {
+            // ids repetidos = el front mandó basura; se queda el primero
+            if (seenItemIds.has(item.id)) {
+              return false;
+            }
+
+            seenItemIds.add(item.id);
+
+            return item.text.trim().length > 0;
+          })
+          .map((item) => {
+            const text = item.text.trim();
+            const before = previousItemById.get(item.id);
+            const assignee = item.assigneeWorkspaceMemberId ?? null;
+
+            if (!isDefined(before)) {
+              activity.push({ type: 'checklistAdded', text });
+            } else if (before.done !== item.done) {
+              activity.push({
+                type: item.done ? 'checklistDone' : 'checklistUndone',
+                text,
+              });
+            }
+
+            if (
+              isDefined(assignee) &&
+              assignee !== (before?.assigneeWorkspaceMemberId ?? null)
+            ) {
+              newAssignees.push(assignee);
+              activity.push({
+                type: 'pointAssigned',
+                text,
+                name: names.get(assignee) ?? '',
+              });
+            }
+
+            return {
+              id: item.id,
+              text,
+              done: item.done,
+              assigneeWorkspaceMemberId: assignee,
+              dueAt: isDefined(item.dueAt)
+                ? new Date(item.dueAt).toISOString()
+                : null,
+              completedAt: item.done
+                ? before?.done
+                  ? (before.completedAt ?? now)
+                  : now
+                : null,
+            };
+          }),
+      };
+    });
+
+    previous
+      .filter(
+        (checklist) =>
+          !checklists.some((candidate) => candidate.id === checklist.id),
+      )
+      .forEach((checklist) =>
+        activity.push({ type: 'checklistRemoved', title: checklist.title }),
+      );
+
+    const removedItemIds = [...previousItemById.keys()].filter(
+      (itemId) => !seenItemIds.has(itemId),
+    );
+
+    return { checklists, activity, newAssignees, removedItemIds };
   }
 
   private requireMember(actor: Actor): string {
@@ -1464,7 +1870,7 @@ export class TaskPipelinesService {
       ...new Set(tasks.map((task) => task.meetingId).filter(isDefined)),
     ];
 
-    const [commentCounts, meetings] = await Promise.all([
+    const [commentCounts, meetings, attachments] = await Promise.all([
       this.coreDataSource.query(
         `SELECT "taskId", COUNT(*)::int AS "count"
            FROM "core"."taskPipelineTaskComment"
@@ -1478,7 +1884,19 @@ export class TaskPipelinesService {
             select: { id: true, title: true, startedAt: true },
           })
         : Promise.resolve([] as MeetingEntity[]),
+      this.attachmentsService
+        .listByTaskIds(workspaceId, taskIds)
+        .then((rows) => this.attachmentsService.toDTOs(workspaceId, rows)),
     ]);
+
+    const attachmentsByTask = new Map<string, typeof attachments>();
+
+    for (const attachment of attachments) {
+      attachmentsByTask.set(attachment.taskId, [
+        ...(attachmentsByTask.get(attachment.taskId) ?? []),
+        attachment,
+      ]);
+    }
 
     const countByTask = new Map(
       commentCounts.map((row) => [row.taskId, row.count]),
@@ -1491,6 +1909,12 @@ export class TaskPipelinesService {
       const meeting = isDefined(task.meetingId)
         ? meetingById.get(task.meetingId)
         : undefined;
+      const checklists = getTaskChecklists(task);
+      const points = checklists.flatMap((checklist) => checklist.items);
+      const taskAttachments = attachmentsByTask.get(task.id) ?? [];
+      const cover = taskAttachments.find(
+        (attachment) => attachment.id === task.coverAttachmentId,
+      );
 
       return {
         id: task.id,
@@ -1501,10 +1925,31 @@ export class TaskPipelinesService {
         title: task.title,
         body: task.body,
         assigneeWorkspaceMemberId: task.assigneeWorkspaceMemberId,
+        memberWorkspaceMemberIds: getTaskMemberIds(task),
+        startAt: task.startAt ?? null,
         dueAt: task.dueAt,
         priority: task.priority,
         labels: task.labels ?? [],
         checklist: task.checklist ?? [],
+        checklists: checklists.map((checklist) => ({
+          id: checklist.id,
+          title: checklist.title,
+          items: checklist.items.map((item) => ({
+            id: item.id,
+            text: item.text,
+            done: item.done,
+            assigneeWorkspaceMemberId: item.assigneeWorkspaceMemberId ?? null,
+            dueAt: isDefined(item.dueAt) ? new Date(item.dueAt) : null,
+            completedAt: isDefined(item.completedAt)
+              ? new Date(item.completedAt)
+              : null,
+          })),
+        })),
+        checklistDoneCount: points.filter((item) => item.done).length,
+        checklistTotalCount: points.length,
+        attachments: taskAttachments,
+        coverAttachmentId: isDefined(cover) ? cover.id : null,
+        coverUrl: cover?.url ?? null,
         relatedRecords: task.relatedRecords ?? [],
         source: task.source,
         sourceLink: task.sourceLink,

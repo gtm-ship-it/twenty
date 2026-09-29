@@ -2118,6 +2118,36 @@ export class ConfigVariables {
   @IsOptional()
   FATHOM_API_BASE_URL?: string;
 
+  @ConfigVariablesMetadata({
+    isEnvOnly: true,
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'Local Ollama base URL used to turn meeting summaries into task cards (e.g. http://ollama:11434). When unset, the "Próximos pasos" section of the summary is used instead.',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  OLLAMA_URL?: string;
+
+  @ConfigVariablesMetadata({
+    isEnvOnly: true,
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description: 'Ollama model for meeting action points (default qwen3:8b).',
+    type: ConfigVariableType.STRING,
+  })
+  @IsOptional()
+  OLLAMA_MODEL?: string;
+
+  @ConfigVariablesMetadata({
+    isEnvOnly: true,
+    group: ConfigVariablesGroup.ADVANCED_SETTINGS,
+    description:
+      'CPU threads Ollama may use per request (default 4, half of the VPS) so the model never starves n8n.',
+    type: ConfigVariableType.NUMBER,
+  })
+  @CastToPositiveNumber()
+  @IsOptional()
+  OLLAMA_NUM_THREAD?: number;
+
   // --- PTS AI CRM: "Call with Atlas" (integración propia del fork) ---
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.ADVANCED_SETTINGS,

@@ -67,6 +67,10 @@ export class MeetingActionItemEntity extends WorkspaceRelatedEntity {
   @Column({ type: 'uuid', nullable: true })
   taskId: string | null;
 
+  // Punto de la checklist de la tarjeta donde quedó este action point.
+  @Column({ type: 'varchar', nullable: true })
+  checklistItemId: string | null;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

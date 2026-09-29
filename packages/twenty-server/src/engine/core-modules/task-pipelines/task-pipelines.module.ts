@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ApplicationModule } from 'src/engine/core-modules/application/application.module';
+import { FileUrlModule } from 'src/engine/core-modules/file/file-url/file-url.module';
 import { WorkspaceDomainsModule } from 'src/engine/core-modules/domain/workspace-domains/workspace-domains.module';
 import { SecretEncryptionModule } from 'src/engine/core-modules/secret-encryption/secret-encryption.module';
 import { FathomWebhookController } from 'src/engine/core-modules/task-pipelines/controllers/fathom-webhook.controller';
@@ -10,6 +12,7 @@ import { MeetingActionItemEntity } from 'src/engine/core-modules/task-pipelines/
 import { MeetingEntity } from 'src/engine/core-modules/task-pipelines/entities/meeting.entity';
 import { TaskPipelineMemberEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-member.entity';
 import { TaskPipelineStageEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-stage.entity';
+import { TaskPipelineTaskAttachmentEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task-attachment.entity';
 import { TaskPipelineTaskCommentEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task-comment.entity';
 import { TaskPipelineTaskEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task.entity';
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
@@ -18,6 +21,9 @@ import { FathomConnectionsService } from 'src/engine/core-modules/task-pipelines
 import { FathomIngestionService } from 'src/engine/core-modules/task-pipelines/fathom/fathom-ingestion.service';
 import { TaskPipelinesResolver } from 'src/engine/core-modules/task-pipelines/resolvers/task-pipelines.resolver';
 import { LibreTranslateService } from 'src/engine/core-modules/task-pipelines/services/libre-translate.service';
+import { LocalLlmService } from 'src/engine/core-modules/task-pipelines/services/local-llm.service';
+import { MeetingActionPointsService } from 'src/engine/core-modules/task-pipelines/services/meeting-action-points.service';
+import { TaskPipelineAttachmentsService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-attachments.service';
 import { MeetingVideoTokenService } from 'src/engine/core-modules/task-pipelines/services/meeting-video-token.service';
 import { MeetingsService } from 'src/engine/core-modules/task-pipelines/services/meetings.service';
 import { TaskPipelineAccessService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-access.service';
@@ -34,6 +40,7 @@ const TASK_PIPELINE_ENTITIES = [
   TaskPipelineStageEntity,
   TaskPipelineTaskEntity,
   TaskPipelineTaskCommentEntity,
+  TaskPipelineTaskAttachmentEntity,
   FathomConnectionEntity,
   MeetingEntity,
   MeetingActionItemEntity,
@@ -48,6 +55,8 @@ const TASK_PIPELINE_ENTITIES = [
     PermissionsModule,
     SecretEncryptionModule,
     WorkspaceDomainsModule,
+    FileUrlModule,
+    ApplicationModule,
   ],
   controllers: [FathomWebhookController, MeetingVideoController],
   providers: [
@@ -65,6 +74,9 @@ const TASK_PIPELINE_ENTITIES = [
     FathomConnectionsService,
     MeetingsService,
     MeetingVideoTokenService,
+    LocalLlmService,
+    MeetingActionPointsService,
+    TaskPipelineAttachmentsService,
   ],
   exports: [TaskPipelinesService],
 })

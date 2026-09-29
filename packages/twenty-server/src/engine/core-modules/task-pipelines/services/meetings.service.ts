@@ -17,7 +17,10 @@ import { TaskPipelineTaskEntity } from 'src/engine/core-modules/task-pipelines/e
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
 import { MeetingVideoTokenService } from 'src/engine/core-modules/task-pipelines/services/meeting-video-token.service';
 import { TaskPipelineAccessService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-access.service';
-import { TaskPipelinesService } from 'src/engine/core-modules/task-pipelines/services/task-pipelines.service';
+import {
+  getTaskChecklists,
+  TaskPipelinesService,
+} from 'src/engine/core-modules/task-pipelines/services/task-pipelines.service';
 import {
   ForbiddenError,
   NotFoundError,
@@ -30,6 +33,20 @@ import { WorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scope
 type Actor = { workspaceId: string; workspaceMemberId: string | undefined };
 
 const MAX_MEETINGS = 200;
+
+const summarizeActionPoints = (statuses: string[]): string => {
+  if (statuses.includes('DONE')) {
+    return 'DONE';
+  }
+
+  if (
+    statuses.some((status) => status === 'PENDING' || status === 'GENERATING')
+  ) {
+    return 'GENERATING';
+  }
+
+  return statuses.includes('FAILED') ? 'FAILED' : 'NONE';
+};
 
 @Injectable()
 export class MeetingsService {
@@ -89,7 +106,7 @@ export class MeetingsService {
 
     const rows: (MeetingEntity & { actionItemCount: number })[] =
       await this.coreDataSource.query(
-        `SELECT m."id", m."title", m."startedAt", m."endedAt", m."participants", m."recordedBy", m."pipelineIds",
+        `SELECT m."id", m."title", m."startedAt", m."endedAt", m."participants", m."recordedBy", m."pipelineIds", m."actionPoints",
               (SELECT COUNT(*)::int FROM "core"."meetingActionItem" a
                 WHERE a."meetingId" = m."id" AND a."pipelineId" = ANY($2::uuid[])) AS "actionItemCount"
          FROM "core"."meeting" m
@@ -116,6 +133,11 @@ export class MeetingsService {
         .map((id) => nameById.get(id))
         .filter(isNonEmptyString),
       recordedByName: row.recordedBy?.name ?? row.recordedBy?.email ?? null,
+      actionPointsStatus: summarizeActionPoints(
+        visibleIds
+          .filter((id) => (row.pipelineIds ?? []).includes(id))
+          .map((id) => row.actionPoints?.[id]?.status ?? 'NONE'),
+      ),
     }));
   }
 
@@ -142,7 +164,15 @@ export class MeetingsService {
       },
     );
 
-    const taskIds = actionItems.map((item) => item.taskId).filter(isDefined);
+    const stateTaskIds = meeting.pipelineIds
+      .filter((id) => visibleIds.includes(id))
+      .flatMap((id) => meeting.actionPoints?.[id]?.taskIds ?? []);
+    const taskIds = [
+      ...new Set([
+        ...actionItems.map((item) => item.taskId).filter(isDefined),
+        ...stateTaskIds,
+      ]),
+    ];
     const tasks =
       taskIds.length > 0
         ? await this.taskRepository.find(actor.workspaceId, {
@@ -158,6 +188,7 @@ export class MeetingsService {
         : [];
 
     const taskById = new Map(tasks.map((task) => [task.id, task]));
+    const existingTaskIds = new Set(tasks.map((task) => task.id));
     const stageById = new Map(stages.map((stage) => [stage.id, stage]));
     const nameById = new Map(
       pipelines.map((pipeline) => [pipeline.id, pipeline.name]),
@@ -215,8 +246,38 @@ export class MeetingsService {
           taskId: isDefined(task) ? task.id : null,
           taskStageId: task?.stageId ?? null,
           taskIsDone: isDefined(task?.completedAt) || stage?.isDone === true,
+          checklistItemId: item.checklistItemId ?? null,
+          pointIsDone:
+            isDefined(task) && isDefined(item.checklistItemId)
+              ? getTaskChecklists(task).some((checklist) =>
+                  checklist.items.some(
+                    (point) => point.id === item.checklistItemId && point.done,
+                  ),
+                )
+              : false,
         };
       }),
+      actionPoints: meeting.pipelineIds
+        .filter((id) => visibleIds.includes(id))
+        .map((id) => {
+          const state = meeting.actionPoints?.[id];
+
+          return {
+            pipelineId: id,
+            pipelineName: nameById.get(id) ?? '',
+            status: state?.status ?? 'NONE',
+            trigger: state?.trigger ?? null,
+            engine: state?.engine ?? null,
+            error: state?.error ?? null,
+            requestedAt: state?.requestedAt
+              ? new Date(state.requestedAt)
+              : null,
+            finishedAt: state?.finishedAt ? new Date(state.finishedAt) : null,
+            taskIds: (state?.taskIds ?? []).filter((taskId) =>
+              existingTaskIds.has(taskId),
+            ),
+          };
+        }),
     };
   }
 

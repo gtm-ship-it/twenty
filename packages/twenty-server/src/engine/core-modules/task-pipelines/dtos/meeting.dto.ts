@@ -75,6 +75,45 @@ export class MeetingActionItemDTO {
 
   @Field(() => Boolean)
   taskIsDone: boolean;
+
+  @Field(() => String, { nullable: true })
+  checklistItemId: string | null;
+
+  // El punto de la checklist ya se marcó como hecho.
+  @Field(() => Boolean)
+  pointIsDone: boolean;
+}
+
+// Estado de los action points de la reunión en UN tablero.
+@ObjectType('MeetingActionPointsState')
+export class MeetingActionPointsStateDTO {
+  @Field(() => UUIDScalarType)
+  pipelineId: string;
+
+  @Field(() => String)
+  pipelineName: string;
+
+  // NONE | PENDING | GENERATING | DONE | FAILED
+  @Field(() => String)
+  status: string;
+
+  @Field(() => String, { nullable: true })
+  trigger: string | null;
+
+  @Field(() => String, { nullable: true })
+  engine: string | null;
+
+  @Field(() => String, { nullable: true })
+  error: string | null;
+
+  @Field(() => Date, { nullable: true })
+  requestedAt: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  finishedAt: Date | null;
+
+  @Field(() => [UUIDScalarType])
+  taskIds: string[];
 }
 
 @ObjectType('MeetingListItem')
@@ -102,6 +141,11 @@ export class MeetingListItemDTO {
 
   @Field(() => String, { nullable: true })
   recordedByName: string | null;
+
+  // Resumen de todos mis tableros: DONE si ya se generaron en alguno,
+  // GENERATING si están en cola, FAILED, o NONE.
+  @Field(() => String)
+  actionPointsStatus: string;
 }
 
 @ObjectType('MeetingDetail')
@@ -151,6 +195,9 @@ export class MeetingDetailDTO {
 
   @Field(() => [MeetingActionItemDTO])
   actionItems: MeetingActionItemDTO[];
+
+  @Field(() => [MeetingActionPointsStateDTO])
+  actionPoints: MeetingActionPointsStateDTO[];
 }
 
 @ObjectType('FathomSyncResult')

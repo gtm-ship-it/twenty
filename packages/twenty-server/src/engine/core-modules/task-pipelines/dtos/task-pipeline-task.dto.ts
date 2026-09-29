@@ -14,6 +14,76 @@ export class TaskPipelineTaskChecklistItemDTO {
   done: boolean;
 }
 
+@ObjectType('TaskPipelineChecklistPoint')
+export class TaskPipelineChecklistPointDTO {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  text: string;
+
+  @Field(() => Boolean)
+  done: boolean;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  assigneeWorkspaceMemberId: string | null;
+
+  @Field(() => Date, { nullable: true })
+  dueAt: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  completedAt: Date | null;
+}
+
+@ObjectType('TaskPipelineChecklist')
+export class TaskPipelineChecklistDTO {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  title: string;
+
+  @Field(() => [TaskPipelineChecklistPointDTO])
+  items: TaskPipelineChecklistPointDTO[];
+}
+
+@ObjectType('TaskPipelineTaskAttachment')
+export class TaskPipelineTaskAttachmentDTO {
+  @Field(() => UUIDScalarType)
+  id: string;
+
+  @Field(() => UUIDScalarType)
+  taskId: string;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  mimeType: string | null;
+
+  @Field(() => Float, { nullable: true })
+  size: number | null;
+
+  @Field(() => String)
+  purpose: string;
+
+  @Field(() => String, { nullable: true })
+  checklistItemId: string | null;
+
+  @Field(() => Boolean)
+  isImage: boolean;
+
+  // URL firmada, lista para el navegador.
+  @Field(() => String)
+  url: string;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  uploadedByWorkspaceMemberId: string | null;
+
+  @Field(() => Date)
+  createdAt: Date;
+}
+
 @ObjectType('TaskPipelineTaskRelatedRecord')
 export class TaskPipelineTaskRelatedRecordDTO {
   @Field(() => String)
@@ -64,6 +134,13 @@ export class TaskPipelineTaskDTO {
   @Field(() => UUIDScalarType, { nullable: true })
   assigneeWorkspaceMemberId: string | null;
 
+  // Miembros de la tarjeta (como en Trello).
+  @Field(() => [UUIDScalarType])
+  memberWorkspaceMemberIds: string[];
+
+  @Field(() => Date, { nullable: true })
+  startAt: Date | null;
+
   @Field(() => Date, { nullable: true })
   dueAt: Date | null;
 
@@ -75,6 +152,24 @@ export class TaskPipelineTaskDTO {
 
   @Field(() => [TaskPipelineTaskChecklistItemDTO])
   checklist: TaskPipelineTaskChecklistItemDTO[];
+
+  @Field(() => [TaskPipelineChecklistDTO])
+  checklists: TaskPipelineChecklistDTO[];
+
+  @Field(() => Int)
+  checklistDoneCount: number;
+
+  @Field(() => Int)
+  checklistTotalCount: number;
+
+  @Field(() => [TaskPipelineTaskAttachmentDTO])
+  attachments: TaskPipelineTaskAttachmentDTO[];
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  coverAttachmentId: string | null;
+
+  @Field(() => String, { nullable: true })
+  coverUrl: string | null;
 
   @Field(() => [TaskPipelineTaskRelatedRecordDTO])
   relatedRecords: TaskPipelineTaskRelatedRecordDTO[];

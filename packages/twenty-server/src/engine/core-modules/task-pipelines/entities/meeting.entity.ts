@@ -7,12 +7,34 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { type FathomActionItem } from 'src/engine/core-modules/task-pipelines/fathom/fathom.types';
 import { WorkspaceRelatedEntity } from 'src/engine/workspace-manager/types/workspace-related-entity';
 
 export type MeetingParticipant = {
   name: string | null;
   email: string | null;
   isExternal: boolean;
+};
+
+export type MeetingActionPointsStatus =
+  | 'PENDING'
+  | 'GENERATING'
+  | 'DONE'
+  | 'FAILED';
+
+// Estado de los action points de la reunión EN UN tablero. Se generan una sola
+// vez: en DONE ya no se vuelven a crear.
+export type MeetingActionPointsState = {
+  status: MeetingActionPointsStatus;
+  trigger: 'AUTO' | 'MANUAL';
+  requestedByWorkspaceMemberId: string | null;
+  requestedAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  attempts: number;
+  engine: 'AI' | 'SUMMARY' | null;
+  error: string | null;
+  taskIds: string[];
 };
 
 export type MeetingTranscriptLine = {
@@ -68,6 +90,13 @@ export class MeetingEntity extends WorkspaceRelatedEntity {
   // los miembros de alguno de ellos la ven.
   @Column({ type: 'jsonb', nullable: false, default: [] })
   pipelineIds: string[];
+
+  @Column({ type: 'jsonb', nullable: false, default: {} })
+  actionPoints: Record<string, MeetingActionPointsState>;
+
+  // Accionables tal como los mandó Fathom (a veces vacío): la IA los usa de pista.
+  @Column({ type: 'jsonb', nullable: false, default: [] })
+  fathomActionItems: FathomActionItem[];
 
   // Idioma en que se tradujo (null = pendiente de traducir).
   @Column({ type: 'varchar', nullable: true })

@@ -124,6 +124,51 @@ export class TaskPipelineTaskChecklistItemInput {
   done: boolean;
 }
 
+@InputType('TaskPipelineChecklistPointInput')
+export class TaskPipelineChecklistPointInput {
+  @Field(() => String)
+  @IsString()
+  @MaxLength(64)
+  id: string;
+
+  @Field(() => String)
+  @IsString()
+  @MaxLength(1000)
+  text: string;
+
+  @Field(() => Boolean)
+  @IsBoolean()
+  done: boolean;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  assigneeWorkspaceMemberId?: string | null;
+
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  dueAt?: Date | null;
+}
+
+@InputType('TaskPipelineChecklistInput')
+export class TaskPipelineChecklistInput {
+  @Field(() => String)
+  @IsString()
+  @MaxLength(64)
+  id: string;
+
+  @Field(() => String)
+  @IsString()
+  @MaxLength(200)
+  title: string;
+
+  @Field(() => [TaskPipelineChecklistPointInput])
+  @ArrayMaxSize(200)
+  @ValidateNested({ each: true })
+  @Type(() => TaskPipelineChecklistPointInput)
+  items: TaskPipelineChecklistPointInput[];
+}
+
 @InputType('TaskPipelineTaskRelatedRecordInput')
 export class TaskPipelineTaskRelatedRecordInput {
   @Field(() => String)
@@ -167,6 +212,16 @@ export class CreateTaskPipelineTaskInput {
   @IsOptional()
   @IsUUID()
   assigneeWorkspaceMemberId?: string | null;
+
+  @Field(() => [UUIDScalarType], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(50)
+  @IsUUID('all', { each: true })
+  memberWorkspaceMemberIds?: string[] | null;
+
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  startAt?: Date | null;
 
   @Field(() => Date, { nullable: true })
   @IsOptional()
@@ -228,6 +283,22 @@ export class UpdateTaskPipelineTaskInput {
   @IsBoolean()
   clearAssignee?: boolean | null;
 
+  // Lista completa de miembros de la tarjeta (reemplaza la anterior).
+  @Field(() => [UUIDScalarType], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(50)
+  @IsUUID('all', { each: true })
+  memberWorkspaceMemberIds?: string[] | null;
+
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  startAt?: Date | null;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  clearStartAt?: boolean | null;
+
   @Field(() => Date, { nullable: true })
   @IsOptional()
   dueAt?: Date | null;
@@ -254,6 +325,24 @@ export class UpdateTaskPipelineTaskInput {
   @ValidateNested({ each: true })
   @Type(() => TaskPipelineTaskChecklistItemInput)
   checklist?: TaskPipelineTaskChecklistItemInput[] | null;
+
+  // Lista completa de checklists (reemplaza la anterior).
+  @Field(() => [TaskPipelineChecklistInput], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(30)
+  @ValidateNested({ each: true })
+  @Type(() => TaskPipelineChecklistInput)
+  checklists?: TaskPipelineChecklistInput[] | null;
+
+  @Field(() => UUIDScalarType, { nullable: true })
+  @IsOptional()
+  @IsUUID()
+  coverAttachmentId?: string | null;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  clearCover?: boolean | null;
 
   @Field(() => [TaskPipelineTaskRelatedRecordInput], { nullable: true })
   @IsOptional()

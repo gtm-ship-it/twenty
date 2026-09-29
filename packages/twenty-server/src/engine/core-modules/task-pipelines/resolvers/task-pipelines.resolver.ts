@@ -1,16 +1,22 @@
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
 
+import bytes from 'bytes';
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 import { isDefined } from 'twenty-shared/utils';
+
+import type { FileUpload } from 'graphql-upload/processRequest.mjs';
 
 import { CoreResolver } from 'src/engine/api/graphql/graphql-config/decorators/core-resolver.decorator';
 import { UUIDScalarType } from 'src/engine/api/graphql/workspace-schema-builder/graphql-types/scalars';
 import {
   FathomSyncResultDTO,
+  MeetingActionPointsStateDTO,
   MeetingDetailDTO,
   MeetingListItemDTO,
 } from 'src/engine/core-modules/task-pipelines/dtos/meeting.dto';
 import {
+  TaskPipelineTaskAttachmentDTO,
   TaskPipelineTaskCommentDTO,
   TaskPipelineTaskDTO,
 } from 'src/engine/core-modules/task-pipelines/dtos/task-pipeline-task.dto';
@@ -28,6 +34,7 @@ import {
   UpdateTaskPipelineTaskInput,
 } from 'src/engine/core-modules/task-pipelines/dtos/task-pipeline.inputs';
 import { FathomConnectionsService } from 'src/engine/core-modules/task-pipelines/fathom/fathom-connections.service';
+import { MeetingActionPointsService } from 'src/engine/core-modules/task-pipelines/services/meeting-action-points.service';
 import { MeetingsService } from 'src/engine/core-modules/task-pipelines/services/meetings.service';
 import { TaskPipelineAccessService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-access.service';
 import { TaskPipelinesService } from 'src/engine/core-modules/task-pipelines/services/task-pipelines.service';
@@ -41,6 +48,10 @@ import { AuthWorkspace } from 'src/engine/decorators/auth/auth-workspace.decorat
 import { CustomPermissionGuard } from 'src/engine/guards/custom-permission.guard';
 import { UserAuthGuard } from 'src/engine/guards/user-auth.guard';
 import { WorkspaceAuthGuard } from 'src/engine/guards/workspace-auth.guard';
+import { settings } from 'src/engine/constants/settings';
+import { streamToBuffer } from 'src/utils/stream-to-buffer';
+
+const ATTACHMENT_PURPOSES = ['ATTACHMENT', 'CHECKLIST_ITEM', 'INLINE'] as const;
 
 const assertText = (value: string, field: string, max: number) => {
   if (
@@ -65,6 +76,7 @@ export class TaskPipelinesResolver {
     private readonly accessService: TaskPipelineAccessService,
     private readonly meetingsService: MeetingsService,
     private readonly fathomConnectionsService: FathomConnectionsService,
+    private readonly actionPointsService: MeetingActionPointsService,
   ) {}
 
   // ------------------------------------------------------------- pipelines
@@ -345,6 +357,65 @@ export class TaskPipelinesResolver {
     );
   }
 
+  // ----------------------------------------------------------- attachments
+
+  // Adjunto de la tarjeta, foto de un punto de la checklist (checklistItemId)
+  // o imagen para pegar en la descripción/un comentario (INLINE).
+  @Mutation(() => TaskPipelineTaskAttachmentDTO)
+  async uploadTaskPipelineTaskAttachment(
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
+    @Args('taskId', { type: () => UUIDScalarType }) taskId: string,
+    @Args({ name: 'file', type: () => GraphQLUpload })
+    { createReadStream, filename }: FileUpload,
+    @Args('purpose', { type: () => String, nullable: true })
+    purpose: string | null,
+    @Args('checklistItemId', { type: () => String, nullable: true })
+    checklistItemId: string | null,
+  ): Promise<TaskPipelineTaskAttachmentDTO> {
+    const resolvedPurpose = purpose ?? 'ATTACHMENT';
+
+    if (!(ATTACHMENT_PURPOSES as readonly string[]).includes(resolvedPurpose)) {
+      throw new UserInputError(
+        'purpose must be ATTACHMENT, CHECKLIST_ITEM or INLINE',
+      );
+    }
+
+    if (resolvedPurpose === 'CHECKLIST_ITEM' && !isDefined(checklistItemId)) {
+      throw new UserInputError(
+        'checklistItemId is required for CHECKLIST_ITEM',
+      );
+    }
+
+    const file = await streamToBuffer(
+      createReadStream(),
+      bytes(settings.storage.maxFileSize) ?? undefined,
+    );
+
+    return this.taskPipelinesService.uploadAttachment(
+      { workspaceId: workspace.id, workspaceMemberId },
+      {
+        taskId,
+        file,
+        filename: filename ?? 'archivo',
+        purpose: resolvedPurpose as (typeof ATTACHMENT_PURPOSES)[number],
+        checklistItemId: checklistItemId ?? null,
+      },
+    );
+  }
+
+  @Mutation(() => Boolean)
+  async deleteTaskPipelineTaskAttachment(
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
+    @Args('attachmentId', { type: () => UUIDScalarType }) attachmentId: string,
+  ): Promise<boolean> {
+    return this.taskPipelinesService.deleteAttachment(
+      { workspaceId: workspace.id, workspaceMemberId },
+      attachmentId,
+    );
+  }
+
   // -------------------------------------------------------------- comments
 
   @Query(() => [TaskPipelineTaskCommentDTO])
@@ -474,6 +545,33 @@ export class TaskPipelinesResolver {
       { workspaceId: workspace.id, workspaceMemberId },
       meetingId,
     );
+  }
+
+  // Botón "Generar action points" de una reunión (una sola vez por tablero).
+  @Mutation(() => MeetingActionPointsStateDTO)
+  async generateMeetingActionPoints(
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @AuthWorkspaceMemberId() workspaceMemberId: string | undefined,
+    @Args('meetingId', { type: () => UUIDScalarType }) meetingId: string,
+    @Args('pipelineId', { type: () => UUIDScalarType }) pipelineId: string,
+  ): Promise<MeetingActionPointsStateDTO> {
+    const state = await this.actionPointsService.requestManual(
+      { workspaceId: workspace.id, workspaceMemberId },
+      meetingId,
+      pipelineId,
+    );
+
+    return {
+      pipelineId,
+      pipelineName: '',
+      status: state.status,
+      trigger: state.trigger,
+      engine: state.engine,
+      error: state.error,
+      requestedAt: state.requestedAt ? new Date(state.requestedAt) : null,
+      finishedAt: state.finishedAt ? new Date(state.finishedAt) : null,
+      taskIds: state.taskIds,
+    };
   }
 
   @Mutation(() => TaskPipelineTaskDTO)

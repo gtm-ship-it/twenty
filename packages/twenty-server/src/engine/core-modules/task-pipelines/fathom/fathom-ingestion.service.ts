@@ -3,42 +3,27 @@ import { InjectDataSource } from '@nestjs/typeorm';
 
 import { isNonEmptyString } from '@sniptt/guards';
 import { isDefined } from 'twenty-shared/utils';
-import { DataSource, In } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 import { type FathomConnectionEntity } from 'src/engine/core-modules/task-pipelines/entities/fathom-connection.entity';
-import { MeetingActionItemEntity } from 'src/engine/core-modules/task-pipelines/entities/meeting-action-item.entity';
 import {
   MeetingEntity,
   type MeetingParticipant,
   type MeetingTranscriptLine,
 } from 'src/engine/core-modules/task-pipelines/entities/meeting.entity';
-import { TaskPipelineMemberEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-member.entity';
-import { TaskPipelineStageEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-stage.entity';
-import { TaskPipelineTaskEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task.entity';
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
 import { type FathomMeeting } from 'src/engine/core-modules/task-pipelines/fathom/fathom.types';
 import { LibreTranslateService } from 'src/engine/core-modules/task-pipelines/services/libre-translate.service';
-import { TaskPipelineNotificationService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-notification.service';
-import { TaskPipelineWorkspaceMembersService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-workspace-members.service';
-import { computeActionItemKey } from 'src/engine/core-modules/task-pipelines/utils/compute-action-item-key.util';
-import { extractSummaryNextSteps } from 'src/engine/core-modules/task-pipelines/utils/extract-summary-next-steps.util';
-import {
-  type AssignableMember,
-  resolveActionItemAssignee,
-} from 'src/engine/core-modules/task-pipelines/utils/resolve-action-item-assignee.util';
+import { MeetingActionPointsService } from 'src/engine/core-modules/task-pipelines/services/meeting-action-points.service';
 import { InjectWorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scoped-repository/inject-workspace-scoped-repository.decorator';
 import { WorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scoped-repository/workspace-scoped-repository';
-
-const POSITION_STEP = 1024;
-const MAX_TITLE_LENGTH = 500;
-// Al reprocesar reuniones viejas no se manda correo por cada tarea creada.
-const NOTIFY_MAX_MEETING_AGE_MS = 48 * 60 * 60 * 1000;
 
 export type MeetingIngestionResult = {
   meetingId: string | null;
   actionItemsSeen: number;
   tasksCreated: number;
+  queued?: boolean;
 };
 
 const toDate = (value: string | null | undefined): Date | null => {
@@ -51,30 +36,9 @@ const toDate = (value: string | null | undefined): Date | null => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
-// Solo enlaces http(s) llegan a sourceLink (vienen de un tercero).
-const httpUrlOrNull = (value: string | null | undefined): string | null => {
-  if (!isNonEmptyString(value)) {
-    return null;
-  }
-
-  try {
-    const url = new URL(value);
-
-    return url.protocol === 'https:' || url.protocol === 'http:'
-      ? url.toString()
-      : null;
-  } catch {
-    return null;
-  }
-};
-
-const truncate = (value: string, max: number) =>
-  value.length > max ? `${value.slice(0, max - 1)}…` : value;
-
-// Convierte una reunión de Fathom en: la reunión guardada (video, resumen,
-// transcripción), sus accionables, y una tarea por accionable asignada a la
-// persona correcta DEL tablero. Idempotente: reprocesar la misma reunión no
-// duplica nada y respeta lo que la gente ya editó o borró.
+// Guarda la reunión de Fathom (video, resumen, transcripción, accionables
+// crudos) y, si es nueva, encola sus action points para la IA. Idempotente:
+// reprocesar la misma reunión no duplica nada.
 @Injectable()
 export class FathomIngestionService {
   private readonly logger = new Logger(FathomIngestionService.name);
@@ -82,21 +46,12 @@ export class FathomIngestionService {
   constructor(
     @InjectWorkspaceScopedRepository(MeetingEntity)
     private readonly meetingRepository: WorkspaceScopedRepository<MeetingEntity>,
-    @InjectWorkspaceScopedRepository(MeetingActionItemEntity)
-    private readonly actionItemRepository: WorkspaceScopedRepository<MeetingActionItemEntity>,
     @InjectWorkspaceScopedRepository(TaskPipelineEntity)
     private readonly pipelineRepository: WorkspaceScopedRepository<TaskPipelineEntity>,
-    @InjectWorkspaceScopedRepository(TaskPipelineMemberEntity)
-    private readonly memberRepository: WorkspaceScopedRepository<TaskPipelineMemberEntity>,
-    @InjectWorkspaceScopedRepository(TaskPipelineStageEntity)
-    private readonly stageRepository: WorkspaceScopedRepository<TaskPipelineStageEntity>,
-    @InjectWorkspaceScopedRepository(TaskPipelineTaskEntity)
-    private readonly taskRepository: WorkspaceScopedRepository<TaskPipelineTaskEntity>,
     @InjectDataSource()
     private readonly coreDataSource: DataSource,
     private readonly translateService: LibreTranslateService,
-    private readonly workspaceMembersService: TaskPipelineWorkspaceMembersService,
-    private readonly notificationService: TaskPipelineNotificationService,
+    private readonly actionPointsService: MeetingActionPointsService,
   ) {}
 
   async ingestMeeting(
@@ -127,46 +82,7 @@ export class FathomIngestionService {
       pipeline.id,
     );
 
-    // Fathom a veces deja `action_items` vacío (pasa con los resúmenes en
-    // español) aunque el resumen sí trae "Próximos pasos": se usan esos.
-    const fathomItems = fathomMeeting.action_items ?? [];
-    const summaryNextSteps =
-      fathomItems.length === 0
-        ? extractSummaryNextSteps(
-            fathomMeeting.default_summary?.markdown_formatted ??
-              meeting.summaryMarkdown,
-          )
-        : null;
-    const sourceItems =
-      fathomItems.length > 0 ? fathomItems : (summaryNextSteps?.items ?? []);
-    const itemsAlreadyInSpanish = summaryNextSteps?.language === 'es';
-
-    // Accionables válidos y sin repetidos (Fathom a veces duplica uno en el mismo segundo).
-    const seenKeys = new Set<string>();
-    const rawItems = sourceItems.filter((item) => {
-      const description = item.description?.trim();
-
-      if (!isNonEmptyString(description)) {
-        return false;
-      }
-
-      const key = computeActionItemKey({
-        recordingId,
-        recordingTimestamp: item.recording_timestamp ?? null,
-        description,
-      });
-
-      if (seenKeys.has(key)) {
-        return false;
-      }
-
-      seenKeys.add(key);
-
-      return true;
-    });
-
-    const texts = rawItems.map((item) => (item.description ?? '').trim());
-
+    // Resumen en español (si Fathom lo mandó en inglés).
     if (
       isDefined(meeting.summaryMarkdown) &&
       !isDefined(meeting.summaryMarkdownEs)
@@ -184,189 +100,21 @@ export class FathomIngestionService {
       }
     }
 
-    const members = await this.getAssignableMembers(workspaceId, pipeline.id);
-    const invitees = meeting.participants.map((participant) => ({
-      name: participant.name,
-      email: participant.email,
-    }));
-    const transcriptHints = meeting.transcript.map((line) => ({
-      speakerName: line.speakerName,
-      speakerEmail: line.speakerEmail,
-      timestamp: line.timestamp,
-    }));
-
-    const stages = await this.stageRepository.find(workspaceId, {
-      where: { pipelineId: pipeline.id },
-      order: { position: 'ASC' },
+    // Los action points ya no se crean aquí: si la reunión es nueva (grabada
+    // después de conectar esta cuenta) se encolan para la IA; si es vieja,
+    // quedan a mano con el botón "Generar action points".
+    const queued = await this.actionPointsService.enqueueIfNewMeeting({
+      workspaceId,
+      meeting,
+      pipelineId: pipeline.id,
+      connectedAt: connection.createdAt,
     });
-    const firstStage = stages[0];
-    const doneStage =
-      stages.find((stage) => stage.isDone) ?? stages[stages.length - 1];
-
-    if (!isDefined(firstStage)) {
-      return {
-        meetingId: meeting.id,
-        actionItemsSeen: rawItems.length,
-        tasksCreated: 0,
-      };
-    }
-
-    const keys = rawItems.map((item) =>
-      computeActionItemKey({
-        recordingId,
-        recordingTimestamp: item.recording_timestamp ?? null,
-        description: (item.description ?? '').trim(),
-      }),
-    );
-
-    const existingItems =
-      keys.length > 0
-        ? await this.actionItemRepository.find(workspaceId, {
-            where: { pipelineId: pipeline.id, externalKey: In(keys) },
-          })
-        : [];
-    const existingByKey = new Map(
-      existingItems.map((item) => [item.externalKey, item]),
-    );
-
-    // Solo se traduce lo nuevo o lo que quedó sin traducir (el respaldo
-    // re-ingiere cada reunión muchas veces: no hay que recargar el traductor).
-    const needsTranslation = itemsAlreadyInSpanish
-      ? []
-      : keys
-          .map((key, index) => ({ key, index }))
-          .filter(({ key }) => !isDefined(existingByKey.get(key)?.textEs));
-    const translatedSubset =
-      needsTranslation.length > 0
-        ? await this.translateService.translateMany(
-            needsTranslation.map(({ index }) => texts[index]),
-          )
-        : [];
-    const translatedTexts: (string | null)[] = texts.map((text) =>
-      itemsAlreadyInSpanish ? text : null,
-    );
-
-    needsTranslation.forEach(({ index }, position) => {
-      translatedTexts[index] = translatedSubset?.[position] ?? null;
-    });
-
-    let tasksCreated = 0;
-
-    for (const [index, item] of rawItems.entries()) {
-      const externalKey = keys[index];
-      const textEn = texts[index];
-      const textEs = translatedTexts?.[index]?.trim() || null;
-      const existing = existingByKey.get(externalKey);
-
-      if (isDefined(existing)) {
-        // Ya procesado: solo completar la traducción si faltaba (y el título
-        // de la tarea si nadie lo cambió).
-        if (!isDefined(existing.textEs) && isDefined(textEs)) {
-          await this.actionItemRepository.update(
-            workspaceId,
-            { id: existing.id },
-            { textEs },
-          );
-
-          if (isDefined(existing.taskId)) {
-            await this.taskRepository.update(
-              workspaceId,
-              {
-                id: existing.taskId,
-                title: truncate(textEn, MAX_TITLE_LENGTH),
-              },
-              { title: truncate(textEs, MAX_TITLE_LENGTH) },
-            );
-          }
-        }
-
-        continue;
-      }
-
-      const resolved = resolveActionItemAssignee({
-        assignee: item.assignee
-          ? {
-              name: item.assignee.name ?? null,
-              email: item.assignee.email ?? null,
-            }
-          : null,
-        description: textEn,
-        recordingTimestamp: item.recording_timestamp ?? null,
-        invitees,
-        transcript: transcriptHints,
-        members,
-      });
-
-      const isCompleted = item.completed === true;
-      const stage =
-        isCompleted && isDefined(doneStage) ? doneStage : firstStage;
-
-      const created = await this.createTaskIfMissing({
-        workspaceId,
-        pipelineId: pipeline.id,
-        stageId: stage.id,
-        stageIsDone: stage.isDone,
-        externalKey,
-        title: truncate(textEs ?? textEn, MAX_TITLE_LENGTH),
-        body: this.buildTaskBody({ meeting, item, textEn, textEs }),
-        assigneeWorkspaceMemberId: resolved.workspaceMemberId,
-        needsAssignment: !isDefined(resolved.workspaceMemberId),
-        sourceLink:
-          httpUrlOrNull(item.recording_playback_url) ??
-          httpUrlOrNull(meeting.shareUrl),
-        meetingId: meeting.id,
-        originalText: textEn,
-        resolution: resolved.resolution,
-      });
-
-      const actionItem = await this.insertActionItemIfMissing(workspaceId, {
-        meetingId: meeting.id,
-        pipelineId: pipeline.id,
-        connectionId: connection.id,
-        externalKey,
-        textEn,
-        textEs,
-        assigneeName: item.assignee?.name ?? null,
-        assigneeEmail: item.assignee?.email ?? null,
-        recordingTimestamp: item.recording_timestamp ?? null,
-        playbackUrl: item.recording_playback_url ?? null,
-        completed: isCompleted,
-        resolvedWorkspaceMemberId: resolved.workspaceMemberId,
-        resolution: resolved.resolution,
-        taskId: created?.id ?? null,
-      });
-
-      if (isDefined(created)) {
-        tasksCreated++;
-
-        const isRecentMeeting =
-          !isDefined(meeting.startedAt) ||
-          Date.now() - meeting.startedAt.getTime() <= NOTIFY_MAX_MEETING_AGE_MS;
-
-        if (
-          isDefined(created.assigneeWorkspaceMemberId) &&
-          !isCompleted &&
-          isRecentMeeting
-        ) {
-          void this.notificationService.notifyAssigned({
-            workspaceId,
-            task: created,
-            pipelineName: pipeline.name,
-            assignedByWorkspaceMemberId: null,
-            meetingTitle: meeting.title,
-          });
-        }
-      }
-
-      this.logger.log(
-        `Fathom meeting ${recordingId} → action item ${actionItem?.id ?? 'already stored'} (${resolved.resolution})${created ? ` task ${created.id}` : ''}`,
-      );
-    }
 
     return {
       meetingId: meeting.id,
-      actionItemsSeen: rawItems.length,
-      tasksCreated,
+      actionItemsSeen: (fathomMeeting.action_items ?? []).length,
+      tasksCreated: 0,
+      queued,
     };
   }
 
@@ -436,6 +184,10 @@ export class FathomIngestionService {
       fields.transcript = transcript;
     }
 
+    if ((fathomMeeting.action_items ?? []).length > 0) {
+      fields.fathomActionItems = fathomMeeting.action_items ?? [];
+    }
+
     if (isDefined(summary) && summary !== existing?.summaryMarkdown) {
       fields.summaryMarkdown = summary;
       fields.summaryMarkdownEs = null;
@@ -451,6 +203,8 @@ export class FathomIngestionService {
           summaryMarkdown: null,
           summaryMarkdownEs: null,
           translatedTo: null,
+          actionPoints: {},
+          fathomActionItems: [],
           ...fields,
           pipelineIds: [pipelineId],
         });
@@ -484,184 +238,5 @@ export class FathomIngestionService {
     return (await this.meetingRepository.findOneOrFail(workspaceId, {
       where: { id: existingRef.id },
     })) as MeetingEntity;
-  }
-
-  private async getAssignableMembers(
-    workspaceId: string,
-    pipelineId: string,
-  ): Promise<AssignableMember[]> {
-    const memberships = await this.memberRepository.find(workspaceId, {
-      where: { pipelineId },
-    });
-    const people = await this.workspaceMembersService.findMembers(
-      workspaceId,
-      memberships.map((membership) => membership.workspaceMemberId),
-    );
-    const personById = new Map(people.map((person) => [person.id, person]));
-
-    return memberships
-      .map((membership) => {
-        const person = personById.get(membership.workspaceMemberId);
-
-        if (!isDefined(person)) {
-          return null;
-        }
-
-        return {
-          workspaceMemberId: membership.workspaceMemberId,
-          email: person.email,
-          firstName: person.firstName,
-          lastName: person.lastName,
-          aliases: membership.aliases ?? [],
-        };
-      })
-      .filter(isDefined);
-  }
-
-  private async insertActionItemIfMissing(
-    workspaceId: string,
-    values: Parameters<
-      WorkspaceScopedRepository<MeetingActionItemEntity>['insertAndReturnOne']
-    >[1],
-  ): Promise<MeetingActionItemEntity | null> {
-    try {
-      return await this.actionItemRepository.insertAndReturnOne(
-        workspaceId,
-        values,
-      );
-    } catch (error) {
-      if ((error as { code?: string }).code === '23505') {
-        return null;
-      }
-
-      throw error;
-    }
-  }
-
-  private async createTaskIfMissing(input: {
-    workspaceId: string;
-    pipelineId: string;
-    stageId: string;
-    stageIsDone: boolean;
-    externalKey: string;
-    title: string;
-    body: string;
-    assigneeWorkspaceMemberId: string | null;
-    needsAssignment: boolean;
-    sourceLink: string | null;
-    meetingId: string;
-    originalText: string;
-    resolution: string;
-  }): Promise<TaskPipelineTaskEntity | null> {
-    const existing = await this.taskRepository.findOne(input.workspaceId, {
-      where: { pipelineId: input.pipelineId, externalKey: input.externalKey },
-    });
-
-    if (isDefined(existing)) {
-      return null;
-    }
-
-    const max = await this.taskRepository.maximum(
-      input.workspaceId,
-      'position',
-      {
-        stageId: input.stageId,
-      },
-    );
-
-    try {
-      const task = await this.taskRepository.insertAndReturnOne(
-        input.workspaceId,
-        {
-          pipelineId: input.pipelineId,
-          stageId: input.stageId,
-          position: (max ?? 0) + POSITION_STEP,
-          title: input.title,
-          body: input.body,
-          assigneeWorkspaceMemberId: input.assigneeWorkspaceMemberId,
-          dueAt: null,
-          priority: null,
-          labels: [],
-          checklist: [],
-          relatedRecords: [],
-          source: 'FATHOM',
-          sourceLink: input.sourceLink,
-          meetingId: input.meetingId,
-          externalKey: input.externalKey,
-          originalText: input.originalText,
-          needsAssignment: input.needsAssignment,
-          createdByWorkspaceMemberId: null,
-          completedAt: input.stageIsDone ? new Date() : null,
-          archivedAt: null,
-        },
-      );
-
-      await this.coreDataSource.query(
-        `INSERT INTO "core"."taskPipelineTaskComment" ("workspaceId", "taskId", "authorWorkspaceMemberId", "kind", "body")
-         VALUES ($1, $2, NULL, 'ACTIVITY', $3)`,
-        [
-          input.workspaceId,
-          task.id,
-          JSON.stringify(
-            input.needsAssignment
-              ? { type: 'fromMeetingUnassigned' }
-              : { type: 'fromMeeting', resolution: input.resolution },
-          ),
-        ],
-      );
-
-      return task;
-    } catch (error) {
-      // Dos procesamientos a la vez (webhook + sync): el índice único gana.
-      if ((error as { code?: string }).code === '23505') {
-        return null;
-      }
-
-      throw error;
-    }
-  }
-
-  private buildTaskBody({
-    meeting,
-    item,
-    textEn,
-    textEs,
-  }: {
-    meeting: MeetingEntity;
-    item: NonNullable<FathomMeeting['action_items']>[number];
-    textEn: string;
-    textEs: string | null;
-  }): string {
-    const lines: string[] = [];
-    const date = meeting.startedAt
-      ? meeting.startedAt.toLocaleDateString('es-ES', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })
-      : null;
-
-    lines.push(`**Reunión:** ${meeting.title}${date ? ` (${date})` : ''}`);
-
-    if (isNonEmptyString(item.recording_timestamp)) {
-      lines.push(
-        `**Momento:** ${item.recording_timestamp}${item.recording_playback_url ? ` — [ver en la grabación](${item.recording_playback_url})` : ''}`,
-      );
-    }
-
-    if (
-      isNonEmptyString(item.assignee?.name) ||
-      isNonEmptyString(item.assignee?.email)
-    ) {
-      lines.push(
-        `**Asignado en Fathom:** ${[item.assignee?.name, item.assignee?.email].filter(isNonEmptyString).join(' · ')}`,
-      );
-    }
-
-    if (isDefined(textEs) && textEs !== textEn) {
-      lines.push('', `> ${textEn}`);
-    }
-
-    return lines.join('\n');
   }
 }
