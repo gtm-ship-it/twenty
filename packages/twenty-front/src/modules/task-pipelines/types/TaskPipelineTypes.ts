@@ -48,6 +48,38 @@ export type TaskPipeline = {
 
 export type TaskChecklistItem = { id: string; text: string; done: boolean };
 
+// Punto de una checklist con su responsable y fecha (como Trello).
+export type TaskChecklistPoint = {
+  id: string;
+  text: string;
+  done: boolean;
+  assigneeWorkspaceMemberId: string | null;
+  dueAt: string | null;
+  completedAt: string | null;
+};
+
+export type TaskChecklist = {
+  id: string;
+  title: string;
+  items: TaskChecklistPoint[];
+};
+
+export type TaskAttachmentPurpose = 'ATTACHMENT' | 'CHECKLIST_ITEM' | 'INLINE';
+
+export type TaskAttachment = {
+  id: string;
+  taskId: string;
+  name: string;
+  mimeType: string | null;
+  size: number | null;
+  purpose: TaskAttachmentPurpose;
+  checklistItemId: string | null;
+  isImage: boolean;
+  url: string;
+  uploadedByWorkspaceMemberId: string | null;
+  createdAt: string;
+};
+
 export type TaskRelatedRecord = {
   objectNameSingular: string;
   recordId: string;
@@ -63,10 +95,18 @@ export type PipelineTask = {
   title: string;
   body: string;
   assigneeWorkspaceMemberId: string | null;
+  memberWorkspaceMemberIds: string[];
+  startAt: string | null;
   dueAt: string | null;
   priority: TaskPriority | null;
   labels: string[];
   checklist: TaskChecklistItem[];
+  checklists: TaskChecklist[];
+  checklistDoneCount: number;
+  checklistTotalCount: number;
+  attachments: TaskAttachment[];
+  coverAttachmentId: string | null;
+  coverUrl: string | null;
   relatedRecords: TaskRelatedRecord[];
   source: 'MANUAL' | 'EMAIL' | 'FATHOM';
   sourceLink: string | null;
@@ -100,6 +140,26 @@ export type MeetingListItem = {
   actionItemCount: number;
   pipelineNames: string[];
   recordedByName: string | null;
+  actionPointsStatus: MeetingActionPointsStatus;
+};
+
+export type MeetingActionPointsStatus =
+  | 'NONE'
+  | 'PENDING'
+  | 'GENERATING'
+  | 'DONE'
+  | 'FAILED';
+
+export type MeetingActionPointsState = {
+  pipelineId: string;
+  pipelineName: string;
+  status: MeetingActionPointsStatus;
+  trigger: 'AUTO' | 'MANUAL' | null;
+  engine: 'AI' | 'SUMMARY' | null;
+  error: string | null;
+  requestedAt: string | null;
+  finishedAt: string | null;
+  taskIds: string[];
 };
 
 export type MeetingActionItem = {
@@ -118,6 +178,8 @@ export type MeetingActionItem = {
   taskId: string | null;
   taskStageId: string | null;
   taskIsDone: boolean;
+  checklistItemId: string | null;
+  pointIsDone: boolean;
 };
 
 export type MeetingDetail = {
@@ -145,6 +207,7 @@ export type MeetingDetail = {
     text: string;
   }[];
   actionItems: MeetingActionItem[];
+  actionPoints: MeetingActionPointsState[];
 };
 
 export type CreatePipelineTaskInput = {
@@ -153,6 +216,8 @@ export type CreatePipelineTaskInput = {
   title: string;
   body?: string | null;
   assigneeWorkspaceMemberId?: string | null;
+  memberWorkspaceMemberIds?: string[] | null;
+  startAt?: string | null;
   dueAt?: string | null;
   priority?: TaskPriority | null;
   labels?: string[] | null;
@@ -166,11 +231,29 @@ export type UpdatePipelineTaskInput = {
   body?: string | null;
   assigneeWorkspaceMemberId?: string | null;
   clearAssignee?: boolean | null;
+  memberWorkspaceMemberIds?: string[] | null;
+  startAt?: string | null;
+  clearStartAt?: boolean | null;
   dueAt?: string | null;
   clearDueAt?: boolean | null;
   priority?: TaskPriority | 'NONE' | null;
   labels?: string[] | null;
   checklist?: TaskChecklistItem[] | null;
+  checklists?: TaskChecklistInput[] | null;
+  coverAttachmentId?: string | null;
+  clearCover?: boolean | null;
   relatedRecords?: TaskRelatedRecord[] | null;
   sourceLink?: string | null;
+};
+
+export type TaskChecklistInput = {
+  id: string;
+  title: string;
+  items: {
+    id: string;
+    text: string;
+    done: boolean;
+    assigneeWorkspaceMemberId: string | null;
+    dueAt: string | null;
+  }[];
 };

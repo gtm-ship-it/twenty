@@ -215,11 +215,9 @@ const TaskColumn = ({
             <TaskCard
               task={task}
               isDone={stage.isDone}
-              assignee={
-                task.assigneeWorkspaceMemberId
-                  ? (membersById.get(task.assigneeWorkspaceMemberId) ?? null)
-                  : null
-              }
+              members={task.memberWorkspaceMemberIds
+                .map((memberId) => membersById.get(memberId))
+                .filter(isDefined)}
               labelColors={labelColors}
               onOpen={() => onOpenTask(task.id)}
             />

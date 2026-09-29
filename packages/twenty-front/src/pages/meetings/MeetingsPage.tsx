@@ -11,6 +11,7 @@ import {
   IconLanguage,
   IconListCheck,
   IconSearch,
+  IconSparkles,
   IconUsers,
   IconVideo,
 } from 'twenty-ui/icon';
@@ -25,24 +26,20 @@ import {
 import { SafeMarkdown } from '@/task-pipelines/components/SafeMarkdown';
 import {
   MemberAvatar,
-  MemberPicker,
   StyledSegment,
   StyledSegmented,
 } from '@/task-pipelines/components/TaskPipelineUi';
 import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
 import {
   CREATE_TASK_FROM_ACTION_ITEM,
+  GENERATE_MEETING_ACTION_POINTS,
   GET_MEETING,
   GET_MEETINGS,
-  UPDATE_PIPELINE_TASK,
 } from '@/task-pipelines/graphql/taskPipelinesDocuments';
-import { useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
 import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
+import { useWorkspaceMembersById } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
-  type TaskMemberInfo,
-  useWorkspaceMembersById,
-} from '@/task-pipelines/hooks/useWorkspaceMembersById';
-import {
+  type MeetingActionPointsState,
   type MeetingDetail,
   type MeetingListItem,
 } from '@/task-pipelines/types/TaskPipelineTypes';
@@ -379,6 +376,123 @@ const highlight = (text: string, needle: string) => {
   );
 };
 
+const StyledPointsBox = styled.div<{
+  tone: 'info' | 'busy' | 'done' | 'error';
+}>`
+  align-items: center;
+  background: ${({ tone }) =>
+    tone === 'error'
+      ? themeCssVariables.tag.background.red
+      : tone === 'done'
+        ? themeCssVariables.background.secondary
+        : themeCssVariables.tag.background.blue};
+  border: 1px solid ${themeCssVariables.border.color.light};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  display: flex;
+  flex-wrap: wrap;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: ${themeCssVariables.spacing[2]};
+  padding: ${themeCssVariables.spacing[2]} ${themeCssVariables.spacing[3]};
+`;
+
+const StyledPulse = styled.span`
+  animation: ap-pulse 1.2s ease-in-out infinite;
+  display: inline-flex;
+
+  @keyframes ap-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+`;
+
+const isBusy = (state: MeetingActionPointsState) =>
+  state.status === 'PENDING' || state.status === 'GENERATING';
+
+// Estado de los action points de la reunión en un tablero + el botón.
+const ActionPointsState = ({
+  state,
+  showPipelineName,
+  isRequesting,
+  onGenerate,
+}: {
+  state: MeetingActionPointsState;
+  showPipelineName: boolean;
+  isRequesting: boolean;
+  onGenerate: () => void;
+}) => {
+  const where = showPipelineName ? ` · ${state.pipelineName}` : '';
+  const boardLink = `${AppPath.TaskPipelinesPage}?pipeline=${state.pipelineId}`;
+
+  if (isBusy(state)) {
+    return (
+      <StyledPointsBox tone="busy">
+        <StyledPulse>
+          <IconSparkles size={16} />
+        </StyledPulse>
+        {t`The AI is pulling the action points out of this meeting… it takes 1–3 minutes`}
+        {where}
+      </StyledPointsBox>
+    );
+  }
+
+  if (state.status === 'DONE') {
+    const count = state.taskIds.length;
+    const finished = state.finishedAt
+      ? new Date(state.finishedAt).toLocaleString(undefined, {
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
+
+    return (
+      <StyledPointsBox tone="done">
+        <IconCheck size={16} />
+        {count === 1
+          ? t`1 card created ${finished}`
+          : t`${count} cards created ${finished}`}
+        {state.engine === 'AI'
+          ? ` · ${t`by the local AI`}`
+          : ` · ${t`from the summary's next steps`}`}
+        {where}
+        <StyledRouterLink to={boardLink}>{t`See the board`}</StyledRouterLink>
+      </StyledPointsBox>
+    );
+  }
+
+  return (
+    <StyledPointsBox tone={state.status === 'FAILED' ? 'error' : 'info'}>
+      <IconSparkles size={16} />
+      <span style={{ flex: 1, minWidth: 200 }}>
+        {state.status === 'FAILED'
+          ? t`Could not generate the action points: ${state.error ?? ''}`
+          : t`No action points yet. Generate them once and they become cards in the board, each with its owner.`}
+        {where}
+      </span>
+      <Button
+        title={
+          isRequesting
+            ? t`Sending…`
+            : state.status === 'FAILED'
+              ? t`Try again`
+              : t`Generate action points`
+        }
+        size="small"
+        accent="blue"
+        Icon={IconSparkles}
+        disabled={isRequesting}
+        onClick={onGenerate}
+      />
+    </StyledPointsBox>
+  );
+};
+
 const MemoMarkdown = memo(({ text }: { text: string }) => (
   <SafeMarkdown>{text}</SafeMarkdown>
 ));
@@ -404,43 +518,39 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
     fetchPolicy: 'cache-and-network',
   });
   const [createTask] = useMutation(CREATE_TASK_FROM_ACTION_ITEM, { client });
-  const [updateTaskMutation] = useMutation(UPDATE_PIPELINE_TASK, { client });
-  const { pipelines } = useTaskPipelines();
-
-  const membersByPipeline = useMemo(
-    () =>
-      new Map(
-        pipelines.map((pipeline) => [
-          pipeline.id,
-          pipeline.members
-            .map((entry) => membersById.get(entry.workspaceMemberId))
-            .filter((entry): entry is TaskMemberInfo => entry !== undefined),
-        ]),
-      ),
-    [pipelines, membersById],
-  );
-
-  const assignTask = async (taskId: string, memberId: string | null) => {
-    try {
-      await updateTaskMutation({
-        variables: {
-          taskId,
-          input:
-            memberId !== null
-              ? { assigneeWorkspaceMemberId: memberId }
-              : { clearAssignee: true },
-        },
-      });
-      enqueueSuccessSnackBar({
-        message: memberId !== null ? t`Task assigned` : t`Assignee removed`,
-      });
-      await refetch();
-    } catch (error) {
-      enqueueErrorSnackBar({ message: friendlyErrorMessage(error) });
-    }
-  };
+  const [generateMutation] = useMutation(GENERATE_MEETING_ACTION_POINTS, {
+    client,
+  });
+  const [requestingPipelineId, setRequestingPipelineId] = useState<
+    string | null
+  >(null);
 
   const meeting = data?.taskPipelineMeeting;
+  const anyBusy = (meeting?.actionPoints ?? []).some(isBusy);
+
+  // Mientras la IA trabaja, se consulta cada 4 s hasta que termine.
+  useEffect(() => {
+    if (!anyBusy) {
+      return;
+    }
+
+    const timer = window.setInterval(() => void refetch(), 4000);
+
+    return () => window.clearInterval(timer);
+  }, [anyBusy, refetch]);
+
+  const generate = async (pipelineId: string) => {
+    setRequestingPipelineId(pipelineId);
+
+    try {
+      await generateMutation({ variables: { meetingId, pipelineId } });
+      await refetch();
+    } catch (generationError) {
+      enqueueErrorSnackBar({ message: friendlyErrorMessage(generationError) });
+    } finally {
+      setRequestingPipelineId(null);
+    }
+  };
 
   const transcript = useMemo(
     () =>
@@ -574,7 +684,7 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
               style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}
             >
               <IconListCheck size={16} />
-              {t`Action items`} ({meeting.actionItems.length})
+              {t`Action points`} ({meeting.actionItems.length})
             </span>
             {hasSpanish && (
               <span
@@ -615,9 +725,19 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
               marginTop: 10,
             }}
           >
-            {meeting.actionItems.length === 0 && (
-              <StyledItemMeta>{t`Fathom did not detect action items.`}</StyledItemMeta>
-            )}
+            {meeting.actionPoints.map((state) => (
+              <ActionPointsState
+                key={state.pipelineId}
+                state={state}
+                showPipelineName={meeting.actionPoints.length > 1}
+                isRequesting={requestingPipelineId === state.pipelineId}
+                onGenerate={() => void generate(state.pipelineId)}
+              />
+            ))}
+            {meeting.actionItems.length === 0 &&
+              meeting.actionPoints.some((state) => state.status === 'DONE') && (
+                <StyledItemMeta>{t`No action points were found in this meeting.`}</StyledItemMeta>
+              )}
             {meeting.actionItems.map((item) => {
               const member = item.resolvedWorkspaceMemberId
                 ? membersById.get(item.resolvedWorkspaceMemberId)
@@ -625,24 +745,17 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
 
               return (
                 <StyledActionItem key={item.id}>
-                  <StyledActionText isDone={item.taskIsDone || item.completed}>
+                  <StyledActionText
+                    isDone={
+                      item.pointIsDone || item.taskIsDone || item.completed
+                    }
+                  >
                     {language === 'es'
                       ? (item.textEs ?? item.textEn)
                       : item.textEn}
                   </StyledActionText>
                   <StyledActionRow>
-                    {item.taskId !== null ? (
-                      <div style={{ minWidth: 180 }}>
-                        <MemberPicker
-                          members={membersByPipeline.get(item.pipelineId) ?? []}
-                          value={item.resolvedWorkspaceMemberId}
-                          placeholder={t`Needs assignee — pick someone`}
-                          onChange={(memberId) =>
-                            void assignTask(item.taskId as string, memberId)
-                          }
-                        />
-                      </div>
-                    ) : member !== undefined ? (
+                    {member !== undefined ? (
                       <span
                         style={{
                           display: 'inline-flex',
@@ -656,9 +769,6 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
                     ) : (
                       <Tag color="orange" text={t`Needs assignee`} />
                     )}
-                    {item.assigneeName && !member && (
-                      <span>· {t`Fathom said: ${item.assigneeName}`}</span>
-                    )}
                     <span>· {item.pipelineName}</span>
                     {item.recordingTimestamp && (
                       <StyledLinkButton
@@ -668,7 +778,7 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
                         ▶ {item.recordingTimestamp}
                       </StyledLinkButton>
                     )}
-                    {item.taskIsDone && (
+                    {(item.pointIsDone || item.taskIsDone) && (
                       <span
                         style={{
                           display: 'inline-flex',
@@ -685,7 +795,7 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
                       <StyledRouterLink
                         to={`${AppPath.TaskPipelinesPage}?pipeline=${item.pipelineId}&task=${item.taskId}`}
                       >
-                        {t`Open task`}
+                        {t`Open card`}
                       </StyledRouterLink>
                     ) : (
                       <Button
@@ -830,8 +940,27 @@ export const MeetingsPage = () => {
               )}
             </StyledItemMeta>
             <StyledItemMeta>
-              <span>
-                <IconListCheck size={12} /> {meeting.actionItemCount}
+              <span
+                title={
+                  meeting.actionPointsStatus === 'DONE'
+                    ? t`Action points generated`
+                    : meeting.actionPointsStatus === 'GENERATING'
+                      ? t`Generating action points…`
+                      : t`Action points not generated yet`
+                }
+              >
+                {meeting.actionPointsStatus === 'GENERATING' ? (
+                  <StyledPulse>
+                    <IconSparkles size={12} />
+                  </StyledPulse>
+                ) : (
+                  <IconListCheck size={12} />
+                )}{' '}
+                {meeting.actionPointsStatus === 'DONE'
+                  ? meeting.actionItemCount
+                  : meeting.actionPointsStatus === 'GENERATING'
+                    ? '…'
+                    : '—'}
               </span>
               <span>
                 <IconUsers size={12} /> {meeting.participantCount}

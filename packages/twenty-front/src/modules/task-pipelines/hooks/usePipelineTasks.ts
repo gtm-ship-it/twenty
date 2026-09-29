@@ -7,15 +7,20 @@ import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient
 import {
   CREATE_PIPELINE_TASK,
   DELETE_PIPELINE_TASK,
+  DELETE_PIPELINE_TASK_ATTACHMENT,
   GET_MY_PIPELINE_TASKS,
+  GET_PIPELINE_TASK,
   GET_PIPELINE_TASKS,
   MOVE_PIPELINE_TASK,
   SET_PIPELINE_TASK_ARCHIVED,
   UPDATE_PIPELINE_TASK,
+  UPLOAD_PIPELINE_TASK_ATTACHMENT,
 } from '@/task-pipelines/graphql/taskPipelinesDocuments';
 import {
   type CreatePipelineTaskInput,
   type PipelineTask,
+  type TaskAttachment,
+  type TaskAttachmentPurpose,
   type UpdatePipelineTaskInput,
 } from '@/task-pipelines/types/TaskPipelineTypes';
 import {
@@ -142,6 +147,29 @@ export const usePipelineTasks = (
     setTaskPipelineTaskArchived: PipelineTask;
   }>(SET_PIPELINE_TASK_ARCHIVED, { client });
   const [deleteMutation] = useMutation(DELETE_PIPELINE_TASK, { client });
+  const [uploadMutation] = useMutation<{
+    uploadTaskPipelineTaskAttachment: TaskAttachment;
+  }>(UPLOAD_PIPELINE_TASK_ATTACHMENT, { client });
+  const [deleteAttachmentMutation] = useMutation(
+    DELETE_PIPELINE_TASK_ATTACHMENT,
+    { client },
+  );
+
+  // Tras subir/borrar un adjunto se relee la tarjeta (portada, fotos, conteos).
+  const reloadTask = async (taskId: string) => {
+    const result = await client.query<{ taskPipelineTask: PipelineTask }>({
+      query: GET_PIPELINE_TASK,
+      variables: { taskId },
+      fetchPolicy: 'network-only',
+    });
+    const task = result.data?.taskPipelineTask;
+
+    if (task) {
+      setOverride(task.id, { kind: 'confirmed', task });
+    }
+
+    return task ?? null;
+  };
 
   const confirm = (task: PipelineTask) =>
     setOverride(task.id, { kind: 'confirmed', task });
@@ -212,6 +240,26 @@ export const usePipelineTasks = (
     setOverride(taskId, { kind: 'removed', since: Date.now() });
   };
 
+  const uploadAttachment = async (
+    taskId: string,
+    file: File,
+    purpose: TaskAttachmentPurpose = 'ATTACHMENT',
+    checklistItemId: string | null = null,
+  ) => {
+    const result = await uploadMutation({
+      variables: { taskId, file, purpose, checklistItemId },
+    });
+
+    await reloadTask(taskId);
+
+    return result.data?.uploadTaskPipelineTaskAttachment ?? null;
+  };
+
+  const deleteAttachment = async (taskId: string, attachmentId: string) => {
+    await deleteAttachmentMutation({ variables: { attachmentId } });
+    await reloadTask(taskId);
+  };
+
   const activeQuery = mode === 'mine' ? mineQuery : pipelineQuery;
 
   return {
@@ -224,5 +272,8 @@ export const usePipelineTasks = (
     moveTask,
     setArchived,
     deleteTask,
+    uploadAttachment,
+    deleteAttachment,
+    reloadTask,
   };
 };

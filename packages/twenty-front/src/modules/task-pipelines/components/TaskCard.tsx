@@ -8,6 +8,7 @@ import {
   IconListCheck,
   IconMail,
   IconMessage,
+  IconPaperclip,
   IconVideo,
 } from 'twenty-ui/icon';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
@@ -25,6 +26,39 @@ import {
   formatTaskDueDate,
   getTaskDueStatus,
 } from '@/task-pipelines/utils/taskDueStatus';
+
+const StyledCover = styled.img`
+  border-radius: ${themeCssVariables.border.radius.sm};
+  display: block;
+  margin: -2px -4px 0;
+  max-height: 140px;
+  object-fit: cover;
+  width: calc(100% + 8px);
+`;
+
+const StyledAvatars = styled.span`
+  align-items: center;
+  display: inline-flex;
+  margin-left: auto;
+
+  & > * + * {
+    margin-left: -6px;
+  }
+`;
+
+const StyledChecklistMeta = styled.span<{ complete: boolean }>`
+  align-items: center;
+  background: ${({ complete }) =>
+    complete ? themeCssVariables.tag.background.green : 'transparent'};
+  border-radius: ${themeCssVariables.border.radius.sm};
+  color: ${({ complete }) =>
+    complete
+      ? themeCssVariables.font.color.primary
+      : themeCssVariables.font.color.tertiary};
+  display: inline-flex;
+  gap: 3px;
+  padding: 0 ${({ complete }) => (complete ? '4px' : '0')};
+`;
 
 const StyledCard = styled.div<{ isDone: boolean }>`
   background: ${themeCssVariables.background.primary};
@@ -128,7 +162,8 @@ const StyledPipelineName = styled.span`
 type TaskCardProps = {
   task: PipelineTask;
   isDone: boolean;
-  assignee: TaskMemberInfo | null;
+  // Miembros de la tarjeta (el primero es el responsable principal).
+  members: TaskMemberInfo[];
   labelColors: Map<string, string>;
   showPipelineName?: boolean;
   onOpen: () => void;
@@ -140,13 +175,17 @@ export const getLabelColor = (labels: TaskPipelineLabel[]) =>
 export const TaskCard = ({
   task,
   isDone,
-  assignee,
+  members,
   labelColors,
   showPipelineName = false,
   onOpen,
 }: TaskCardProps) => {
   const dueStatus = getTaskDueStatus(task.dueAt, isDone);
-  const checklistDone = task.checklist.filter((item) => item.done).length;
+  const checklistDone = task.checklistDoneCount;
+  const checklistTotal = task.checklistTotalCount;
+  const attachmentCount = task.attachments.filter(
+    (attachment) => attachment.purpose === 'ATTACHMENT',
+  ).length;
   const priority = task.priority ? PRIORITY_META[task.priority] : null;
 
   return (
@@ -163,6 +202,7 @@ export const TaskCard = ({
         }
       }}
     >
+      {task.coverUrl && <StyledCover src={task.coverUrl} alt="" />}
       {showPipelineName && (
         <StyledPipelineName>{task.pipelineName}</StyledPipelineName>
       )}
@@ -205,13 +245,26 @@ export const TaskCard = ({
             title={dueStatus === 'overdue' ? t`Overdue` : undefined}
           >
             <IconCalendar size={12} />
+            {task.startAt ? `${formatTaskDueDate(task.startAt)} – ` : ''}
             {formatTaskDueDate(task.dueAt)}
           </StyledMeta>
         )}
-        {task.checklist.length > 0 && (
+        {!task.dueAt && task.startAt && (
           <StyledMeta>
+            <IconCalendar size={12} />
+            {t`Starts`} {formatTaskDueDate(task.startAt)}
+          </StyledMeta>
+        )}
+        {checklistTotal > 0 && (
+          <StyledChecklistMeta complete={checklistDone === checklistTotal}>
             <IconListCheck size={12} />
-            {checklistDone}/{task.checklist.length}
+            {checklistDone}/{checklistTotal}
+          </StyledChecklistMeta>
+        )}
+        {attachmentCount > 0 && (
+          <StyledMeta>
+            <IconPaperclip size={12} />
+            {attachmentCount}
           </StyledMeta>
         )}
         {task.commentCount > 0 && (
@@ -232,11 +285,19 @@ export const TaskCard = ({
         )}
       </StyledMetaRow>
       <StyledFooter>
-        {assignee !== null ? (
-          <StyledAssignee title={assignee.fullName}>
-            {assignee.firstName}
-            <MemberAvatar member={assignee} size="sm" />
+        {members.length === 1 ? (
+          <StyledAssignee title={members[0].fullName}>
+            {members[0].firstName}
+            <MemberAvatar member={members[0]} size="sm" />
           </StyledAssignee>
+        ) : members.length > 1 ? (
+          <StyledAvatars
+            title={members.map((member) => member.fullName).join(', ')}
+          >
+            {members.slice(0, 4).map((member) => (
+              <MemberAvatar key={member.id} member={member} size="sm" />
+            ))}
+          </StyledAvatars>
         ) : task.needsAssignment ? (
           <StyledNeedsAssignment>
             <IconAlertTriangle size={12} />

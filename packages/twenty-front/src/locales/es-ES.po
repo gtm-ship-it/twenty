@@ -456,6 +456,11 @@ msgstr "{cachedPercent}% en caché"
 msgid "{count, plural, one {E.g. {0}{1} for {count} decimal} other {E.g. {2}{3} for {count} decimals}}"
 msgstr "{count, plural, one {Ej. {0}{1} para {count} decimal} other {Ej. {2}{3} para {count} decimales}}"
 
+#. js-lingui-id: 4SPBOj
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "{count} cards created {finished}"
+msgstr "{count} tarjetas creadas {finished}"
+
 #. js-lingui-id: LZWC7x
 #: src/modules/settings/billing/components/internal/ResourceCreditPackagePickerModal.tsx
 msgid "{currentCreditAmountDisplay} credits "
@@ -788,6 +793,11 @@ msgstr "#"
 msgid "% left"
 msgstr "% restante"
 
+#. js-lingui-id: /tXodS
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "+ Add member"
+msgstr "+ Agregar miembro"
+
 #. js-lingui-id: vsrrQ1
 #: src/modules/inbox/components/PipelineEditorModal.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
@@ -830,6 +840,11 @@ msgstr "0"
 #: src/modules/workflow/workflow-trigger/components/WorkflowEditTriggerCronForm.tsx
 msgid "0 */1 * * *"
 msgstr "0 */1 * * *"
+
+#. js-lingui-id: HVT3cY
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "1 card created {finished}"
+msgstr "1 tarjeta creada {finished}"
 
 #. js-lingui-id: 4pzLrc
 #: src/modules/settings/data-model/object-details/components/SettingsObjectRelationItemTableRow.tsx
@@ -1164,15 +1179,30 @@ msgstr "acción"
 msgid "Action"
 msgstr "Acción"
 
-#. js-lingui-id: l20dZL
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Action items"
-msgstr "Accionables"
-
 #. js-lingui-id: j6ogTf
 #: src/modules/settings/data-model/fields/forms/components/SettingsDataModelFieldOnClickActionForm.tsx
 msgid "Action on click"
 msgstr "Acción al hacer clic"
+
+#. js-lingui-id: ROT+jf
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Action points"
+msgstr "Action points"
+
+#. js-lingui-id: InchTb
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "action points by the local AI"
+msgstr "action points de la IA local"
+
+#. js-lingui-id: FoDACi
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Action points generated"
+msgstr "Action points generados"
+
+#. js-lingui-id: sdgk65
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Action points not generated yet"
+msgstr "Action points sin generar"
 
 #. js-lingui-id: 7L01XJ
 #: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectFormObjectLevelTableHeader.tsx
@@ -1335,7 +1365,7 @@ msgid "Add account"
 msgstr "Agregar cuenta"
 
 #. js-lingui-id: FG0w00
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "Add an item and press Enter"
 msgstr "Escribe un elemento y pulsa Enter"
 
@@ -1370,6 +1400,11 @@ msgstr "Agregar tarjeta"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Add CC"
 msgstr "Añadir CC"
+
+#. js-lingui-id: Gxxi5J
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Add checklist"
+msgstr "Agregar checklist"
 
 #. js-lingui-id: 3iIvQg
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -1450,6 +1485,12 @@ msgstr "Agregar regla de filtro"
 msgid "Add first filter"
 msgstr "Añadir primer filtro"
 
+#. js-lingui-id: P5MuiB
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Add image"
+msgstr "Agregar imagen"
+
 #. js-lingui-id: 7K4Hxr
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 msgid "Add In-Reply-To"
@@ -1486,6 +1527,11 @@ msgstr "Agregar elemento a una carpeta"
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Add label"
 msgstr "Añadir etiqueta"
+
+#. js-lingui-id: PCIlOO
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Add member"
+msgstr "Agregar miembro"
 
 #. js-lingui-id: gaZXkv
 #: src/modules/navigation-menu-item/display/folder/components/NavigationMenuItemFolderDnd.tsx
@@ -1564,6 +1610,11 @@ msgstr "Añadir campo de salida"
 #: src/modules/workflow/workflow-steps/workflow-actions/ai-agent-action/components/WorkflowEditActionAiAgent.tsx
 msgid "Add permission"
 msgstr ""
+
+#. js-lingui-id: Lx8S4X
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Add photo"
+msgstr "Agregar foto"
 
 #. js-lingui-id: JrYwgc
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
@@ -1723,11 +1774,23 @@ msgstr "Añade tu primer {objectLabel}"
 msgid "added “{0}” to the checklist"
 msgstr "añadió “{0}” al checklist"
 
+#. js-lingui-id: FTsi08
+#. placeholder {0}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "added {0} to the card"
+msgstr "agregó a {0} a la tarjeta"
+
 #. js-lingui-id: vLO+NG
 #: src/modules/settings/hooks/useGetAddedRelativeDateDescription.ts
 #: src/modules/ui/layout/show-page/components/ShowPageSummaryCard.tsx
 msgid "Added {beautifiedCreatedAt}"
 msgstr "Añadido {beautifiedCreatedAt}"
+
+#. js-lingui-id: hh/UGc
+#. placeholder {0}: text('title')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "added the checklist “{0}”"
+msgstr "agregó la checklist “{0}”"
 
 #. js-lingui-id: QApyEH
 #. placeholder {0}: text('label')
@@ -2763,12 +2826,23 @@ msgstr "Archivar"
 msgid "Archive files cannot be previewed. Please download the file to access its contents."
 msgstr "Los archivos comprimidos no se pueden previsualizar. Descarga el archivo para acceder a su contenido."
 
+#. js-lingui-id: NXn85g
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+msgid "archived"
+msgstr "archivada"
+
 #. js-lingui-id: TdfEV7
 #: src/modules/ai/constants/AgentChatThreadFilterStatusLabels.ts
 #: src/modules/settings/accounts/components/SettingsAccountsConnectedAccountsRowRightContainer.tsx
 #: src/modules/settings/admin-panel/chats/components/SettingsAdminChatsTableRow.tsx
 msgid "Archived"
 msgstr "Archivado"
+
+#. js-lingui-id: 2vVKm4
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+#: src/pages/tasks/TasksPage.tsx
+msgid "Archived tasks"
+msgstr "Tareas archivadas"
 
 #. js-lingui-id: 4U4ny7
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
@@ -2910,11 +2984,6 @@ msgstr "Asignar al agente"
 msgid "Assign to API key"
 msgstr "Asignar a clave API"
 
-#. js-lingui-id: mv2j1I
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
-msgid "Assign to me"
-msgstr "Asignarme"
-
 #. js-lingui-id: 2y2quh
 #: src/modules/settings/roles/role-assignment/constants/RoleTargetConfig.ts
 msgid "Assign to member"
@@ -2951,11 +3020,6 @@ msgstr "se la asignó a {0}"
 msgid "Assigned to"
 msgstr "Asignado a"
 
-#. js-lingui-id: iU3XRS
-#: src/pages/tasks/TasksPage.tsx
-msgid "Assigned to me"
-msgstr "Asignadas a mí"
-
 #. js-lingui-id: TzM/0+
 #: src/modules/settings/roles/components/SettingsRolesDefaultRole.tsx
 msgid "Assigned to users who join via invite link, approved domain, or SSO, and used as fallback when an assigned role is deleted"
@@ -2963,7 +3027,6 @@ msgstr "Asignado a los usuarios que se unen mediante un enlace de invitación, u
 
 #. js-lingui-id: ojKCLU
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskListView.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Assignee"
@@ -2973,11 +3036,6 @@ msgstr "Responsable"
 #: src/pages/tasks/TasksPage.tsx
 msgid "Assignee filter"
 msgstr "Filtro de responsable"
-
-#. js-lingui-id: 0fHZhK
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Assignee removed"
-msgstr "Responsable quitado"
 
 #. js-lingui-id: 0dtKl9
 #: src/modules/settings/roles/role/components/SettingsRole.tsx
@@ -3076,6 +3134,11 @@ msgstr ""
 msgid "Atlas did not return a result"
 msgstr ""
 
+#. js-lingui-id: tCyvAw
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
+msgid "Attach a file"
+msgstr "Adjuntar archivo"
+
 #. js-lingui-id: N7m8E+
 #: src/modules/activities/emails/components/EmailComposerFields.tsx
 #: src/modules/ai/components/internal/AgentChatFileUploadButton.tsx
@@ -3084,7 +3147,14 @@ msgstr ""
 msgid "Attach files"
 msgstr "Adjuntar archivos"
 
+#. js-lingui-id: 7CnONL
+#. placeholder {0}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "attached {0}"
+msgstr "adjuntó {0}"
+
 #. js-lingui-id: w/Sphq
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionEmailBase.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
 msgid "Attachments"
@@ -3632,6 +3702,11 @@ msgstr "Botón"
 msgid "by {author}"
 msgstr "por {author}"
 
+#. js-lingui-id: dE4+YJ
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "by the local AI"
+msgstr "por la IA local"
+
 #. js-lingui-id: 74cYqx
 #: src/modules/auth/sign-in-up/components/FooterNote.tsx
 msgid "By using PTS AI CRM, you agree to the"
@@ -4091,6 +4166,11 @@ msgstr "Cambiar a anual?"
 msgid "Change visibility?"
 msgstr "¿Cambiar la visibilidad?"
 
+#. js-lingui-id: mTmf42
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "changed the cover"
+msgstr "cambió la portada"
+
 #. js-lingui-id: rnTfap
 #: src/pages/settings/applications/SettingsApplicationConnectionDetail.tsx
 msgid "Changing visibility requires reconnecting this OAuth connection. You will be redirected to authorize it again."
@@ -4166,14 +4246,26 @@ msgid "Check your inbox to verify your new email address."
 msgstr "Revisa tu bandeja de entrada para verificar tu nueva dirección de correo electrónico."
 
 #. js-lingui-id: ANtE4t
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "Checklist"
 msgstr "Checklist"
 
+#. js-lingui-id: 5iY1Lu
+#. placeholder {0}: checklists.length + 1
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Checklist {0}"
+msgstr "Checklist {0}"
+
 #. js-lingui-id: 8iS+TN
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "Checklist item"
 msgstr "Elemento del checklist"
+
+#. js-lingui-id: GnRmu4
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Checklist name"
+msgstr "Nombre de la checklist"
 
 #. js-lingui-id: SxwQE8
 #: src/modules/settings/billing/hooks/useHandleCheckoutSession.ts
@@ -4308,6 +4400,7 @@ msgstr "Los enlaces de instalación de Claude requieren una URL MCP HTTPS."
 
 #. js-lingui-id: xCJdfg
 #: src/modules/inbox/components/InboxPipelineBoard.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/ui/input/components/internal/date/components/DatePicker.tsx
 #: src/modules/ui/input/components/internal/date/components/DateTimePicker.tsx
@@ -5446,6 +5539,12 @@ msgstr "No se pudo eliminar el dominio de acceso aprobado"
 msgid "Could not download the document."
 msgstr "No se pudo descargar el documento."
 
+#. js-lingui-id: WXEXET
+#. placeholder {0}: state.error ?? ''
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Could not generate the action points: {0}"
+msgstr "No se pudieron generar los action points: {0}"
+
 #. js-lingui-id: NonvA5
 #: src/pages/settings/legal/SettingsLegalDpaNew.tsx
 msgid "Could not generate the signed DPA. Please try again."
@@ -5520,6 +5619,11 @@ msgstr "No se pudo transferir la clave empresarial. Ponte en contacto con soport
 #: src/pages/settings/enterprise/SettingsEnterprise.tsx
 msgid "Could not update the instance type"
 msgstr "No se pudo actualizar el tipo de instancia"
+
+#. js-lingui-id: 9zmFmF
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Could not upload the image"
+msgstr "No se pudo subir la imagen"
 
 #. js-lingui-id: PiYvMl
 #: src/modules/navigation-menu-item/edit/hooks/useNavigationMenuItemEditController.ts
@@ -6784,10 +6888,21 @@ msgstr "Eliminar clave API"
 msgid "Delete app"
 msgstr "Eliminar aplicación"
 
+#. js-lingui-id: V/W2Mq
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
+msgid "Delete attachment"
+msgstr "Borrar adjunto"
+
 #. js-lingui-id: YFpLoV
 #: src/modules/ai/components/AiChatThreadDeleteConfirmationModal.tsx
 msgid "Delete chat"
 msgstr "Eliminar chat"
+
+#. js-lingui-id: rmAXC2
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Delete checklist"
+msgstr "Borrar checklist"
 
 #. js-lingui-id: 4xlcyV
 #: src/pages/settings/communications/SettingsWorkspaceCommunicationGroupChannelDetail.tsx
@@ -6829,6 +6944,11 @@ msgstr "Eliminar nodo"
 #: src/pages/settings/admin-panel/SettingsAdminApplicationRegistrationDangerZone.tsx
 msgid "Delete or transfer this app registration"
 msgstr "Eliminar o transferir este registro de aplicación"
+
+#. js-lingui-id: z9dICQ
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Delete photo"
+msgstr "Borrar foto"
 
 #. js-lingui-id: U3WCBj
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
@@ -6961,6 +7081,12 @@ msgstr "Eliminó {objectLabel}"
 #: src/modules/mention/components/MentionRecordChip.tsx
 msgid "Deleted record"
 msgstr "Registro eliminado"
+
+#. js-lingui-id: 8BehkJ
+#. placeholder {0}: text('title')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "deleted the checklist “{0}”"
+msgstr "borró la checklist “{0}”"
 
 #. js-lingui-id: IeAAx4
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
@@ -7320,8 +7446,8 @@ msgid "Done"
 msgstr "Completado"
 
 #. js-lingui-id: jUHBqZ
-#. placeholder {0}: item.text
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#. placeholder {0}: point.text
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "Done: {0}"
 msgstr "Hecho: {0}"
 
@@ -7345,6 +7471,7 @@ msgstr "Cambiar a facturación mensual"
 #: src/modules/activities/files/components/AttachmentDropdown.tsx
 #: src/modules/activities/files/components/DocumentViewer.tsx
 #: src/modules/settings/legal/components/SettingsDpaAgreementRow.tsx
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
 #: src/pages/settings/applications/components/SettingsApplicationRegistrationGeneralInfo.tsx
 msgid "Download"
 msgstr "Descargar"
@@ -7431,6 +7558,9 @@ msgstr "Vence"
 
 #. js-lingui-id: XicmhT
 #: src/modules/task-pipelines/components/CreateTaskFromEmailModal.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Due date"
@@ -9337,11 +9467,6 @@ msgstr "Fathom conectado — importando las reuniones de las últimas dos semana
 msgid "Fathom did not accept that API key. Generate a new one in Fathom → Settings → API Access and paste it again."
 msgstr "Fathom no aceptó esa API key. Genera una nueva en Fathom → Settings → API Access y pégala de nuevo."
 
-#. js-lingui-id: bSQp4v
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Fathom did not detect action items."
-msgstr "Fathom no detectó accionables."
-
 #. js-lingui-id: RDEppG
 #: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
 msgid "Fathom did not respond. Try again in a moment."
@@ -9356,12 +9481,6 @@ msgstr "Fathom desconectado"
 #: src/modules/task-pipelines/utils/friendlyErrorMessage.ts
 msgid "Fathom is limiting requests right now. Try again in a minute."
 msgstr "Fathom está limitando las peticiones. Inténtalo de nuevo en un minuto."
-
-#. js-lingui-id: B4u2HS
-#. placeholder {0}: item.assigneeName
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Fathom said: {0}"
-msgstr "Fathom dijo: {0}"
 
 #. js-lingui-id: UrZ06I
 #: src/pages/meetings/MeetingsPage.tsx
@@ -9862,6 +9981,12 @@ msgstr "De una reunión"
 msgid "From an email"
 msgstr "De un correo"
 
+#. js-lingui-id: lF1oVH
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "from the summary's next steps"
+msgstr "de los próximos pasos del resumen"
+
 #. js-lingui-id: zaEHSY
 #: src/modules/metadata-error-handler/hooks/useMetadataErrorHandler.ts
 #: src/pages/settings/applications/SettingsApplicationDetails.tsx
@@ -9949,6 +10074,13 @@ msgstr "Ejecución de función"
 msgid "Functions - Settings"
 msgstr "Funciones - Ajustes"
 
+#. js-lingui-id: g5YhaD
+#. placeholder {0}: text('text')
+#. placeholder {1}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "gave “{0}” to {1}"
+msgstr "le dio “{0}” a {1}"
+
 #. js-lingui-id: e4FdDl
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Gemini CLI"
@@ -9983,6 +10115,11 @@ msgstr "General - Ajustes"
 msgid "Generate"
 msgstr "Generar"
 
+#. js-lingui-id: vg0Fsc
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Generate action points"
+msgstr "Generar action points"
+
 #. js-lingui-id: LwRkxs
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 msgid "Generate an API key and paste it below. It is stored encrypted and never shown again."
@@ -10008,6 +10145,11 @@ msgstr "Archivos generados"
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
 msgid "Generates a Google Meet or Microsoft Teams link depending on the account."
 msgstr "Genera un enlace de Google Meet o Microsoft Teams según la cuenta."
+
+#. js-lingui-id: PkdQIK
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Generating action points…"
+msgstr "Generando action points…"
 
 #. js-lingui-id: DDcvSo
 #: src/localization/hooks/useLocaleOptions.ts
@@ -11599,8 +11741,9 @@ msgstr "john.doe@example.com"
 #. js-lingui-id: 0wdd7X
 #: src/modules/inbox/components/InboxCalendarView.tsx
 #: src/modules/inbox/components/InboxCalendarView.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Join"
-msgstr ""
+msgstr "Unirme"
 
 #. js-lingui-id: fSPjtl
 #: src/pages/auth/SignInUp.tsx
@@ -12452,6 +12595,7 @@ msgid "Loading..."
 msgstr "Cargando..."
 
 #. js-lingui-id: Pwqkdw
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
 #: src/pages/meetings/MeetingsPage.tsx
 #: src/pages/tasks/TasksPage.tsx
 msgid "Loading…"
@@ -12596,6 +12740,11 @@ msgstr "Mantenimiento"
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
 msgid "Maintenance mode"
 msgstr "Modo de mantenimiento"
+
+#. js-lingui-id: cnyUyK
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
+msgid "Make cover"
+msgstr "Usar de portada"
 
 #. js-lingui-id: MOLprz
 #: src/modules/settings/roles/role-permissions/permission-flags/hooks/useActionRolePermissionFlagConfig.ts
@@ -12949,6 +13098,7 @@ msgstr ""
 #: src/modules/settings/roles/role-assignment/components/SettingsRoleAssignmentTable.tsx
 #: src/modules/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectForm.tsx
 #: src/modules/settings/roles/role/components/SettingsRole.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 #: src/pages/settings/admin-panel/SettingsAdminWorkspaceDetail.tsx
@@ -13057,6 +13207,11 @@ msgstr "Mín"
 #: src/modules/side-panel/pages/page-layout/constants/settings/ChartConfigurationSettingLabels.ts
 msgid "Min range"
 msgstr "Rango mínimo"
+
+#. js-lingui-id: BhZnmV
+#: src/pages/tasks/TasksPage.tsx
+msgid "Mine (member or step)"
+msgstr "Míos (miembro o punto)"
 
 #. js-lingui-id: 5IrCQY
 #: src/modules/settings/data-model/fields/forms/select/components/SettingsDataModelFieldSelectFormOptionRow.tsx
@@ -13523,11 +13678,6 @@ msgstr "Necesita un campo de selección"
 msgid "Needs assignee"
 msgstr "Por asignar"
 
-#. js-lingui-id: JkREUg
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Needs assignee — pick someone"
-msgstr "Por asignar — elige a alguien"
-
 #. js-lingui-id: wW3b68
 #: src/modules/workflow/workflow-steps/workflow-actions/http-request-action/components/WorkflowRunStepLogsHttpRequestDetail.tsx
 msgid "Network error"
@@ -13611,7 +13761,7 @@ msgid "New chat"
 msgstr "Nuevo chat"
 
 #. js-lingui-id: 6U3kRH
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "New checklist item"
 msgstr "Nuevo elemento del checklist"
 
@@ -13889,6 +14039,16 @@ msgstr "No se encontró ningún {objectLabelSingular}"
 msgid "No access"
 msgstr "Sin acceso"
 
+#. js-lingui-id: SWADA+
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "No action points were found in this meeting."
+msgstr "No se encontraron action points en esta reunión."
+
+#. js-lingui-id: Y0BeeR
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "No action points yet. Generate them once and they become cards in the board, each with its owner."
+msgstr "Todavía no hay action points. Genéralos una vez y se vuelven tarjetas en el tablero, cada una con su responsable."
+
 #. js-lingui-id: glQp+P
 #: src/modules/settings/admin-panel/components/SettingsAdminWorkspaceBillingContent.tsx
 msgid "No active subscription."
@@ -13974,6 +14134,11 @@ msgstr "No hay aplicaciones disponibles para instalar en este momento"
 #: src/modules/settings/admin-panel/apps/components/SettingsAdminApps.tsx
 msgid "No apps found"
 msgstr "No se encontraron aplicaciones"
+
+#. js-lingui-id: +OrKF2
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+msgid "No archived tasks."
+msgstr "No hay tareas archivadas."
 
 #. js-lingui-id: tFxVHz
 #: src/modules/workflow/workflow-steps/filters/components/WorkflowStepFilterFieldSelect.tsx
@@ -14730,6 +14895,11 @@ msgstr "No se encontraron espacios de trabajo"
 msgid "No workspaces found matching your search criteria."
 msgstr "No se encontraron espacios de trabajo que coincidan con tus criterios de búsqueda."
 
+#. js-lingui-id: xpF9po
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Nobody"
+msgstr "Nadie"
+
 #. js-lingui-id: Ah7JCB
 #: src/modules/side-panel/pages/workflow/step/view-run/components/SidePanelWorkflowRunViewStepContent.tsx
 msgid "Node"
@@ -15306,6 +15476,11 @@ msgstr "Abrir un editor de correo electrónico para editar la configuración del
 msgid "Open as link"
 msgstr "Abrir como enlace"
 
+#. js-lingui-id: Rm0v1r
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Open card"
+msgstr "Abrir tarjeta"
+
 #. js-lingui-id: gV3Sty
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
 msgid "Open Claude with the PTS AI CRM connector name and MCP URL prefilled."
@@ -15377,11 +15552,6 @@ msgstr ""
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Open source"
 msgstr "Abrir origen"
-
-#. js-lingui-id: P2o9xF
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Open task"
-msgstr "Abrir tarea"
 
 #. js-lingui-id: RnAG4x
 #: src/modules/settings/mcp-and-apis/utils/buildMcpSetupCategories.tsx
@@ -15976,6 +16146,11 @@ msgstr "Número de teléfono"
 #: src/modules/object-record/record-table/record-table-cell/hooks/useGetSecondaryRecordTableCellButton.ts
 msgid "Phone number copied to clipboard"
 msgstr "Número de teléfono copiado al portapapeles"
+
+#. js-lingui-id: qa9cy4
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Photo"
+msgstr "Foto"
 
 #. js-lingui-id: vqKcU0
 #: src/modules/workflow/workflow-steps/components/WorkflowDropdownStepOutputItems.tsx
@@ -17069,6 +17244,11 @@ msgstr "Quitar como predeterminado"
 msgid "Remove block"
 msgstr "Quitar bloque"
 
+#. js-lingui-id: xhcj8E
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
+msgid "Remove cover"
+msgstr "Quitar portada"
+
 #. js-lingui-id: 2HpFUd
 #: src/modules/object-record/record-table/empty-state/components/RecordTableEmptyStateSoftDelete.tsx
 msgid "Remove Deleted filter"
@@ -17101,7 +17281,7 @@ msgid "Remove from sidebar"
 msgstr "Quitar de la barra lateral"
 
 #. js-lingui-id: vop1s3
-#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
 msgid "Remove item"
 msgstr "Quitar elemento"
 
@@ -17116,6 +17296,7 @@ msgid "Remove logo"
 msgstr "Quitar logotipo"
 
 #. js-lingui-id: 99VIgC
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 #: src/modules/task-pipelines/components/TaskPipelineSettingsModal.tsx
 #: src/pages/settings/members/SettingsWorkspaceMember.tsx
 msgid "Remove member"
@@ -17180,10 +17361,27 @@ msgstr "Elimina este proveedor y desconecta todos sus modelos"
 msgid "Remove variable"
 msgstr "Eliminar variable"
 
+#. js-lingui-id: EUde7E
+#. placeholder {0}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed {0} from the card"
+msgstr "sacó a {0} de la tarjeta"
+
 #. js-lingui-id: H3ZB+3
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "removed the assignee"
 msgstr "quitó al responsable"
+
+#. js-lingui-id: d7Hcd8
+#. placeholder {0}: text('name')
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the attachment {0}"
+msgstr "borró el adjunto {0}"
+
+#. js-lingui-id: Umhtc/
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the cover"
+msgstr "quitó la portada"
 
 #. js-lingui-id: aHRWVI
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
@@ -17200,6 +17398,11 @@ msgstr "quitó la etiqueta {0}"
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "removed the priority"
 msgstr "quitó la prioridad"
+
+#. js-lingui-id: 4kgcyZ
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "removed the start date"
+msgstr "quitó la fecha de inicio"
 
 #. js-lingui-id: 2wxgft
 #: src/modules/activities/files/components/AttachmentDropdown.tsx
@@ -17427,6 +17630,7 @@ msgstr "restaurar"
 
 #. js-lingui-id: yKu/3Y
 #: src/modules/information-banner/components/deleted-record/InformationBannerDeletedRecord.tsx
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
 #: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Restore"
 msgstr "Restaurar"
@@ -17440,6 +17644,11 @@ msgstr "Restaurar {objectLabel}"
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "restored this task"
 msgstr "restauró esta tarea"
+
+#. js-lingui-id: I89uD4
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+msgid "Restoring…"
+msgstr "Restaurando…"
 
 #. js-lingui-id: hO3AfV
 #: src/pages/settings/ai/components/SettingsAiModelsTab.tsx
@@ -18011,6 +18220,12 @@ msgstr "Buscar cualquier campo"
 msgid "Search API keys"
 msgstr "Buscar claves API"
 
+#. js-lingui-id: sccDoz
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+#: src/modules/task-pipelines/components/ArchivedTasksModal.tsx
+msgid "Search archived tasks"
+msgstr "Buscar tareas archivadas"
+
 #. js-lingui-id: 3mGNuB
 #: src/modules/settings/unsubscribers/components/SettingsUnsubscribersList.tsx
 msgid "Search by email address"
@@ -18338,6 +18553,11 @@ msgstr "Ver registros"
 #: src/modules/settings/roles/role-permissions/objects-permissions/components/SettingsRolePermissionsObjectsSection.tsx
 msgid "See Records on All Objects"
 msgstr "Ver registros en todos los objetos"
+
+#. js-lingui-id: kjZj4D
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "See the board"
+msgstr "Ver el tablero"
 
 #. js-lingui-id: eQ3co2
 #: src/pages/settings/data-model/SettingsObjects.tsx
@@ -18709,6 +18929,11 @@ msgstr "Enviando solicitud..."
 msgid "Sending..."
 msgstr "Enviando..."
 
+#. js-lingui-id: Sad2tK
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "Sending…"
+msgstr "Enviando…"
+
 #. js-lingui-id: h69WC6
 #: src/modules/settings/accounts/components/SettingsAccountsMessageAutoCreationCard.tsx
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowRunStepLogsEmailDetail.tsx
@@ -18826,6 +19051,11 @@ msgstr "Configura el nombre de tu subdominio"
 #: src/modules/task-pipelines/utils/formatTaskActivity.ts
 msgid "set the priority to {label}"
 msgstr "puso la prioridad en {label}"
+
+#. js-lingui-id: h8Eo1w
+#: src/modules/task-pipelines/utils/formatTaskActivity.ts
+msgid "set the start date to {date}"
+msgstr "puso la fecha de inicio el {date}"
 
 #. js-lingui-id: tG3Y2G
 #: src/modules/views/view-picker/components/ViewPickerContentCreateMode.tsx
@@ -19453,6 +19683,11 @@ msgstr "Acelera las lecturas en los campos por los que más filtras o ordenas. C
 msgid "Split multiple values"
 msgstr "Dividir valores múltiples"
 
+#. js-lingui-id: tfQBC8
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Split the work in steps and give each step its owner."
+msgstr "Divide el trabajo en pasos y dale a cada paso su responsable."
+
 #. js-lingui-id: vnS6Rf
 #: src/modules/settings/billing/constants/SettingsBillingPlanComparisonRows.ts
 #: src/modules/settings/security/components/SettingsSecuritySettings.tsx
@@ -19530,6 +19765,8 @@ msgstr "Inicia una nueva suscripción Enterprise."
 #. js-lingui-id: WAjFYI
 #: src/modules/settings/admin-panel/health-status/maintenance-mode/components/SettingsAdminMaintenanceMode.tsx
 #: src/modules/settings/event-logs/components/EventLogFilters.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
 msgid "Start date"
 msgstr "Fecha de inicio"
 
@@ -19548,6 +19785,11 @@ msgstr "Proceso de verificación iniciado"
 #: src/modules/settings/billing/components/internal/SettingsBillingSubscriptionInfoCard.tsx
 msgid "Starting {scheduledChangeStartDate}"
 msgstr "Empieza el {scheduledChangeStartDate}"
+
+#. js-lingui-id: W1KkjZ
+#: src/modules/task-pipelines/components/TaskCard.tsx
+msgid "Starts"
+msgstr "Empieza"
 
 #. js-lingui-id: ETsH83
 #: src/modules/workflow/workflow-steps/workflow-actions/components/WorkflowEditActionCreateCalendarEvent.tsx
@@ -20097,11 +20339,6 @@ msgstr "Tarea"
 msgid "Task archived"
 msgstr "Tarea archivada"
 
-#. js-lingui-id: OLs8GT
-#: src/pages/meetings/MeetingsPage.tsx
-msgid "Task assigned"
-msgstr "Tarea asignada"
-
 #. js-lingui-id: cI8fS/
 #: src/pages/meetings/MeetingsPage.tsx
 #: src/pages/tasks/TasksPage.tsx
@@ -20123,6 +20360,11 @@ msgstr "Tarea eliminada"
 #: src/pages/tasks/TasksPage.tsx
 msgid "Task pipelines"
 msgstr "Tableros de tareas"
+
+#. js-lingui-id: XrKVOk
+#: src/pages/tasks/TasksPage.tsx
+msgid "Task restored"
+msgstr "Tarea restaurada"
 
 #. js-lingui-id: R+s8S+
 #: src/modules/activities/tasks/components/TaskRow.tsx
@@ -20241,6 +20483,11 @@ msgstr ""
 #: src/modules/settings/accounts/components/SettingsAccountsNewEmailGroupChannel.tsx
 msgid "The address your workspace will send and receive email from (e.g. support@mycompany.com). Outbound sending requires the domain to be verified in Outbound Domains."
 msgstr "La dirección desde la que tu espacio de trabajo enviará y recibirá correos electrónicos (por ejemplo, support@mycompany.com). El envío de correos salientes requiere que el dominio esté verificado en Dominios de salida."
+
+#. js-lingui-id: JR1wse
+#: src/pages/meetings/MeetingsPage.tsx
+msgid "The AI is pulling the action points out of this meeting… it takes 1–3 minutes"
+msgstr "La IA está sacando los action points de esta reunión… tarda 1–3 minutos"
 
 #. js-lingui-id: oVH0Mt
 #: src/pages/settings/admin-panel/SettingsAdminNewAiProvider.tsx
@@ -21310,6 +21557,7 @@ msgstr "Verdadero"
 #. js-lingui-id: KDw4GX
 #: src/modules/onboarding/components/upgrade-free-trial/ChooseYourPlanErrorState.tsx
 #: src/modules/settings/billing/components/SettingsBillingPlansErrorState.tsx
+#: src/pages/meetings/MeetingsPage.tsx
 msgid "Try again"
 msgstr "Inténtalo de nuevo"
 
@@ -22131,6 +22379,14 @@ msgstr "El contenido subido es demasiado grande."
 #: src/modules/object-record/record-field/ui/meta-types/input/components/FilesFieldInput.tsx
 msgid "Uploading..."
 msgstr "Subiendo..."
+
+#. js-lingui-id: gANddk
+#: src/modules/task-pipelines/components/TaskAttachments.tsx
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+#: src/modules/task-pipelines/components/TaskDetailPanel.tsx
+msgid "Uploading…"
+msgstr "Subiendo…"
 
 #. js-lingui-id: PZd7QF
 #: src/modules/ai/constants/crud-tool-operation-verbs.constant.ts
@@ -23095,6 +23351,11 @@ msgstr "Si este modelo admite razonamiento con cadena de pensamiento"
 #: src/modules/task-pipelines/components/CreateTaskPipelineModal.tsx
 msgid "Who can see it"
 msgstr "Quién lo ve"
+
+#. js-lingui-id: iv72KW
+#: src/modules/task-pipelines/components/TaskChecklists.tsx
+msgid "Who does it"
+msgstr "Quién lo hace"
 
 #. js-lingui-id: 9y+sLE
 #: src/modules/workflow/workflow-variables/utils/getWorkflowVariableSpecialItems.ts

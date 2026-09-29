@@ -51,6 +51,8 @@ export const PIPELINE_TASK_FIELDS = gql`
     title
     body
     assigneeWorkspaceMemberId
+    memberWorkspaceMemberIds
+    startAt
     dueAt
     priority
     labels
@@ -59,6 +61,35 @@ export const PIPELINE_TASK_FIELDS = gql`
       text
       done
     }
+    checklists {
+      id
+      title
+      items {
+        id
+        text
+        done
+        assigneeWorkspaceMemberId
+        dueAt
+        completedAt
+      }
+    }
+    checklistDoneCount
+    checklistTotalCount
+    attachments {
+      id
+      taskId
+      name
+      mimeType
+      size
+      purpose
+      checklistItemId
+      isImage
+      url
+      uploadedByWorkspaceMemberId
+      createdAt
+    }
+    coverAttachmentId
+    coverUrl
     relatedRecords {
       objectNameSingular
       recordId
@@ -339,6 +370,7 @@ export const GET_MEETINGS = gql`
       actionItemCount
       pipelineNames
       recordedByName
+      actionPointsStatus
     }
   }
 `;
@@ -385,6 +417,19 @@ export const GET_MEETING = gql`
         taskId
         taskStageId
         taskIsDone
+        checklistItemId
+        pointIsDone
+      }
+      actionPoints {
+        pipelineId
+        pipelineName
+        status
+        trigger
+        engine
+        error
+        requestedAt
+        finishedAt
+        taskIds
       }
     }
   }
@@ -395,5 +440,52 @@ export const CREATE_TASK_FROM_ACTION_ITEM = gql`
     createTaskFromMeetingActionItem(actionItemId: $actionItemId) {
       id
     }
+  }
+`;
+
+export const GENERATE_MEETING_ACTION_POINTS = gql`
+  mutation GenerateMeetingActionPoints($meetingId: UUID!, $pipelineId: UUID!) {
+    generateMeetingActionPoints(
+      meetingId: $meetingId
+      pipelineId: $pipelineId
+    ) {
+      pipelineId
+      status
+      trigger
+    }
+  }
+`;
+
+export const UPLOAD_PIPELINE_TASK_ATTACHMENT = gql`
+  mutation UploadTaskPipelineTaskAttachment(
+    $taskId: UUID!
+    $file: Upload!
+    $purpose: String
+    $checklistItemId: String
+  ) {
+    uploadTaskPipelineTaskAttachment(
+      taskId: $taskId
+      file: $file
+      purpose: $purpose
+      checklistItemId: $checklistItemId
+    ) {
+      id
+      taskId
+      name
+      mimeType
+      size
+      purpose
+      checklistItemId
+      isImage
+      url
+      uploadedByWorkspaceMemberId
+      createdAt
+    }
+  }
+`;
+
+export const DELETE_PIPELINE_TASK_ATTACHMENT = gql`
+  mutation DeleteTaskPipelineTaskAttachment($attachmentId: UUID!) {
+    deleteTaskPipelineTaskAttachment(attachmentId: $attachmentId)
   }
 `;

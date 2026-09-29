@@ -75,6 +75,14 @@ describe('filterPipelineTasks', () => {
     title: 'Enviar leads a Pilar',
     body: '',
     assigneeWorkspaceMemberId: 'me',
+    memberWorkspaceMemberIds: ['me'],
+    startAt: null,
+    checklists: [],
+    checklistDoneCount: 0,
+    checklistTotalCount: 0,
+    attachments: [],
+    coverAttachmentId: null,
+    coverUrl: null,
     dueAt: null,
     priority: null,
     labels: ['PTS Tax'],
@@ -99,6 +107,7 @@ describe('filterPipelineTasks', () => {
       id: '2',
       title: 'Revisión del logo',
       assigneeWorkspaceMemberId: null,
+      memberWorkspaceMemberIds: [],
       labels: [],
     },
     {
@@ -106,6 +115,7 @@ describe('filterPipelineTasks', () => {
       id: '3',
       title: 'Otro',
       assigneeWorkspaceMemberId: 'other',
+      memberWorkspaceMemberIds: ['other'],
       labels: ['Sunset'],
     },
   ];
@@ -122,6 +132,46 @@ describe('filterPipelineTasks', () => {
     expect(run({ assignee: 'me' })).toEqual(['1']);
     expect(run({ assignee: 'unassigned' })).toEqual(['2']);
     expect(run({ assignee: 'other' })).toEqual(['3']);
+  });
+
+  it('a person with only a checklist point is involved in the card', () => {
+    const withPoint: PipelineTask = {
+      ...tasks[2],
+      id: '4',
+      checklists: [
+        {
+          id: 'c',
+          title: 'Pasos',
+          items: [
+            {
+              id: 'i',
+              text: 'Subir el reporte',
+              done: false,
+              assigneeWorkspaceMemberId: 'me',
+              dueAt: null,
+              completedAt: null,
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(
+      filterPipelineTasks([...tasks, withPoint], {
+        search: '',
+        assignee: 'me',
+        label: null,
+        currentWorkspaceMemberId: 'me',
+      }).map((task) => task.id),
+    ).toEqual(['1', '4']);
+    expect(
+      filterPipelineTasks([withPoint], {
+        search: 'reporte',
+        assignee: 'all',
+        label: null,
+        currentWorkspaceMemberId: 'me',
+      }).map((task) => task.id),
+    ).toEqual(['4']);
   });
 
   it('filters by label and accent-insensitive search (incl. original text)', () => {

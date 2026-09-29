@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AppPath } from 'twenty-shared/types';
 import {
+  IconArchive,
   IconChevronDown,
   IconLayoutKanban,
   IconLayoutSidebarLeftCollapse,
@@ -20,6 +21,7 @@ import { Button, IconButton } from 'twenty-ui/input';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
 import { currentWorkspaceMemberState } from '@/auth/states/currentWorkspaceMemberState';
+import { ArchivedTasksModal } from '@/task-pipelines/components/ArchivedTasksModal';
 import { CreateTaskPipelineModal } from '@/task-pipelines/components/CreateTaskPipelineModal';
 import { getLabelColor } from '@/task-pipelines/components/TaskCard';
 import { TaskBoard } from '@/task-pipelines/components/TaskBoard';
@@ -641,6 +643,7 @@ export const TasksPage = () => {
   const [isCreatingPipeline, setIsCreatingPipeline] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [archivedOpen, setArchivedOpen] = useState(false);
 
   const pipelines = api.pipelines;
   const shared = pipelines.filter(
@@ -943,7 +946,7 @@ export const TasksPage = () => {
                   onChange={(event) => setAssigneeFilter(event.target.value)}
                 >
                   <option value="all">{t`Everyone`}</option>
-                  <option value="me">{t`Assigned to me`}</option>
+                  <option value="me">{t`Mine (member or step)`}</option>
                   <option value="unassigned">{t`Unassigned`}</option>
                   {pipelineMembers.map((member) => (
                     <option key={member.id} value={member.id}>
@@ -989,6 +992,15 @@ export const TasksPage = () => {
                     {t`List`}
                   </StyledSegment>
                 </StyledSegmented>
+              )}
+              {selectedPipeline && (
+                <IconButton
+                  Icon={IconArchive}
+                  variant="secondary"
+                  size="small"
+                  ariaLabel={t`Archived tasks`}
+                  onClick={() => setArchivedOpen(true)}
+                />
               )}
               {selectedPipeline && (
                 <IconButton
@@ -1151,6 +1163,22 @@ export const TasksPage = () => {
         />
       )}
 
+      {archivedOpen && selectedPipeline && (
+        <ArchivedTasksModal
+          pipelineId={selectedPipeline.id}
+          stageName={(stageId) => stagesById.get(stageId)?.name ?? ''}
+          onRestore={async (taskId) => {
+            await guard(async () => {
+              await tasksApi.setArchived(taskId, false);
+              await tasksApi.refetch();
+              await api.reload();
+              enqueueSuccessSnackBar({ message: t`Task restored` });
+            });
+          }}
+          onClose={() => setArchivedOpen(false)}
+        />
+      )}
+
       {openTask && openTaskPipeline && (
         <TaskDetailPanel
           key={openTask.id}
@@ -1189,6 +1217,17 @@ export const TasksPage = () => {
           }}
           onOpenMeeting={(meetingId) =>
             navigate(`${AppPath.MeetingsPage}?meeting=${meetingId}`)
+          }
+          onUploadAttachment={(file, purpose, checklistItemId) =>
+            tasksApi.uploadAttachment(
+              openTask.id,
+              file,
+              purpose,
+              checklistItemId ?? null,
+            )
+          }
+          onDeleteAttachment={(attachmentId) =>
+            tasksApi.deleteAttachment(openTask.id, attachmentId)
           }
         />
       )}

@@ -7,18 +7,20 @@ import {
   IconArchive,
   IconArrowBackUp,
   IconExternalLink,
+  IconPhoto,
   IconTrash,
+  IconUserPlus,
   IconVideo,
   IconX,
 } from 'twenty-ui/icon';
 import { Button, IconButton } from 'twenty-ui/input';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
-import { v4 } from 'uuid';
 
 import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
+import { TaskAttachments } from '@/task-pipelines/components/TaskAttachments';
+import { TaskChecklists } from '@/task-pipelines/components/TaskChecklists';
 import {
   MemberAvatar,
-  MemberPicker,
   PRIORITY_META,
   StyledFieldLabel,
   StyledHint,
@@ -38,8 +40,10 @@ import { type TaskMemberInfo } from '@/task-pipelines/hooks/useWorkspaceMembersB
 import {
   type PipelineTask,
   type PipelineTaskComment,
+  type TaskAttachment,
+  type TaskAttachmentPurpose,
+  type TaskChecklist,
   type TaskPipeline,
-  type TaskChecklistItem,
   type TaskPriority,
   type UpdatePipelineTaskInput,
 } from '@/task-pipelines/types/TaskPipelineTypes';
@@ -49,6 +53,7 @@ import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
 import {
   dueFromInputValue,
   dueInputValue,
+  getTaskDueStatus,
 } from '@/task-pipelines/utils/taskDueStatus';
 import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
@@ -209,58 +214,6 @@ const StyledDescriptionView = styled.div`
   }
 `;
 
-const StyledChecklistRow = styled.div`
-  align-items: center;
-  display: flex;
-  gap: ${themeCssVariables.spacing[2]};
-
-  &:hover .checklist-remove {
-    opacity: 1;
-  }
-`;
-
-const StyledChecklistText = styled.input<{ isDone: boolean }>`
-  background: transparent;
-  border: none;
-  color: ${({ isDone }) =>
-    isDone
-      ? themeCssVariables.font.color.tertiary
-      : themeCssVariables.font.color.primary};
-  flex: 1;
-  font-family: inherit;
-  font-size: ${themeCssVariables.font.size.md};
-  outline: none;
-  text-decoration: ${({ isDone }) => (isDone ? 'line-through' : 'none')};
-`;
-
-const StyledRemove = styled.button`
-  background: transparent;
-  border: none;
-  color: ${themeCssVariables.font.color.tertiary};
-  cursor: pointer;
-  opacity: 0;
-  padding: 0 4px;
-
-  &:focus-visible {
-    opacity: 1;
-  }
-`;
-
-const StyledProgress = styled.div`
-  background: ${themeCssVariables.background.tertiary};
-  border-radius: 4px;
-  height: 6px;
-  margin-bottom: ${themeCssVariables.spacing[2]};
-  overflow: hidden;
-`;
-
-const StyledProgressFill = styled.div<{ percent: number }>`
-  background: ${themeCssVariables.color.green};
-  height: 100%;
-  transition: width 0.2s ease;
-  width: ${({ percent }) => `${percent}%`};
-`;
-
 const StyledSourceBox = styled.div`
   background: ${themeCssVariables.background.secondary};
   border: 1px solid ${themeCssVariables.border.color.light};
@@ -357,6 +310,67 @@ const StyledFooterRow = styled.div`
   justify-content: flex-end;
 `;
 
+const StyledCover = styled.img`
+  border-radius: ${themeCssVariables.border.radius.sm};
+  display: block;
+  flex-shrink: 0;
+  max-height: 220px;
+  object-fit: cover;
+  width: 100%;
+`;
+
+const StyledMemberChip = styled.span`
+  align-items: center;
+  background: ${themeCssVariables.background.transparent.lighter};
+  border: 1px solid ${themeCssVariables.border.color.light};
+  border-radius: 12px;
+  display: inline-flex;
+  font-size: ${themeCssVariables.font.size.sm};
+  gap: 4px;
+  padding: 1px 6px 1px 2px;
+
+  button {
+    background: transparent;
+    border: none;
+    color: ${themeCssVariables.font.color.tertiary};
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+  }
+`;
+
+const StyledImageButton = styled.button`
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: ${themeCssVariables.font.color.tertiary};
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: ${themeCssVariables.font.size.xs};
+  gap: 3px;
+  margin-right: auto;
+  padding: 0;
+
+  &:hover {
+    color: ${themeCssVariables.font.color.primary};
+  }
+`;
+
+// Checklists tal como las pide la API (sin campos calculados).
+const toChecklistInput = (checklists: TaskChecklist[]) =>
+  checklists.map((checklist) => ({
+    id: checklist.id,
+    title: checklist.title,
+    items: checklist.items.map((item) => ({
+      id: item.id,
+      text: item.text,
+      done: item.done,
+      assigneeWorkspaceMemberId: item.assigneeWorkspaceMemberId,
+      dueAt: item.dueAt,
+    })),
+  }));
+
 const formatDateTime = (value: string) =>
   new Date(value).toLocaleString(undefined, {
     day: 'numeric',
@@ -376,6 +390,12 @@ type TaskDetailPanelProps = {
   onArchive: (archived: boolean) => Promise<void>;
   onDelete: () => Promise<void>;
   onOpenMeeting: (meetingId: string) => void;
+  onUploadAttachment: (
+    file: File,
+    purpose: TaskAttachmentPurpose,
+    checklistItemId?: string | null,
+  ) => Promise<TaskAttachment | null>;
+  onDeleteAttachment: (attachmentId: string) => Promise<void>;
 };
 
 export const TaskDetailPanel = ({
@@ -389,13 +409,17 @@ export const TaskDetailPanel = ({
   onArchive,
   onDelete,
   onOpenMeeting,
+  onUploadAttachment,
+  onDeleteAttachment,
 }: TaskDetailPanelProps) => {
   const client = useApolloCoreClient();
   const { enqueueErrorSnackBar } = useSnackBar();
   const [title, setTitle] = useState(task.title);
   const [body, setBody] = useState(task.body);
   const [isEditingBody, setIsEditingBody] = useState(false);
-  const [newChecklistItem, setNewChecklistItem] = useState('');
+  const [isUploadingInline, setIsUploadingInline] = useState(false);
+  const commentImageRef = useRef<HTMLInputElement>(null);
+  const bodyImageRef = useRef<HTMLInputElement>(null);
   const [newLabel, setNewLabel] = useState('');
   const [commentDraft, setCommentDraft] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
@@ -422,13 +446,13 @@ export const TaskDetailPanel = ({
 
   // Checklist y etiquetas se editan en local al instante y se guardan en cola:
   // cada guardado parte del último valor local, así dos clics seguidos no se pisan.
-  const [checklist, setChecklist] = useState<TaskChecklistItem[]>(
-    task.checklist,
+  const [checklists, setChecklists] = useState<TaskChecklist[]>(
+    task.checklists,
   );
   const [labels, setLabels] = useState<string[]>(task.labels);
-  const [checklistDrafts, setChecklistDrafts] = useState<
-    Record<string, string>
-  >({});
+  const [memberIds, setMemberIds] = useState<string[]>(
+    task.memberWorkspaceMemberIds,
+  );
   // Contador y cola de guardados en curso: no son estado de render, solo coordinan escrituras.
   // oxlint-disable-next-line twenty/no-state-useref
   const pendingSaves = useRef(0);
@@ -443,10 +467,11 @@ export const TaskDetailPanel = ({
   // Solo se re-sincroniza desde el servidor cuando no hay guardados en curso.
   useEffect(() => {
     if (pendingSaves.current === 0) {
-      setChecklist(task.checklist);
+      setChecklists(task.checklists);
       setLabels(task.labels);
+      setMemberIds(task.memberWorkspaceMemberIds);
     }
-  }, [task.checklist, task.labels]);
+  }, [task.checklists, task.labels, task.memberWorkspaceMemberIds]);
 
   useEffect(() => {
     panelRef.current?.focus();
@@ -526,6 +551,7 @@ export const TaskDetailPanel = ({
   ];
   const stage = pipeline.stages.find((entry) => entry.id === task.stageId);
   const isDone = stage?.isDone === true;
+  const dueStatus = getTaskDueStatus(task.dueAt, isDone || !!task.completedAt);
 
   const run = async (action: () => Promise<unknown>) => {
     try {
@@ -548,17 +574,41 @@ export const TaskDetailPanel = ({
       });
   };
 
-  const updateChecklist = (next: TaskChecklistItem[]) => {
-    setChecklist(next);
-    enqueueSave({ checklist: next });
+  const updateChecklists = (next: TaskChecklist[]) => {
+    setChecklists(next);
+    enqueueSave({ checklists: toChecklistInput(next) });
+  };
+
+  const updateMembers = (next: string[]) => {
+    setMemberIds(next);
+    enqueueSave({ memberWorkspaceMemberIds: next });
+  };
+
+  // Imagen para pegar en un comentario o en la descripción (markdown).
+  const uploadInlineImage = async (file: File) => {
+    setIsUploadingInline(true);
+
+    try {
+      const attachment = await onUploadAttachment(file, 'INLINE');
+
+      return attachment
+        ? `![${attachment.name.replace(/[[\]]/g, '')}](${attachment.url})`
+        : null;
+    } catch (error) {
+      enqueueErrorSnackBar({
+        message: friendlyErrorMessage(error, t`Could not upload the image`),
+      });
+
+      return null;
+    } finally {
+      setIsUploadingInline(false);
+    }
   };
 
   const updateLabels = (next: string[]) => {
     setLabels(next);
     enqueueSave({ labels: next });
   };
-
-  const checklistDone = checklist.filter((item) => item.done).length;
 
   const comments = commentsQuery.data?.taskPipelineTaskComments ?? [];
   const visibleComments = comments.filter(
@@ -618,6 +668,7 @@ export const TaskDetailPanel = ({
         </StyledPanelHeader>
 
         <StyledPanelBody>
+          {task.coverUrl && <StyledCover src={task.coverUrl} alt="" />}
           <StyledTitleInput
             ref={titleRef}
             rows={1}
@@ -650,44 +701,111 @@ export const TaskDetailPanel = ({
           )}
 
           <StyledGrid>
-            <StyledGridLabel>{t`Assignee`}</StyledGridLabel>
-            <StyledInline style={{ flexWrap: 'nowrap' }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <MemberPicker
-                  members={pipelineMembers}
-                  value={task.assigneeWorkspaceMemberId}
-                  onChange={(memberId) =>
-                    void save(
-                      memberId !== null
-                        ? { assigneeWorkspaceMemberId: memberId }
-                        : { clearAssignee: true },
-                    )
-                  }
-                />
-              </div>
+            <StyledGridLabel>{t`Members`}</StyledGridLabel>
+            <StyledInline>
+              {memberIds.map((memberId) => {
+                const member = membersById.get(memberId);
+
+                return (
+                  <StyledMemberChip key={memberId} title={member?.fullName}>
+                    <MemberAvatar member={member} size="xs" />
+                    {member?.firstName ?? '—'}
+                    <button
+                      type="button"
+                      aria-label={t`Remove member`}
+                      onClick={() =>
+                        updateMembers(memberIds.filter((id) => id !== memberId))
+                      }
+                    >
+                      ✕
+                    </button>
+                  </StyledMemberChip>
+                );
+              })}
+              {pipelineMembers.some(
+                (member) => !memberIds.includes(member.id),
+              ) && (
+                <StyledSelect
+                  aria-label={t`Add member`}
+                  value=""
+                  style={{ fontSize: 13, padding: '2px 6px' }}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      updateMembers([...memberIds, event.target.value]);
+                    }
+                  }}
+                >
+                  <option value="">{t`+ Add member`}</option>
+                  {pipelineMembers
+                    .filter((member) => !memberIds.includes(member.id))
+                    .map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.fullName}
+                      </option>
+                    ))}
+                </StyledSelect>
+              )}
               {currentWorkspaceMemberId !== null &&
-                task.assigneeWorkspaceMemberId !== currentWorkspaceMemberId &&
+                !memberIds.includes(currentWorkspaceMemberId) &&
                 pipelineMembers.some(
                   (member) => member.id === currentWorkspaceMemberId,
                 ) && (
                   <StyledTextButton
                     type="button"
-                    style={{ whiteSpace: 'nowrap', fontSize: 13 }}
+                    style={{
+                      alignItems: 'center',
+                      display: 'inline-flex',
+                      fontSize: 13,
+                      gap: 3,
+                      whiteSpace: 'nowrap',
+                    }}
                     onClick={() =>
-                      void save({
-                        assigneeWorkspaceMemberId: currentWorkspaceMemberId,
-                      })
+                      updateMembers([...memberIds, currentWorkspaceMemberId])
                     }
                   >
-                    {t`Assign to me`}
+                    <IconUserPlus size={14} />
+                    {t`Join`}
                   </StyledTextButton>
                 )}
+            </StyledInline>
+
+            <StyledGridLabel>{t`Start date`}</StyledGridLabel>
+            <StyledInline>
+              <StyledDateInput
+                type="date"
+                aria-label={t`Start date`}
+                value={dueInputValue(task.startAt)}
+                onChange={(event) => {
+                  const start = dueFromInputValue(event.target.value);
+
+                  void save(
+                    start ? { startAt: start } : { clearStartAt: true },
+                  );
+                }}
+              />
+              {task.startAt && (
+                <StyledTextButton
+                  type="button"
+                  onClick={() => void save({ clearStartAt: true })}
+                >
+                  {t`Clear`}
+                </StyledTextButton>
+              )}
             </StyledInline>
 
             <StyledGridLabel>{t`Due date`}</StyledGridLabel>
             <StyledInline>
               <StyledDateInput
                 type="date"
+                aria-label={t`Due date`}
+                style={{
+                  color:
+                    dueStatus === 'overdue'
+                      ? themeCssVariables.color.red
+                      : dueStatus === 'today' || dueStatus === 'soon'
+                        ? themeCssVariables.color.orange
+                        : undefined,
+                }}
                 value={dueInputValue(task.dueAt)}
                 onChange={(event) => {
                   const due = dueFromInputValue(event.target.value);
@@ -838,104 +956,76 @@ export const TaskDetailPanel = ({
                 )}
               </StyledDescriptionView>
             )}
-          </div>
+            <input
+              ref={bodyImageRef}
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp"
+              hidden
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
 
-          <div>
-            <StyledFieldLabel>
-              {t`Checklist`}{' '}
-              {checklist.length > 0 && `· ${checklistDone}/${checklist.length}`}
-            </StyledFieldLabel>
-            {checklist.length > 0 && (
-              <StyledProgress>
-                <StyledProgressFill
-                  percent={Math.round((checklistDone / checklist.length) * 100)}
-                />
-              </StyledProgress>
-            )}
-            {checklist.map((item) => {
-              const draft = checklistDrafts[item.id] ?? item.text;
+                event.target.value = '';
 
-              return (
-                <StyledChecklistRow key={item.id}>
-                  <input
-                    type="checkbox"
-                    aria-label={t`Done: ${item.text}`}
-                    checked={item.done}
-                    onChange={() =>
-                      updateChecklist(
-                        checklist.map((entry) =>
-                          entry.id === item.id
-                            ? { ...entry, done: !entry.done }
-                            : entry,
-                        ),
-                      )
-                    }
-                  />
-                  <StyledChecklistText
-                    isDone={item.done}
-                    aria-label={t`Checklist item`}
-                    value={draft}
-                    onChange={(event) =>
-                      setChecklistDrafts({
-                        ...checklistDrafts,
-                        [item.id]: event.target.value,
-                      })
-                    }
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        (event.target as HTMLInputElement).blur();
-                      }
-                    }}
-                    onBlur={() => {
-                      const text = draft.trim();
-                      const { [item.id]: _discarded, ...rest } =
-                        checklistDrafts;
+                if (!file) {
+                  return;
+                }
 
-                      setChecklistDrafts(rest);
+                const markdown = await uploadInlineImage(file);
 
-                      if (text.length > 0 && text !== item.text) {
-                        updateChecklist(
-                          checklist.map((entry) =>
-                            entry.id === item.id ? { ...entry, text } : entry,
-                          ),
-                        );
-                      }
-                    }}
-                  />
-                  <StyledRemove
-                    className="checklist-remove"
-                    type="button"
-                    aria-label={t`Remove item`}
-                    onClick={() =>
-                      updateChecklist(
-                        checklist.filter((entry) => entry.id !== item.id),
-                      )
-                    }
-                  >
-                    ✕
-                  </StyledRemove>
-                </StyledChecklistRow>
-              );
-            })}
-            <StyledTextInput
-              aria-label={t`New checklist item`}
-              style={{ marginTop: 6 }}
-              placeholder={t`Add an item and press Enter`}
-              value={newChecklistItem}
-              onChange={(event) => setNewChecklistItem(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && newChecklistItem.trim()) {
-                  const text = newChecklistItem.trim();
+                if (markdown !== null) {
+                  const next = `${task.body.trimEnd()}${task.body.trim() ? '\n\n' : ''}${markdown}`;
 
-                  setNewChecklistItem('');
-                  updateChecklist([
-                    ...checklist,
-                    { id: v4(), text, done: false },
-                  ]);
+                  setBody(next);
+                  void save({ body: next });
                 }
               }}
             />
+            {!isEditingBody && (
+              <StyledImageButton
+                type="button"
+                style={{ marginTop: 4 }}
+                disabled={isUploadingInline}
+                onClick={() => bodyImageRef.current?.click()}
+              >
+                <IconPhoto size={14} />
+                {isUploadingInline ? t`Uploading…` : t`Add image`}
+              </StyledImageButton>
+            )}
           </div>
+
+          <TaskChecklists
+            checklists={checklists}
+            members={pipelineMembers}
+            membersById={membersById}
+            attachments={task.attachments}
+            onChange={updateChecklists}
+            onUploadPhoto={async (checklistItemId, file) => {
+              await run(() =>
+                onUploadAttachment(file, 'CHECKLIST_ITEM', checklistItemId),
+              );
+            }}
+            onDeletePhoto={(attachmentId) =>
+              run(() => onDeleteAttachment(attachmentId))
+            }
+          />
+
+          <TaskAttachments
+            attachments={task.attachments}
+            coverAttachmentId={task.coverAttachmentId}
+            onUpload={async (file) => {
+              await run(() => onUploadAttachment(file, 'ATTACHMENT'));
+            }}
+            onDelete={(attachmentId) =>
+              run(() => onDeleteAttachment(attachmentId))
+            }
+            onSetCover={(attachmentId) =>
+              save(
+                attachmentId !== null
+                  ? { coverAttachmentId: attachmentId }
+                  : { clearCover: true },
+              )
+            }
+          />
 
           {(task.source !== 'MANUAL' || task.sourceLink) && (
             <StyledSourceBox>
@@ -1013,6 +1103,38 @@ export const TaskDetailPanel = ({
               }}
             />
             <StyledFooterRow style={{ margin: '8px 0 16px' }}>
+              <input
+                ref={commentImageRef}
+                type="file"
+                accept="image/png,image/jpeg,image/gif,image/webp"
+                hidden
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+
+                  event.target.value = '';
+
+                  if (!file) {
+                    return;
+                  }
+
+                  const markdown = await uploadInlineImage(file);
+
+                  if (markdown !== null) {
+                    setCommentDraft(
+                      (draft) =>
+                        `${draft.trimEnd()}${draft.trim() ? '\n' : ''}${markdown}\n`,
+                    );
+                  }
+                }}
+              />
+              <StyledImageButton
+                type="button"
+                disabled={isUploadingInline}
+                onClick={() => commentImageRef.current?.click()}
+              >
+                <IconPhoto size={14} />
+                {isUploadingInline ? t`Uploading…` : t`Add image`}
+              </StyledImageButton>
               <Button
                 title={t`Comment`}
                 size="small"

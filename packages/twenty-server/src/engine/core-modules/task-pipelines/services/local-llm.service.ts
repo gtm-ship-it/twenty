@@ -8,7 +8,7 @@ const DEFAULT_MODEL = 'qwen3:8b';
 const DEFAULT_NUM_THREAD = 4;
 // Una reunión larga en CPU tarda 1-3 min; 15 min es "algo se colgó".
 const REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
-const CONTEXT_TOKENS = 16384;
+const CONTEXT_TOKENS = 8192;
 
 export class LocalLlmUnavailableError extends Error {}
 

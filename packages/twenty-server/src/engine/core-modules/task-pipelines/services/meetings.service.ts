@@ -239,8 +239,15 @@ export class MeetingsService {
           recordingTimestamp: item.recordingTimestamp,
           playbackUrl: item.playbackUrl,
           completed: item.completed,
+          // El responsable vigente: el del punto de la checklist (si el
+          // accionable vive en uno), si no el de la tarjeta.
           resolvedWorkspaceMemberId: isDefined(task)
-            ? task.assigneeWorkspaceMemberId
+            ? isDefined(item.checklistItemId)
+              ? (getTaskChecklists(task)
+                  .flatMap((checklist) => checklist.items)
+                  .find((point) => point.id === item.checklistItemId)
+                  ?.assigneeWorkspaceMemberId ?? null)
+              : task.assigneeWorkspaceMemberId
             : item.resolvedWorkspaceMemberId,
           resolution: item.resolution,
           taskId: isDefined(task) ? task.id : null,

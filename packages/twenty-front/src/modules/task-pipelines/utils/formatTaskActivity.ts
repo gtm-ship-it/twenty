@@ -17,6 +17,8 @@ const RESOLUTION_LABELS: Record<string, () => string> = {
   MENTION: () => t`named in the action item`,
   SPEAKER: () => t`speaker at that moment`,
   SOLE_MEMBER: () => t`only member of the pipeline`,
+  AI: () => t`action points by the local AI`,
+  SUMMARY: () => t`from the summary's next steps`,
 };
 
 // Evento del historial (JSON del servidor) → frase en el idioma de quien lee.
@@ -80,6 +82,34 @@ export const formatTaskActivity = (body: string): string => {
       return t`completed “${text('text')}”`;
     case 'checklistUndone':
       return t`reopened “${text('text')}”`;
+    case 'memberAdded':
+      return t`added ${text('name')} to the card`;
+    case 'memberRemoved':
+      return t`removed ${text('name')} from the card`;
+    case 'start': {
+      const date = new Date(text('date')).toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+      });
+
+      return t`set the start date to ${date}`;
+    }
+    case 'startCleared':
+      return t`removed the start date`;
+    case 'checklistCreated':
+      return t`added the checklist “${text('title')}”`;
+    case 'checklistRemoved':
+      return t`deleted the checklist “${text('title')}”`;
+    case 'pointAssigned':
+      return t`gave “${text('text')}” to ${text('name')}`;
+    case 'attachmentAdded':
+      return t`attached ${text('name')}`;
+    case 'attachmentRemoved':
+      return t`removed the attachment ${text('name')}`;
+    case 'coverSet':
+      return t`changed the cover`;
+    case 'coverCleared':
+      return t`removed the cover`;
     case 'archived':
       return t`archived this task`;
     case 'restored':
