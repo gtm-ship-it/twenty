@@ -290,6 +290,13 @@ export class UpdateTaskPipelineTaskInput {
   @IsUUID('all', { each: true })
   memberWorkspaceMemberIds?: string[] | null;
 
+  // Con base: solo se aplican mis altas/bajas sobre lo guardado.
+  @Field(() => [UUIDScalarType], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(50)
+  @IsUUID('all', { each: true })
+  baseMemberWorkspaceMemberIds?: string[] | null;
+
   @Field(() => Date, { nullable: true })
   @IsOptional()
   startAt?: Date | null;
@@ -319,6 +326,12 @@ export class UpdateTaskPipelineTaskInput {
   @IsString({ each: true })
   labels?: string[] | null;
 
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(20)
+  @IsString({ each: true })
+  baseLabels?: string[] | null;
+
   @Field(() => [TaskPipelineTaskChecklistItemInput], { nullable: true })
   @IsOptional()
   @ArrayMaxSize(100)
@@ -326,13 +339,22 @@ export class UpdateTaskPipelineTaskInput {
   @Type(() => TaskPipelineTaskChecklistItemInput)
   checklist?: TaskPipelineTaskChecklistItemInput[] | null;
 
-  // Lista completa de checklists (reemplaza la anterior).
+  // Checklists después del cambio. Con `baseChecklists` (cómo se veían justo
+  // antes) solo se aplica la diferencia sobre lo guardado: dos personas
+  // editando a la vez no se pisan. Sin base, reemplaza la lista completa.
   @Field(() => [TaskPipelineChecklistInput], { nullable: true })
   @IsOptional()
   @ArrayMaxSize(30)
   @ValidateNested({ each: true })
   @Type(() => TaskPipelineChecklistInput)
   checklists?: TaskPipelineChecklistInput[] | null;
+
+  @Field(() => [TaskPipelineChecklistInput], { nullable: true })
+  @IsOptional()
+  @ArrayMaxSize(30)
+  @ValidateNested({ each: true })
+  @Type(() => TaskPipelineChecklistInput)
+  baseChecklists?: TaskPipelineChecklistInput[] | null;
 
   @Field(() => UUIDScalarType, { nullable: true })
   @IsOptional()

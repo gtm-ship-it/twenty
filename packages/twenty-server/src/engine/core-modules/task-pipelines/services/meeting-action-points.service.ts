@@ -272,7 +272,7 @@ export class MeetingActionPointsService
     }[] = await this.coreDataSource.query(
       `SELECT m."id", e.key AS "pipelineId", (e.value->>'attempts')::int AS "attempts"
          FROM "core"."meeting" m, jsonb_each(m."actionPoints") e
-        WHERE e.value->>'status' = 'GENERATING' AND (e.value->>'startedAt') < $1`,
+        WHERE e.value->>'status' = 'GENERATING' AND (e.value->>'startedAt')::timestamptz < $1::timestamptz`,
       [cutoff],
     );
 
@@ -292,7 +292,7 @@ export class MeetingActionPointsService
             SET "actionPoints" = jsonb_set("actionPoints", ARRAY[$2::text],
                   ("actionPoints"->$2::text) || $3::jsonb)
           WHERE "id" = $1 AND "actionPoints"->$2::text->>'status' = 'GENERATING'
-            AND ("actionPoints"->$2::text->>'startedAt') < $4`,
+            AND ("actionPoints"->$2::text->>'startedAt')::timestamptz < $4::timestamptz`,
         [row.id, row.pipelineId, JSON.stringify(patch), cutoff],
       );
     }
@@ -327,7 +327,7 @@ export class MeetingActionPointsService
             SET "actionPoints" = jsonb_set("actionPoints", ARRAY[$2::text],
                   ("actionPoints"->$2::text) || jsonb_build_object(
                     'status', 'GENERATING',
-                    'startedAt', now()::text,
+                    'startedAt', to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
                     'attempts', coalesce(("actionPoints"->$2::text->>'attempts')::int, 0) + 1))
           WHERE "id" = $1 AND "actionPoints"->$2::text->>'status' = 'PENDING'
           RETURNING "id"`,

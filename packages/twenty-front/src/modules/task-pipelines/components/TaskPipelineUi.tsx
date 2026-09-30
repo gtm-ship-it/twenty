@@ -6,6 +6,7 @@ import { IconChevronDown, IconX } from 'twenty-ui/icon';
 import { IconButton } from 'twenty-ui/input';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
+import { useTypingHotkeyGuard } from '@/task-pipelines/hooks/useTypingHotkeyGuard';
 import { type TaskMemberInfo } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 
 // Piezas visuales compartidas por Tasks y Reuniones (mismo lenguaje que el
@@ -85,6 +86,8 @@ export const TaskModal = ({
 }) => {
   const titleId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
+  // Los modales también se abren fuera de Tasks (p. ej. desde el Inbox).
+  const typingGuard = useTypingHotkeyGuard();
 
   // Foco dentro del modal al abrir; se devuelve a donde estaba al cerrar.
   useEffect(() => {
@@ -100,9 +103,25 @@ export const TaskModal = ({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !event.defaultPrevented) {
-        onClose();
+      if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
       }
+
+      // Esc escribiendo solo sale del campo: no tira a la basura el formulario.
+      const target = event.target as HTMLElement | null;
+
+      if (
+        target !== null &&
+        cardRef.current?.contains(target) &&
+        (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+          target.isContentEditable)
+      ) {
+        target.blur();
+
+        return;
+      }
+
+      onClose();
     };
 
     window.addEventListener('keydown', onKeyDown);
@@ -120,6 +139,8 @@ export const TaskModal = ({
         aria-modal="true"
         aria-labelledby={titleId}
         onMouseDown={(event) => event.stopPropagation()}
+        onFocus={typingGuard.onFocus}
+        onBlur={typingGuard.onBlur}
       >
         <StyledCardHeader>
           <StyledCardTitle id={titleId}>{title}</StyledCardTitle>

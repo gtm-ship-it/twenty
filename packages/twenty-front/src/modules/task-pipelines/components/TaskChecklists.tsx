@@ -18,9 +18,8 @@ import {
   type TaskChecklist,
   type TaskChecklistPoint,
 } from '@/task-pipelines/types/TaskPipelineTypes';
+import { useDateDraft } from '@/task-pipelines/hooks/useDateDraft';
 import {
-  dueFromInputValue,
-  dueInputValue,
   formatTaskDueDate,
   getTaskDueStatus,
 } from '@/task-pipelines/utils/taskDueStatus';
@@ -206,6 +205,32 @@ const StyledPhoto = styled.div`
     opacity: 1;
   }
 `;
+
+const PointDueDate = ({
+  dueAt,
+  tone,
+  onCommit,
+}: {
+  dueAt: string | null;
+  tone: 'danger' | 'warning' | 'default';
+  onCommit: (next: string | null) => void;
+}) => {
+  const draft = useDateDraft(dueAt, onCommit);
+
+  return (
+    <StyledMiniDate
+      type="date"
+      aria-label={t`Due date`}
+      title={dueAt ? formatTaskDueDate(dueAt) : t`Due date`}
+      tone={tone}
+      value={draft.value}
+      onFocus={draft.onFocus}
+      onChange={draft.onChange}
+      onBlur={draft.onBlur}
+      onKeyDown={draft.onKeyDown}
+    />
+  );
+};
 
 type TaskChecklistsProps = {
   checklists: TaskChecklist[];
@@ -454,14 +479,8 @@ export const TaskChecklists = ({
                           </option>
                         ))}
                       </StyledMiniSelect>
-                      <StyledMiniDate
-                        type="date"
-                        aria-label={t`Due date`}
-                        title={
-                          point.dueAt
-                            ? formatTaskDueDate(point.dueAt)
-                            : t`Due date`
-                        }
+                      <PointDueDate
+                        dueAt={point.dueAt}
                         tone={
                           dueStatus === 'overdue'
                             ? 'danger'
@@ -469,11 +488,8 @@ export const TaskChecklists = ({
                               ? 'warning'
                               : 'default'
                         }
-                        value={dueInputValue(point.dueAt)}
-                        onChange={(event) =>
-                          updatePoint(checklist.id, point.id, {
-                            dueAt: dueFromInputValue(event.target.value),
-                          })
+                        onCommit={(dueAt) =>
+                          updatePoint(checklist.id, point.id, { dueAt })
                         }
                       />
                       <StyledIconAction

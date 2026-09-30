@@ -44,6 +44,7 @@ import {
   type MeetingListItem,
 } from '@/task-pipelines/types/TaskPipelineTypes';
 import { timestampToSeconds } from '@/task-pipelines/utils/timestampToSeconds';
+import { useTypingHotkeyGuard } from '@/task-pipelines/hooks/useTypingHotkeyGuard';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
 const PANEL_RADIUS = `calc(${themeCssVariables.border.radius.md} + ${themeCssVariables.spacing[1]})`;
@@ -884,6 +885,7 @@ const MeetingDetailView = ({ meetingId }: { meetingId: string }) => {
 };
 
 export const MeetingsPage = () => {
+  const typingGuard = useTypingHotkeyGuard();
   const client = useApolloCoreClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get('meeting');
@@ -906,7 +908,7 @@ export const MeetingsPage = () => {
   }, [selectedId, firstMeetingId, setSearchParams]);
 
   return (
-    <StyledPage>
+    <StyledPage onFocus={typingGuard.onFocus} onBlur={typingGuard.onBlur}>
       <StyledList>
         <StyledListHeader>
           <IconVideo size={16} />

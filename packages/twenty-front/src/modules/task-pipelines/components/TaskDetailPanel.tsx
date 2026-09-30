@@ -50,11 +50,8 @@ import {
 import { SafeMarkdown } from '@/task-pipelines/components/SafeMarkdown';
 import { formatTaskActivity } from '@/task-pipelines/utils/formatTaskActivity';
 import { safeHttpUrl } from '@/task-pipelines/utils/safeHttpUrl';
-import {
-  dueFromInputValue,
-  dueInputValue,
-  getTaskDueStatus,
-} from '@/task-pipelines/utils/taskDueStatus';
+import { useDateDraft } from '@/task-pipelines/hooks/useDateDraft';
+import { getTaskDueStatus } from '@/task-pipelines/utils/taskDueStatus';
 import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 
@@ -458,6 +455,9 @@ export const TaskDetailPanel = ({
   const pendingSaves = useRef(0);
   // oxlint-disable-next-line twenty/no-state-useref
   const saveQueue = useRef<Promise<unknown>>(Promise.resolve());
+  // Al vaciarse la cola se vuelve a leer lo del servidor (trae lo que otros
+  // cambiaron entretanto, o deshace lo local si el guardado falló).
+  const [resyncTick, setResyncTick] = useState(0);
 
   useEffect(() => {
     setTitle(task.title);
@@ -471,7 +471,7 @@ export const TaskDetailPanel = ({
       setLabels(task.labels);
       setMemberIds(task.memberWorkspaceMemberIds);
     }
-  }, [task.checklists, task.labels, task.memberWorkspaceMemberIds]);
+  }, [task.checklists, task.labels, task.memberWorkspaceMemberIds, resyncTick]);
 
   useEffect(() => {
     panelRef.current?.focus();
@@ -481,7 +481,7 @@ export const TaskDetailPanel = ({
     const next = title.trim();
 
     if (next.length > 0 && next !== task.title) {
-      void onUpdate({ title: next });
+      void run(() => onUpdate({ title: next }));
     }
   };
 
@@ -489,7 +489,7 @@ export const TaskDetailPanel = ({
     flushTitle();
 
     if (isEditingBody && body !== task.body) {
-      void onUpdate({ body });
+      void run(() => onUpdate({ body }));
     }
 
     onClose();
@@ -565,23 +565,48 @@ export const TaskDetailPanel = ({
 
   const save = (input: UpdatePipelineTaskInput) => run(() => onUpdate(input));
 
+  const startDraft = useDateDraft(
+    task.startAt,
+    (start) => void save(start ? { startAt: start } : { clearStartAt: true }),
+  );
+  const dueDraft = useDateDraft(
+    task.dueAt,
+    (due) => void save(due ? { dueAt: due } : { clearDueAt: true }),
+  );
+
   const enqueueSave = (input: UpdatePipelineTaskInput) => {
     pendingSaves.current += 1;
     saveQueue.current = saveQueue.current
       .then(() => run(() => onUpdate(input)))
       .finally(() => {
         pendingSaves.current -= 1;
+
+        if (pendingSaves.current === 0) {
+          setResyncTick((tick) => tick + 1);
+        }
       });
   };
 
+  // Se manda cómo estaba antes (base) y cómo queda: el servidor aplica solo
+  // este cambio sobre lo guardado, sin pisar lo que otra persona hizo.
   const updateChecklists = (next: TaskChecklist[]) => {
+    const base = checklists;
+
     setChecklists(next);
-    enqueueSave({ checklists: toChecklistInput(next) });
+    enqueueSave({
+      checklists: toChecklistInput(next),
+      baseChecklists: toChecklistInput(base),
+    });
   };
 
   const updateMembers = (next: string[]) => {
+    const base = memberIds;
+
     setMemberIds(next);
-    enqueueSave({ memberWorkspaceMemberIds: next });
+    enqueueSave({
+      memberWorkspaceMemberIds: next,
+      baseMemberWorkspaceMemberIds: base,
+    });
   };
 
   // Imagen para pegar en un comentario o en la descripción (markdown).
@@ -606,8 +631,10 @@ export const TaskDetailPanel = ({
   };
 
   const updateLabels = (next: string[]) => {
+    const base = labels;
+
     setLabels(next);
-    enqueueSave({ labels: next });
+    enqueueSave({ labels: next, baseLabels: base });
   };
 
   const comments = commentsQuery.data?.taskPipelineTaskComments ?? [];
@@ -774,14 +801,11 @@ export const TaskDetailPanel = ({
               <StyledDateInput
                 type="date"
                 aria-label={t`Start date`}
-                value={dueInputValue(task.startAt)}
-                onChange={(event) => {
-                  const start = dueFromInputValue(event.target.value);
-
-                  void save(
-                    start ? { startAt: start } : { clearStartAt: true },
-                  );
-                }}
+                value={startDraft.value}
+                onFocus={startDraft.onFocus}
+                onChange={startDraft.onChange}
+                onBlur={startDraft.onBlur}
+                onKeyDown={startDraft.onKeyDown}
               />
               {task.startAt && (
                 <StyledTextButton
@@ -806,12 +830,11 @@ export const TaskDetailPanel = ({
                         ? themeCssVariables.color.orange
                         : undefined,
                 }}
-                value={dueInputValue(task.dueAt)}
-                onChange={(event) => {
-                  const due = dueFromInputValue(event.target.value);
-
-                  void save(due ? { dueAt: due } : { clearDueAt: true });
-                }}
+                value={dueDraft.value}
+                onFocus={dueDraft.onFocus}
+                onChange={dueDraft.onChange}
+                onBlur={dueDraft.onBlur}
+                onKeyDown={dueDraft.onKeyDown}
               />
               {task.dueAt && (
                 <StyledTextButton

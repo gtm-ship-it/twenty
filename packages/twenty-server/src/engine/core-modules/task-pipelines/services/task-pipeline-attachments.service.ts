@@ -21,6 +21,11 @@ import { WorkspaceScopedRepository } from 'src/engine/twenty-orm/workspace-scope
 
 const IMAGE_MIME_TYPES = new Set<string>(EMAIL_IMAGE_MIME_TYPES);
 const MAX_NAME_LENGTH = 255;
+// La firma de los archivos caduca en 1 día (FILE_TOKEN_EXPIRES_IN): se reusa
+// la misma URL 6 h para que el tablero (que se refresca cada 30 s) no vuelva a
+// descargar ni haga parpadear portadas y fotos.
+const SIGNED_URL_TTL_MS = 6 * 60 * 60 * 1000;
+const SIGNED_URL_CACHE_MAX = 5000;
 
 export const isTaskImageMimeType = (mimeType: string | null | undefined) =>
   isDefined(mimeType) && IMAGE_MIME_TYPES.has(mimeType);
@@ -34,6 +39,10 @@ export const isTaskImageMimeType = (mimeType: string | null | undefined) =>
 @Injectable()
 export class TaskPipelineAttachmentsService {
   private readonly logger = new Logger(TaskPipelineAttachmentsService.name);
+  private readonly signedUrls = new Map<
+    string,
+    { url: string; expiresAt: number }
+  >();
 
   constructor(
     @InjectWorkspaceScopedRepository(TaskPipelineTaskAttachmentEntity)
@@ -118,6 +127,7 @@ export class TaskPipelineAttachmentsService {
     attachment: TaskPipelineTaskAttachmentEntity,
   ): Promise<void> {
     await this.attachmentRepository.delete(workspaceId, { id: attachment.id });
+    this.signedUrls.delete(`${workspaceId}:${attachment.fileId}`);
 
     try {
       await this.fileStorageService.deleteByFileId({
@@ -152,6 +162,35 @@ export class TaskPipelineAttachmentsService {
     }
   }
 
+  private async signedUrl(
+    workspaceId: string,
+    attachment: TaskPipelineTaskAttachmentEntity,
+  ): Promise<string> {
+    const key = `${workspaceId}:${attachment.fileId}`;
+    const cached = this.signedUrls.get(key);
+
+    if (isDefined(cached) && cached.expiresAt > Date.now()) {
+      return cached.url;
+    }
+
+    const url = await this.fileUrlService.signFileByIdUrl({
+      fileId: attachment.fileId,
+      workspaceId,
+      fileFolder: attachment.fileFolder as FileFolder,
+    });
+
+    if (this.signedUrls.size >= SIGNED_URL_CACHE_MAX) {
+      this.signedUrls.clear();
+    }
+
+    this.signedUrls.set(key, {
+      url,
+      expiresAt: Date.now() + SIGNED_URL_TTL_MS,
+    });
+
+    return url;
+  }
+
   async toDTOs(
     workspaceId: string,
     attachments: TaskPipelineTaskAttachmentEntity[],
@@ -166,11 +205,7 @@ export class TaskPipelineAttachmentsService {
         purpose: attachment.purpose,
         checklistItemId: attachment.checklistItemId,
         isImage: isTaskImageMimeType(attachment.mimeType),
-        url: await this.fileUrlService.signFileByIdUrl({
-          fileId: attachment.fileId,
-          workspaceId,
-          fileFolder: attachment.fileFolder as FileFolder,
-        }),
+        url: await this.signedUrl(workspaceId, attachment),
         uploadedByWorkspaceMemberId: attachment.uploadedByWorkspaceMemberId,
         createdAt: attachment.createdAt,
       })),

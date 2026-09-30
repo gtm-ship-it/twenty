@@ -232,6 +232,7 @@ export type UpdatePipelineTaskInput = {
   assigneeWorkspaceMemberId?: string | null;
   clearAssignee?: boolean | null;
   memberWorkspaceMemberIds?: string[] | null;
+  baseMemberWorkspaceMemberIds?: string[] | null;
   startAt?: string | null;
   clearStartAt?: boolean | null;
   dueAt?: string | null;
@@ -240,6 +241,8 @@ export type UpdatePipelineTaskInput = {
   labels?: string[] | null;
   checklist?: TaskChecklistItem[] | null;
   checklists?: TaskChecklistInput[] | null;
+  baseChecklists?: TaskChecklistInput[] | null;
+  baseLabels?: string[] | null;
   coverAttachmentId?: string | null;
   clearCover?: boolean | null;
   relatedRecords?: TaskRelatedRecord[] | null;

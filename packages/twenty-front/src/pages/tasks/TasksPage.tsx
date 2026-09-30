@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client/react';
 import { styled } from '@linaria/react';
 import { t } from '@lingui/core/macro';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -42,6 +43,8 @@ import {
   StyledTextInput,
   TaskModal,
 } from '@/task-pipelines/components/TaskPipelineUi';
+import { useApolloCoreClient } from '@/object-metadata/hooks/useApolloCoreClient';
+import { GET_PIPELINE_TASK } from '@/task-pipelines/graphql/taskPipelinesDocuments';
 import { usePipelineTasks } from '@/task-pipelines/hooks/usePipelineTasks';
 import { useTaskPipelines } from '@/task-pipelines/hooks/useTaskPipelines';
 import {
@@ -49,6 +52,7 @@ import {
   useWorkspaceMembersById,
 } from '@/task-pipelines/hooks/useWorkspaceMembersById';
 import {
+  type PipelineTask,
   type TaskPipeline,
   type TaskPriority,
 } from '@/task-pipelines/types/TaskPipelineTypes';
@@ -58,6 +62,7 @@ import {
 } from '@/task-pipelines/utils/filterPipelineTasks';
 import { dueFromInputValue } from '@/task-pipelines/utils/taskDueStatus';
 import { friendlyErrorMessage } from '@/task-pipelines/utils/friendlyErrorMessage';
+import { useTypingHotkeyGuard } from '@/task-pipelines/hooks/useTypingHotkeyGuard';
 import { useSnackBar } from '@/ui/feedback/snack-bar-manager/hooks/useSnackBar';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
 
@@ -481,6 +486,11 @@ const NewTaskModal = ({
   const [isSaving, setIsSaving] = useState(false);
 
   const submit = async () => {
+    // Enter dos veces seguidas no debe crear la tarea dos veces.
+    if (isSaving) {
+      return;
+    }
+
     if (title.trim().length === 0) {
       setError(t`Write a title`);
 
@@ -608,6 +618,7 @@ const NewTaskModal = ({
 };
 
 export const TasksPage = () => {
+  const typingGuard = useTypingHotkeyGuard();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { enqueueErrorSnackBar, enqueueSuccessSnackBar } = useSnackBar();
@@ -739,8 +750,26 @@ export const TasksPage = () => {
     currentWorkspaceMemberId: currentMemberId,
   });
 
-  const openTask =
+  // Si la tarea abierta sale de la lista (en "Mis tareas" al terminarla o al
+  // quitarme de ella, o una archivada) el panel sigue abierto con la tarea
+  // leída directamente, sin perder lo que se estaba escribiendo.
+  const client = useApolloCoreClient();
+  const listedOpenTask =
     tasksApi.tasks.find((task) => task.id === openTaskId) ?? null;
+  const openTaskQuery = useQuery<{ taskPipelineTask: PipelineTask }>(
+    GET_PIPELINE_TASK,
+    {
+      client,
+      variables: { taskId: openTaskId },
+      skip: !openTaskId || listedOpenTask !== null || tasksApi.isLoading,
+      fetchPolicy: 'cache-and-network',
+    },
+  );
+  const openTask =
+    listedOpenTask ??
+    (openTaskQuery.data?.taskPipelineTask?.id === openTaskId
+      ? openTaskQuery.data.taskPipelineTask
+      : null);
   const openTaskPipeline = openTask
     ? (pipelines.find((pipeline) => pipeline.id === openTask.pipelineId) ??
       null)
@@ -797,7 +826,7 @@ export const TasksPage = () => {
   const labelColors = getLabelColor(selectedPipeline?.labels ?? []);
 
   return (
-    <StyledPage>
+    <StyledPage onFocus={typingGuard.onFocus} onBlur={typingGuard.onBlur}>
       {isSidebarCollapsed ? (
         <StyledCollapsedRail>
           <IconButton

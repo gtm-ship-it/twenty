@@ -36,6 +36,10 @@ import {
 } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task.entity';
 import { type TaskPipelineAttachmentPurpose } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline-task-attachment.entity';
 import { TaskPipelineAttachmentsService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-attachments.service';
+import {
+  mergeIdList,
+  mergeTaskChecklists,
+} from 'src/engine/core-modules/task-pipelines/utils/merge-task-checklists.util';
 import { TaskPipelineEntity } from 'src/engine/core-modules/task-pipelines/entities/task-pipeline.entity';
 import { TaskPipelineAccessService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-access.service';
 import { TaskPipelineNotificationService } from 'src/engine/core-modules/task-pipelines/services/task-pipeline-notification.service';
@@ -679,12 +683,45 @@ export class TaskPipelinesService {
 
     await this.memberRepository.delete(actor.workspaceId, { id: target.id });
 
-    // Sus tareas en este tablero quedan sin asignar (y marcadas para reasignar).
-    await this.taskRepository.update(
-      actor.workspaceId,
-      { pipelineId, assigneeWorkspaceMemberId: workspaceMemberId },
-      { assigneeWorkspaceMemberId: null, needsAssignment: true },
-    );
+    // Sale de sus tarjetas en este tablero (como miembro y como responsable de
+    // puntos); las que se quedan sin nadie quedan marcadas para reasignar.
+    const tasks = await this.taskRepository.find(actor.workspaceId, {
+      where: { pipelineId },
+    });
+
+    for (const task of tasks) {
+      const members = getTaskMemberIds(task);
+      const checklists = getTaskChecklists(task);
+      const hasPoint = checklists.some((checklist) =>
+        checklist.items.some(
+          (item) => item.assigneeWorkspaceMemberId === workspaceMemberId,
+        ),
+      );
+
+      if (!members.includes(workspaceMemberId) && !hasPoint) {
+        continue;
+      }
+
+      const nextMembers = members.filter((id) => id !== workspaceMemberId);
+
+      await this.taskRepository.update(
+        actor.workspaceId,
+        { id: task.id },
+        {
+          memberWorkspaceMemberIds: nextMembers,
+          assigneeWorkspaceMemberId: nextMembers[0] ?? null,
+          needsAssignment: nextMembers.length === 0 || task.needsAssignment,
+          checklists: checklists.map((checklist) => ({
+            ...checklist,
+            items: checklist.items.map((item) =>
+              item.assigneeWorkspaceMemberId === workspaceMemberId
+                ? { ...item, assigneeWorkspaceMemberId: null }
+                : item,
+            ),
+          })),
+        },
+      );
+    }
 
     return true;
   }
@@ -884,7 +921,15 @@ export class TaskPipelinesService {
     let nextMembers: string[] | undefined;
 
     if (isDefined(input.memberWorkspaceMemberIds)) {
-      nextMembers = uniqueIds(input.memberWorkspaceMemberIds);
+      nextMembers = uniqueIds(
+        isDefined(input.baseMemberWorkspaceMemberIds)
+          ? mergeIdList({
+              current: previousMembers,
+              base: input.baseMemberWorkspaceMemberIds,
+              next: input.memberWorkspaceMemberIds,
+            })
+          : input.memberWorkspaceMemberIds,
+      );
     } else if (input.clearAssignee === true) {
       nextMembers = [];
     } else if (
@@ -990,8 +1035,16 @@ export class TaskPipelinesService {
     }
 
     if (isDefined(input.labels)) {
-      const nextLabels = this.sanitizeLabels(input.labels);
       const previousLabels = task.labels ?? [];
+      const nextLabels = this.sanitizeLabels(
+        isDefined(input.baseLabels)
+          ? mergeIdList({
+              current: previousLabels,
+              base: this.sanitizeLabels(input.baseLabels),
+              next: this.sanitizeLabels(input.labels),
+            })
+          : input.labels,
+      );
 
       patch.labels = nextLabels;
       nextLabels
@@ -1036,6 +1089,7 @@ export class TaskPipelinesService {
         pipeline.id,
         task,
         input.checklists,
+        input.baseChecklists ?? null,
       );
 
       patch.checklists = result.checklists;
@@ -1480,7 +1534,8 @@ export class TaskPipelinesService {
     workspaceId: string,
     pipelineId: string,
     task: TaskPipelineTaskEntity,
-    input: NonNullable<UpdateTaskPipelineTaskInput['checklists']>,
+    requested: NonNullable<UpdateTaskPipelineTaskInput['checklists']>,
+    base: UpdateTaskPipelineTaskInput['baseChecklists'],
   ): Promise<{
     checklists: TaskPipelineChecklist[];
     activity: TaskActivityEvent[];
@@ -1488,6 +1543,30 @@ export class TaskPipelinesService {
     removedItemIds: string[];
   }> {
     const previous = getTaskChecklists(task);
+    const toShape = (
+      checklists: NonNullable<UpdateTaskPipelineTaskInput['checklists']>,
+    ) =>
+      checklists.map((checklist) => ({
+        id: checklist.id,
+        title: checklist.title,
+        items: checklist.items.map((item) => ({
+          id: item.id,
+          text: item.text,
+          done: item.done,
+          assigneeWorkspaceMemberId: item.assigneeWorkspaceMemberId ?? null,
+          dueAt: isDefined(item.dueAt)
+            ? new Date(item.dueAt).toISOString()
+            : null,
+        })),
+      }));
+    const merged = isDefined(base)
+      ? mergeTaskChecklists({
+          current: previous,
+          base: toShape(base),
+          next: toShape(requested),
+        })
+      : null;
+    const input = merged !== null ? merged.checklists : toShape(requested);
     const previousChecklistById = new Map(
       previous.map((checklist) => [checklist.id, checklist]),
     );
@@ -1497,11 +1576,19 @@ export class TaskPipelinesService {
       ),
     );
 
+    // Solo se validan los responsables que ESTE cambio puso: si alguien salió
+    // del tablero, sus puntos viejos no deben bloquear marcar otra casilla.
     const assigneeIds = uniqueIds(
       input.flatMap((checklist) =>
         checklist.items
-          .map((item) => item.assigneeWorkspaceMemberId)
-          .filter(isDefined),
+          .filter(
+            (item) =>
+              isDefined(item.assigneeWorkspaceMemberId) &&
+              item.assigneeWorkspaceMemberId !==
+                (previousItemById.get(item.id)?.assigneeWorkspaceMemberId ??
+                  null),
+          )
+          .map((item) => item.assigneeWorkspaceMemberId as string),
       ),
     );
 
@@ -1589,9 +1676,12 @@ export class TaskPipelinesService {
         activity.push({ type: 'checklistRemoved', title: checklist.title }),
       );
 
-    const removedItemIds = [...previousItemById.keys()].filter(
-      (itemId) => !seenItemIds.has(itemId),
-    );
+    const removedItemIds =
+      merged !== null
+        ? merged.removedItemIds
+        : [...previousItemById.keys()].filter(
+            (itemId) => !seenItemIds.has(itemId),
+          );
 
     return { checklists, activity, newAssignees, removedItemIds };
   }
