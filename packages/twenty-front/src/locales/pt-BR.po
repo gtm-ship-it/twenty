@@ -20484,9 +20484,9 @@ msgstr ""
 msgid "The address your workspace will send and receive email from (e.g. support@mycompany.com). Outbound sending requires the domain to be verified in Outbound Domains."
 msgstr "O endereço que o seu espaço de trabalho usará para enviar e receber e-mails (por exemplo, support@mycompany.com). O envio de saída exige que o domínio seja verificado em Outbound Domains."
 
-#. js-lingui-id: JR1wse
+#. js-lingui-id: o1paM0
 #: src/pages/meetings/MeetingsPage.tsx
-msgid "The AI is pulling the action points out of this meeting… it takes 1–3 minutes"
+msgid "The AI is pulling the action points out of this meeting… it can take a few minutes, you can leave this page"
 msgstr ""
 
 #. js-lingui-id: oVH0Mt

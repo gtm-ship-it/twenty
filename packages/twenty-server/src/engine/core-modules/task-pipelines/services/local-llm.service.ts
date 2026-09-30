@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import http from 'node:http';
+import https from 'node:https';
+
 import { isNonEmptyString } from '@sniptt/guards';
 
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
@@ -11,6 +14,52 @@ const REQUEST_TIMEOUT_MS = 15 * 60 * 1000;
 const CONTEXT_TOKENS = 8192;
 
 export class LocalLlmUnavailableError extends Error {}
+
+// POST JSON sin los límites por defecto de fetch (undici corta a los 5 min
+// esperando la respuesta, y en CPU cargar el modelo + leer una reunión larga
+// tarda más). Aquí el único límite es el nuestro.
+const postJson = (
+  url: string,
+  body: string,
+  timeoutMs: number,
+): Promise<{ status: number; text: string }> =>
+  new Promise((resolve, reject) => {
+    const target = new URL(url);
+    const client = target.protocol === 'https:' ? https : http;
+    const request = client.request(
+      target,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+        },
+      },
+      (response) => {
+        const chunks: Buffer[] = [];
+
+        response.on('data', (chunk: Buffer) => chunks.push(chunk));
+        response.on('end', () =>
+          resolve({
+            status: response.statusCode ?? 0,
+            text: Buffer.concat(chunks).toString('utf8'),
+          }),
+        );
+        response.on('error', reject);
+      },
+    );
+    const timer = setTimeout(
+      () => request.destroy(new Error('Ollama timed out')),
+      timeoutMs,
+    );
+
+    request.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    request.on('close', () => clearTimeout(timer));
+    request.end(body);
+  });
 
 // IA local (Ollama en el mismo VPS): gratis y sin mandar datos a terceros.
 // Devuelve JSON que cumple el esquema pedido; el llamador valida el contenido.
@@ -48,16 +97,12 @@ export class LocalLlmService {
     const numThread =
       Number(this.twentyConfigService.get('OLLAMA_NUM_THREAD')) ||
       DEFAULT_NUM_THREAD;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     const startedAt = Date.now();
 
     try {
-      const response = await fetch(`${baseUrl.replace(/\/$/, '')}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
-        body: JSON.stringify({
+      const response = await postJson(
+        `${baseUrl.replace(/\/$/, '')}/api/chat`,
+        JSON.stringify({
           model: this.getModel(),
           stream: false,
           think: false,
@@ -74,19 +119,28 @@ export class LocalLlmService {
             { role: 'user', content: user },
           ],
         }),
-      });
+        REQUEST_TIMEOUT_MS,
+      );
 
-      if (!response.ok) {
+      if (response.status < 200 || response.status >= 300) {
         throw new LocalLlmUnavailableError(
-          `Ollama answered ${response.status}: ${(await response.text()).slice(0, 300)}`,
+          `Ollama answered ${response.status}: ${response.text.slice(0, 300)}`,
         );
       }
 
-      const payload = (await response.json()) as {
+      let payload: {
         message?: { content?: string };
         prompt_eval_count?: number;
         eval_count?: number;
       };
+
+      try {
+        payload = JSON.parse(response.text);
+      } catch {
+        throw new LocalLlmUnavailableError(
+          `Ollama returned an unreadable answer: ${response.text.slice(0, 200)}`,
+        );
+      }
 
       this.logger.log(
         `Ollama ${this.getModel()} answered in ${Math.round((Date.now() - startedAt) / 1000)}s (${payload.prompt_eval_count ?? '?'} → ${payload.eval_count ?? '?'} tokens)`,
@@ -107,12 +161,8 @@ export class LocalLlmService {
       }
 
       throw new LocalLlmUnavailableError(
-        controller.signal.aborted
-          ? 'Ollama timed out'
-          : `Ollama request failed: ${(error as Error).message}`,
+        `Ollama request failed after ${Math.round((Date.now() - startedAt) / 1000)}s: ${(error as Error).message}`,
       );
-    } finally {
-      clearTimeout(timer);
     }
   }
 }

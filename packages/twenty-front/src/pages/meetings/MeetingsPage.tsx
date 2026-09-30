@@ -435,7 +435,7 @@ const ActionPointsState = ({
         <StyledPulse>
           <IconSparkles size={16} />
         </StyledPulse>
-        {t`The AI is pulling the action points out of this meeting… it takes 1–3 minutes`}
+        {t`The AI is pulling the action points out of this meeting… it can take a few minutes, you can leave this page`}
         {where}
       </StyledPointsBox>
     );
